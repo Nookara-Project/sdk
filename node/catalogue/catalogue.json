@@ -21,7 +21,11 @@
     "VOICE": 16384,
     "SIGN_MESSAGES": 32768,
     "FILES_READ": 65536,
-    "FILES_WRITE": 131072
+    "FILES_WRITE": 131072,
+    "NOTIFY_SEND": 262144,
+    "NOTIFY_READ": 524288,
+    "BLOCKS_READ": 1048576,
+    "BLOCKS_MANAGE": 2097152
   },
   "routes": [
     {
@@ -2225,7 +2229,9 @@
       "method": "GET",
       "path": "/account/notifications",
       "auth": "bearer",
-      "scopes": [],
+      "scopes": [
+        "NOTIFY_READ"
+      ],
       "params": [],
       "query": [
         "unread",
@@ -2236,7 +2242,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Newest first. Query unread=1 (only unread), category (one category key), cursor (the last id you got, for the next page), limit (up to 50). Returns {notifications: [{id, category, kind, title, body, link, icon, actor: {username, pfp_url} | null, data, read, read_at, created_at}], next_cursor, unread}. title and body are plain text with **bold** as the only markup; render it yourself, never as HTML.",
+      "notes": "Newest first. Query unread=1 (only unread), category (one category key), cursor (the last id you got, for the next page), limit (up to 50). Returns {notifications: [{id, category, kind, title, body, link, icon, actor: {username, pfp_url} | null, data, read, read_at, created_at}], next_cursor, unread}. title and body are plain text with **bold** as the only markup; render it yourself, never as HTML. Website and Nookara's own sign-ins need no extra scope (or the older Friends scope for blocks); an App token needs the scope listed.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -2247,13 +2253,46 @@
       "method": "GET",
       "path": "/account/notifications/unread-count",
       "auth": "bearer",
-      "scopes": [],
+      "scopes": [
+        "NOTIFY_READ"
+      ],
       "params": [],
       "query": [],
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Returns {unread}: the number for the bell.",
+      "notes": "Returns {unread}: the number for the bell. Website and Nookara's own sign-ins need no extra scope (or the older Friends scope for blocks); an App token needs the scope listed.",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
+      "operationId": "post_account_notifications_send",
+      "group": "notifications",
+      "method": "POST",
+      "path": "/account/notifications/send",
+      "auth": "bearer",
+      "scopes": [
+        "NOTIFY_SEND"
+      ],
+      "params": [],
+      "query": [],
+      "body": [
+        "title",
+        "body",
+        "link"
+      ],
+      "files": [],
+      "errors": [
+        "app_token_required",
+        "app_not_available",
+        "bad_title",
+        "body_too_long",
+        "bad_link",
+        "rate_limited",
+        "insufficient_scope"
+      ],
+      "notes": "App tokens only. Sends the person whose token it is a notification under \"From apps\", titled \"**<your app>**: <title>\". title 1-100 characters, body up to 500, link optional and only to one of your App's https addresses. 10 an hour and 50 a day per person. Returns {success, delivered}: delivered is false when they turned \"From apps\" off. 429 rate_limited has retry_after (seconds).",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -2264,7 +2303,9 @@
       "method": "POST",
       "path": "/account/notifications/read",
       "auth": "bearer",
-      "scopes": [],
+      "scopes": [
+        "NOTIFY_READ"
+      ],
       "params": [],
       "query": [],
       "body": [
@@ -2273,7 +2314,7 @@
       ],
       "files": [],
       "errors": [],
-      "notes": "Body {ids: [..]} or {all: true}. Returns {success, unread}. Your other sockets get notifications_updated.",
+      "notes": "Body {ids: [..]} or {all: true}. Returns {success, unread}. Your other sockets get notifications_updated. Website and Nookara's own sign-ins need no extra scope (or the older Friends scope for blocks); an App token needs the scope listed.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -2284,7 +2325,9 @@
       "method": "POST",
       "path": "/account/notifications/unread",
       "auth": "bearer",
-      "scopes": [],
+      "scopes": [
+        "NOTIFY_READ"
+      ],
       "params": [],
       "query": [],
       "body": [
@@ -2292,7 +2335,7 @@
       ],
       "files": [],
       "errors": [],
-      "notes": "Body {ids: [..]}. Marks them unread again. Returns {success, unread}.",
+      "notes": "Body {ids: [..]}. Marks them unread again. Returns {success, unread}. Website and Nookara's own sign-ins need no extra scope (or the older Friends scope for blocks); an App token needs the scope listed.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -2303,7 +2346,9 @@
       "method": "DELETE",
       "path": "/account/notifications/:id",
       "auth": "bearer",
-      "scopes": [],
+      "scopes": [
+        "NOTIFY_READ"
+      ],
       "params": [
         {
           "name": "id",
@@ -2316,7 +2361,7 @@
       "errors": [
         "not_found"
       ],
-      "notes": "Deletes one of your notifications. Returns {success, unread}, or 404 not_found.",
+      "notes": "Deletes one of your notifications. Returns {success, unread}, or 404 not_found. Website and Nookara's own sign-ins need no extra scope (or the older Friends scope for blocks); an App token needs the scope listed.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -2327,13 +2372,15 @@
       "method": "GET",
       "path": "/account/notification-settings",
       "auth": "bearer",
-      "scopes": [],
+      "scopes": [
+        "NOTIFY_READ"
+      ],
       "params": [],
       "query": [],
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Returns {categories: [{key, label, description, icon, locked, staff, email, list}]} in settings order. locked categories (system, moderation) are always on. staff categories only exist for staff accounts. list = it lands in the bell and on your devices; email = it is also emailed (throttled).",
+      "notes": "Returns {categories: [{key, label, description, icon, locked, staff, email, list}]} in settings order. locked categories (system, moderation) are always on. staff categories only exist for staff accounts. list = it lands in the bell and on your devices; email = it is also emailed (throttled). Website and Nookara's own sign-ins need no extra scope (or the older Friends scope for blocks); an App token needs the scope listed.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -2352,7 +2399,7 @@
       ],
       "files": [],
       "errors": [],
-      "notes": "Body {prefs: {<category>: {email?: bool, list?: bool}}}. Locked and unknown categories are ignored. Returns {success, categories} like the GET.",
+      "notes": "Body {prefs: {<category>: {email?: bool, list?: bool}}}. Locked and unknown categories are ignored. Returns {success, categories} like the GET. App tokens are refused (insufficient_scope): an App can't switch its own notifications back on.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -2516,14 +2563,14 @@
       "path": "/account/blocks",
       "auth": "bearer",
       "scopes": [
-        "FRIENDS_READ"
+        "BLOCKS_READ"
       ],
       "params": [],
       "query": [],
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "",
+      "notes": "Returns {blocks: [{id, username, pfp_url, color, created_at}]}, the people you blocked. Website and Nookara's own sign-ins need no extra scope (or the older Friends scope for blocks); an App token needs the scope listed.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -2535,7 +2582,7 @@
       "path": "/account/blocks",
       "auth": "bearer",
       "scopes": [
-        "FRIENDS_MANAGE"
+        "BLOCKS_MANAGE"
       ],
       "params": [],
       "query": [],
@@ -2549,7 +2596,7 @@
         "missing_fields",
         "user_not_found"
       ],
-      "notes": "",
+      "notes": "Body {username}. Removes any friendship or pending friend request. Website and Nookara's own sign-ins need no extra scope (or the older Friends scope for blocks); an App token needs the scope listed.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -2561,7 +2608,7 @@
       "path": "/account/blocks/:username",
       "auth": "bearer",
       "scopes": [
-        "FRIENDS_MANAGE"
+        "BLOCKS_MANAGE"
       ],
       "params": [
         {
@@ -2575,7 +2622,7 @@
       "errors": [
         "user_not_found"
       ],
-      "notes": "",
+      "notes": "Only the person who blocked can unblock. Website and Nookara's own sign-ins need no extra scope (or the older Friends scope for blocks); an App token needs the scope listed.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -10311,13 +10358,15 @@
       "method": "GET",
       "path": "/notifications",
       "auth": "bearer",
-      "scopes": [],
+      "scopes": [
+        "NOTIFY_READ"
+      ],
       "params": [],
       "query": [],
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Older feed (the Scratch/PenguinMod extension uses it): your unread notifications, newest first, at most 50, as {notifications: [{id, type, category, title, body, data, created_at}]} with the **bold** markers removed. New clients use GET /account/notifications.",
+      "notes": "Older feed (the Scratch/PenguinMod extension uses it): your unread notifications, newest first, at most 50, as {notifications: [{id, type, category, title, body, data, created_at}]} with the **bold** markers removed. New clients use GET /account/notifications. Website and Nookara's own sign-ins need no extra scope (or the older Friends scope for blocks); an App token needs the scope listed.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -10328,13 +10377,15 @@
       "method": "GET",
       "path": "/notifications/count",
       "auth": "bearer",
-      "scopes": [],
+      "scopes": [
+        "NOTIFY_READ"
+      ],
       "params": [],
       "query": [],
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Older feed: {count} of unread notifications. Same number as GET /account/notifications/unread-count.",
+      "notes": "Older feed: {count} of unread notifications. Same number as GET /account/notifications/unread-count. Website and Nookara's own sign-ins need no extra scope (or the older Friends scope for blocks); an App token needs the scope listed.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -10345,13 +10396,15 @@
       "method": "PATCH",
       "path": "/notifications/read-all",
       "auth": "bearer",
-      "scopes": [],
+      "scopes": [
+        "NOTIFY_READ"
+      ],
       "params": [],
       "query": [],
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Older feed: marks every notification read. Same as POST /account/notifications/read {all: true}.",
+      "notes": "Older feed: marks every notification read. Same as POST /account/notifications/read {all: true}. Website and Nookara's own sign-ins need no extra scope (or the older Friends scope for blocks); an App token needs the scope listed.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -10362,7 +10415,9 @@
       "method": "DELETE",
       "path": "/notifications/:id",
       "auth": "bearer",
-      "scopes": [],
+      "scopes": [
+        "NOTIFY_READ"
+      ],
       "params": [
         {
           "name": "id",
@@ -10373,7 +10428,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Older feed: deletes one notification. Always answers {success: true}.",
+      "notes": "Older feed: deletes one notification. Always answers {success: true}. Website and Nookara's own sign-ins need no extra scope (or the older Friends scope for blocks); an App token needs the scope listed.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false

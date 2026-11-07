@@ -370,6 +370,10 @@ class Endpoints:
         """POST /account/notifications/unread. See the API reference for scopes and payloads."""
         return self.call('post_account_notifications_unread', query=query, json=json, data=data, files=files, raw=raw)
 
+    def post_account_notifications_send(self, *, query=None, json=None, data=None, files=None, raw=False):
+        """POST /account/notifications/send. See the API reference for scopes and payloads."""
+        return self.call('post_account_notifications_send', query=query, json=json, data=data, files=files, raw=raw)
+
     def delete_account_notifications_by_id(self, *, id, query=None, json=None, data=None, files=None, raw=False):
         """DELETE /account/notifications/:id. See the API reference for scopes and payloads."""
         return self.call('delete_account_notifications_by_id', id=id, query=query, json=json, data=data, files=files, raw=raw)

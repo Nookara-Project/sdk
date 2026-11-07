@@ -473,6 +473,19 @@ input has a strict JSON Schema and not every privileged operation is tested live
 server remains authoritative. Internal bridge/payment integration credentials and
 deployment callbacks are not public client APIs.
 
+## Changes in 0.9.5
+
+Three new App scopes (they sit above the old 16 bits, so only a registered App's token can hold them):
+
+| Scope | Bit | What it opens |
+|---|---|---|
+| `NOTIFY_SEND` (Send Notifications) | 262144 | `send_notification(title, body=None, link=None)`, `POST /account/notifications/send` |
+| `NOTIFY_READ` (Read Notifications) | 524288 | `notifications()`, `unread_notifications()`, `mark_notifications_read()`, `delete_notification()` and the older `/notifications` routes |
+| `BLOCKS_READ` (View Blocked People) | 1048576 | `blocked_people()`, `GET /account/blocks` |
+| `BLOCKS_MANAGE` (Block and Unblock, includes View) | 2097152 | `block(username)`, `unblock(username)` |
+
+An App token now needs these for notifications and blocks; Friends no longer reaches blocks for Apps. `SCOPES` also lists `FILES_READ` and `FILES_WRITE`.
+
 ## Changes in 0.9.4
 
 Personal emojis (needs Chat): emojis that belong to your Nookara account and work on every Ember server, in DMs and in group chats (25 for free accounts, 100 with Pro). `personal_emojis()` is `GET /chat/personal-emojis` and answers `{emojis: [{eid, name, animated, url, created_at}], max, pro_max}`. `add_personal_emoji(file, name=None)` uploads a PNG, JPG, GIF or WebP up to 2 MB and returns the emoji; `rename_personal_emoji(eid, name)` and `delete_personal_emoji(eid)` do what they say. In a message they are the same `<:name:eid>` or `<a:name:eid>` as server emojis. `emoji_info(eid)` (`GET /chat/emojis/:eid/info`) now also answers for personal emojis with `{emoji, server: None, personal: {owner: {username, pfp}}}`. Errors: `too_many_emojis`, `file_too_large` (413), `invalid_emoji`, `name_required`, `not_found` (404), `upload_suspended` (403).

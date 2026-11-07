@@ -25,6 +25,12 @@ SCOPES = {
     "CURRENCY_READ": 8192,
     "VOICE": 16384,
     "SIGN_MESSAGES": 32768,
+    "FILES_READ": 65536,
+    "FILES_WRITE": 131072,
+    "NOTIFY_SEND": 262144,
+    "NOTIFY_READ": 524288,
+    "BLOCKS_READ": 1048576,
+    "BLOCKS_MANAGE": 2097152,
 }
 
 SCOPE_LABELS = {
@@ -44,6 +50,12 @@ SCOPE_LABELS = {
     "CURRENCY_READ": "View Subscriptions",
     "VOICE": "Nookara Voice",
     "SIGN_MESSAGES": "Sign Messages",
+    "FILES_READ": "Manage Files (read only)",
+    "FILES_WRITE": "Manage Files (read and write)",
+    "NOTIFY_SEND": "Send Notifications",
+    "NOTIFY_READ": "Read Notifications",
+    "BLOCKS_READ": "View Blocked People",
+    "BLOCKS_MANAGE": "Block and Unblock",
 }
 
 DEFAULT_OFF = ("PROFILE_SENSITIVE", "ACCOUNT_WRITE", "STORAGE_WRITE", "FRIENDS_MANAGE", "CURRENCY_PAY", "SIGN_MESSAGES")

@@ -57,6 +57,11 @@ The Python SDK also has sign-in helpers, websockets and the bot gateway, message
 
 Guide: https://nookara.cc/guides/node-sdk. Every route: https://nookara.cc/guides/velora-api
 
+## Changes in 0.1.2
+
+- Three new App scopes in `SCOPES`: `NOTIFY_SEND` (262144), `NOTIFY_READ` (524288), `BLOCKS_READ` (1048576) and `BLOCKS_MANAGE` (2097152).
+- `post_account_notifications_send` (`POST /account/notifications/send`, App tokens with Send Notifications). Notification and block routes list the scope an App token needs.
+
 ## Changes in 0.1.1
 
 - Route descriptions say Ember instead of the old Bonfire name. Method names are unchanged: they follow the URL, so routes under `/bonfire/...` keep names like `get_bonfire_instances`.

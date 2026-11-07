@@ -57,7 +57,7 @@ class ScopeTests(unittest.TestCase):
             scope_mask('NOT_A_SCOPE')
         with self.assertRaises(ValueError):
             scope_mask(3)
-        self.assertEqual(sorted(SCOPES.values()), sorted(1 << i for i in range(16)))
+        self.assertEqual(sorted(SCOPES.values()), sorted(1 << i for i in range(22)))  # (16 legacy bits + Manage Files, notifications, blocked people)
         self.assertEqual(EMBER_APP_MASK & 2048, 2048)
 
     def test_login_requests_scopes_and_reserves_bonfire_names(self):

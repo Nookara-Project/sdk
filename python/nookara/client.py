@@ -357,6 +357,27 @@ class Client(Endpoints):
         """prefs = {"friends": {"list": True, "email": False}, ...}; locked and unknown categories are ignored."""
         return self.patch_account_notification_settings(json={"prefs": prefs})
 
+    def send_notification(self, title, body=None, *, link=None):
+        """App tokens with Send Notifications: notify the person whose token this is, under "From apps".
+
+        Shown as "**<your app>**: <title>". title 1-100 characters, body up to 500, link only to one of your App's
+        https addresses. 10 an hour and 50 a day per person (429 rate_limited, with retry_after). Returns
+        {"success": True, "delivered": bool}; delivered is False when they turned "From apps" off.
+        """
+        return self.post_account_notifications_send(json={k: v for k, v in {"title": title, "body": body, "link": link}.items() if v is not None})
+
+    def blocked_people(self):
+        """The people you blocked: {"blocks": [{id, username, pfp_url, color, created_at}]}. An App token needs View Blocked People."""
+        return self.get_account_blocks()
+
+    def block(self, username):
+        """Block someone (removes any friendship or pending request). An App token needs Block and Unblock."""
+        return self.post_account_blocks(json={"username": username})
+
+    def unblock(self, username):
+        """Unblock someone you blocked. An App token needs Block and Unblock."""
+        return self.delete_account_blocks_by_username(username=username)
+
     def upload_dm_file(self, path, *, destination="temp"):
         """Upload a file for a DM. destination="temp": Nookara's temporary storage (free; expires after a while
         nobody opens it, every load resets the clock). destination="account": your Nookara account storage (counts
