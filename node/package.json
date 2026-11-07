@@ -1,0 +1,28 @@
+{
+  "name": "nookara",
+  "version": "0.1.0",
+  "description": "Node SDK for Nookara: sign-in, profiles, friends, chat, credits and payments, storage, and bots.",
+  "license": "MIT",
+  "author": "Ikelene <me@ikelene.net>",
+  "homepage": "https://nookara.cc",
+  "repository": { "type": "git", "url": "git+https://github.com/Nookara-Project/sdk.git", "directory": "node" },
+  "keywords": ["nookara", "social", "sdk", "sign-in", "chat", "friends", "payments"],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": { "types": "./dist/index.d.ts", "default": "./dist/index.mjs" },
+      "require": { "types": "./dist/index.d.cts", "default": "./dist/index.cjs" }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node scripts/build.mjs && node --test test/client.test.mjs",
+    "prepublishOnly": "npm test"
+  }
+}

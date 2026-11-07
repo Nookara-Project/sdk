@@ -1,0 +1,2143 @@
+[
+  {
+    "operationId": "get_bot_discovery",
+    "method": "GET",
+    "path": "/bot/discovery",
+    "auth": "none",
+    "params": [],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_bot_v1_gateway_bot",
+    "method": "GET",
+    "path": "/bot/v1/gateway/bot",
+    "auth": "bot",
+    "params": [],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_bot_v1_users_me",
+    "method": "GET",
+    "path": "/bot/v1/users/@me",
+    "auth": "bot",
+    "params": [],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_bot_v1_oauth2_applications_me",
+    "method": "GET",
+    "path": "/bot/v1/oauth2/applications/@me",
+    "auth": "bot",
+    "params": [],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_bot_v1_users_me_guilds",
+    "method": "GET",
+    "path": "/bot/v1/users/@me/guilds",
+    "auth": "bot",
+    "params": [],
+    "group": "Bots"
+  },
+  {
+    "operationId": "delete_bot_v1_users_me_guilds_by_gid",
+    "method": "DELETE",
+    "path": "/bot/v1/users/@me/guilds/:gid",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "gid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "post_bot_v1_users_me_channels",
+    "method": "POST",
+    "path": "/bot/v1/users/@me/channels",
+    "auth": "bot",
+    "params": [],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_bot_v1_users_by_uid",
+    "method": "GET",
+    "path": "/bot/v1/users/:uid",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "uid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_bot_v1_guilds_by_gid",
+    "method": "GET",
+    "path": "/bot/v1/guilds/:gid",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "gid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_bot_v1_guilds_by_gid_roles",
+    "method": "GET",
+    "path": "/bot/v1/guilds/:gid/roles",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "gid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_bot_v1_guilds_by_gid_channels",
+    "method": "GET",
+    "path": "/bot/v1/guilds/:gid/channels",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "gid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_bot_v1_guilds_by_gid_members_by_uid",
+    "method": "GET",
+    "path": "/bot/v1/guilds/:gid/members/:uid",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "gid",
+        "optional": false
+      },
+      {
+        "name": "uid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_bot_v1_guilds_by_gid_members",
+    "method": "GET",
+    "path": "/bot/v1/guilds/:gid/members",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "gid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "put_bot_v1_guilds_by_gid_members_by_uid_roles_by_rid",
+    "method": "PUT",
+    "path": "/bot/v1/guilds/:gid/members/:uid/roles/:rid",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "gid",
+        "optional": false
+      },
+      {
+        "name": "uid",
+        "optional": false
+      },
+      {
+        "name": "rid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "delete_bot_v1_guilds_by_gid_members_by_uid_roles_by_rid",
+    "method": "DELETE",
+    "path": "/bot/v1/guilds/:gid/members/:uid/roles/:rid",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "gid",
+        "optional": false
+      },
+      {
+        "name": "uid",
+        "optional": false
+      },
+      {
+        "name": "rid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_bot_v1_channels_by_cid",
+    "method": "GET",
+    "path": "/bot/v1/channels/:cid",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "post_bot_v1_channels_by_cid_typing",
+    "method": "POST",
+    "path": "/bot/v1/channels/:cid/typing",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_bot_v1_channels_by_cid_messages",
+    "method": "GET",
+    "path": "/bot/v1/channels/:cid/messages",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_bot_v1_channels_by_cid_messages_by_mid",
+    "method": "GET",
+    "path": "/bot/v1/channels/:cid/messages/:mid",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      },
+      {
+        "name": "mid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "post_bot_v1_channels_by_cid_messages",
+    "method": "POST",
+    "path": "/bot/v1/channels/:cid/messages",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "patch_bot_v1_channels_by_cid_messages_by_mid",
+    "method": "PATCH",
+    "path": "/bot/v1/channels/:cid/messages/:mid",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      },
+      {
+        "name": "mid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "delete_bot_v1_channels_by_cid_messages_by_mid",
+    "method": "DELETE",
+    "path": "/bot/v1/channels/:cid/messages/:mid",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      },
+      {
+        "name": "mid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "put_bot_v1_channels_by_cid_messages_by_mid_reactions_by_emoji_me",
+    "method": "PUT",
+    "path": "/bot/v1/channels/:cid/messages/:mid/reactions/:emoji/@me",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      },
+      {
+        "name": "mid",
+        "optional": false
+      },
+      {
+        "name": "emoji",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "delete_bot_v1_channels_by_cid_messages_by_mid_reactions_by_emoji_me",
+    "method": "DELETE",
+    "path": "/bot/v1/channels/:cid/messages/:mid/reactions/:emoji/@me",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      },
+      {
+        "name": "mid",
+        "optional": false
+      },
+      {
+        "name": "emoji",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "put_bot_v1_channels_by_cid_pins_by_mid",
+    "method": "PUT",
+    "path": "/bot/v1/channels/:cid/pins/:mid",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      },
+      {
+        "name": "mid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "delete_bot_v1_channels_by_cid_pins_by_mid",
+    "method": "DELETE",
+    "path": "/bot/v1/channels/:cid/pins/:mid",
+    "auth": "bot",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      },
+      {
+        "name": "mid",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_bot_v1_gateway",
+    "method": "GET",
+    "path": "/bot/v1/gateway",
+    "auth": "none",
+    "params": [],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_api_v1_invite_by_code",
+    "method": "GET",
+    "path": "/api/v1/invite/:code",
+    "auth": "none",
+    "params": [
+      {
+        "name": "code",
+        "optional": false
+      }
+    ],
+    "group": "Invites and join requests"
+  },
+  {
+    "operationId": "get_api_v1_identities",
+    "method": "GET",
+    "path": "/api/v1/identities",
+    "auth": "bearer",
+    "params": [],
+    "group": "Members and roles"
+  },
+  {
+    "operationId": "get_api_v1_settings",
+    "method": "GET",
+    "path": "/api/v1/settings",
+    "auth": "bearer",
+    "params": [],
+    "group": "Personal settings and notifications"
+  },
+  {
+    "operationId": "patch_api_v1_settings",
+    "method": "PATCH",
+    "path": "/api/v1/settings",
+    "auth": "bearer",
+    "params": [],
+    "group": "Personal settings and notifications"
+  },
+  {
+    "operationId": "get_api_v1_notify",
+    "method": "GET",
+    "path": "/api/v1/notify",
+    "auth": "bearer",
+    "params": [],
+    "group": "Personal settings and notifications"
+  },
+  {
+    "operationId": "put_api_v1_notify_by_target",
+    "method": "PUT",
+    "path": "/api/v1/notify/:target",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "target",
+        "optional": false
+      }
+    ],
+    "group": "Personal settings and notifications"
+  },
+  {
+    "operationId": "get_api_v1_servers",
+    "method": "GET",
+    "path": "/api/v1/servers",
+    "auth": "bearer",
+    "params": [],
+    "group": "Community"
+  },
+  {
+    "operationId": "get_api_v1_discover",
+    "method": "GET",
+    "path": "/api/v1/discover",
+    "auth": "bearer",
+    "params": [],
+    "group": "Community"
+  },
+  {
+    "operationId": "post_api_v1_servers",
+    "method": "POST",
+    "path": "/api/v1/servers",
+    "auth": "bearer",
+    "params": [],
+    "group": "Community"
+  },
+  {
+    "operationId": "get_api_v1_servers_by_sid",
+    "method": "GET",
+    "path": "/api/v1/servers/:sid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Community"
+  },
+  {
+    "operationId": "patch_api_v1_servers_by_sid",
+    "method": "PATCH",
+    "path": "/api/v1/servers/:sid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Community"
+  },
+  {
+    "operationId": "put_api_v1_servers_by_sid_layout",
+    "method": "PUT",
+    "path": "/api/v1/servers/:sid/layout",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Channels"
+  },
+  {
+    "operationId": "delete_api_v1_servers_by_sid",
+    "method": "DELETE",
+    "path": "/api/v1/servers/:sid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Community"
+  },
+  {
+    "operationId": "post_api_v1_servers_by_sid_join",
+    "method": "POST",
+    "path": "/api/v1/servers/:sid/join",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Community"
+  },
+  {
+    "operationId": "post_api_v1_join_by_code",
+    "method": "POST",
+    "path": "/api/v1/join/:code",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "code",
+        "optional": false
+      }
+    ],
+    "group": "Invites and join requests"
+  },
+  {
+    "operationId": "post_api_v1_servers_by_sid_leave",
+    "method": "POST",
+    "path": "/api/v1/servers/:sid/leave",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Community"
+  },
+  {
+    "operationId": "post_api_v1_servers_by_sid_icon",
+    "method": "POST",
+    "path": "/api/v1/servers/:sid/icon",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Community"
+  },
+  {
+    "operationId": "post_api_v1_servers_by_sid_banner",
+    "method": "POST",
+    "path": "/api/v1/servers/:sid/banner",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Community"
+  },
+  {
+    "operationId": "delete_api_v1_servers_by_sid_icon",
+    "method": "DELETE",
+    "path": "/api/v1/servers/:sid/icon",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Community"
+  },
+  {
+    "operationId": "delete_api_v1_servers_by_sid_banner",
+    "method": "DELETE",
+    "path": "/api/v1/servers/:sid/banner",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Community"
+  },
+  {
+    "operationId": "get_api_v1_servers_by_sid_members",
+    "method": "GET",
+    "path": "/api/v1/servers/:sid/members",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Members and roles"
+  },
+  {
+    "operationId": "delete_api_v1_servers_by_sid_members_by_uid",
+    "method": "DELETE",
+    "path": "/api/v1/servers/:sid/members/:uid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "uid",
+        "optional": false
+      }
+    ],
+    "group": "Members and roles"
+  },
+  {
+    "operationId": "get_api_v1_servers_by_sid_bans",
+    "method": "GET",
+    "path": "/api/v1/servers/:sid/bans",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Members and roles"
+  },
+  {
+    "operationId": "delete_api_v1_servers_by_sid_bans_by_uid",
+    "method": "DELETE",
+    "path": "/api/v1/servers/:sid/bans/:uid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "uid",
+        "optional": false
+      }
+    ],
+    "group": "Members and roles"
+  },
+  {
+    "operationId": "get_api_v1_servers_by_sid_requests",
+    "method": "GET",
+    "path": "/api/v1/servers/:sid/requests",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Invites and join requests"
+  },
+  {
+    "operationId": "post_api_v1_servers_by_sid_requests_by_uid_accept",
+    "method": "POST",
+    "path": "/api/v1/servers/:sid/requests/:uid/accept",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "uid",
+        "optional": false
+      }
+    ],
+    "group": "Invites and join requests"
+  },
+  {
+    "operationId": "post_api_v1_servers_by_sid_requests_by_uid_deny",
+    "method": "POST",
+    "path": "/api/v1/servers/:sid/requests/:uid/deny",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "uid",
+        "optional": false
+      }
+    ],
+    "group": "Invites and join requests"
+  },
+  {
+    "operationId": "get_api_v1_servers_by_sid_invites",
+    "method": "GET",
+    "path": "/api/v1/servers/:sid/invites",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Invites and join requests"
+  },
+  {
+    "operationId": "post_api_v1_servers_by_sid_invites",
+    "method": "POST",
+    "path": "/api/v1/servers/:sid/invites",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Invites and join requests"
+  },
+  {
+    "operationId": "delete_api_v1_invites_by_code",
+    "method": "DELETE",
+    "path": "/api/v1/invites/:code",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "code",
+        "optional": false
+      }
+    ],
+    "group": "Invites and join requests"
+  },
+  {
+    "operationId": "post_api_v1_servers_by_sid_roles",
+    "method": "POST",
+    "path": "/api/v1/servers/:sid/roles",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Members and roles"
+  },
+  {
+    "operationId": "put_api_v1_servers_by_sid_roles_order",
+    "method": "PUT",
+    "path": "/api/v1/servers/:sid/roles/order",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Members and roles"
+  },
+  {
+    "operationId": "patch_api_v1_servers_by_sid_roles_by_rid",
+    "method": "PATCH",
+    "path": "/api/v1/servers/:sid/roles/:rid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "rid",
+        "optional": false
+      }
+    ],
+    "group": "Members and roles"
+  },
+  {
+    "operationId": "delete_api_v1_servers_by_sid_roles_by_rid",
+    "method": "DELETE",
+    "path": "/api/v1/servers/:sid/roles/:rid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "rid",
+        "optional": false
+      }
+    ],
+    "group": "Members and roles"
+  },
+  {
+    "operationId": "put_api_v1_servers_by_sid_members_by_uid_roles_by_rid",
+    "method": "PUT",
+    "path": "/api/v1/servers/:sid/members/:uid/roles/:rid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "uid",
+        "optional": false
+      },
+      {
+        "name": "rid",
+        "optional": false
+      }
+    ],
+    "group": "Members and roles"
+  },
+  {
+    "operationId": "delete_api_v1_servers_by_sid_members_by_uid_roles_by_rid",
+    "method": "DELETE",
+    "path": "/api/v1/servers/:sid/members/:uid/roles/:rid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "uid",
+        "optional": false
+      },
+      {
+        "name": "rid",
+        "optional": false
+      }
+    ],
+    "group": "Members and roles"
+  },
+  {
+    "operationId": "post_api_v1_servers_by_sid_roles_by_rid_icon",
+    "method": "POST",
+    "path": "/api/v1/servers/:sid/roles/:rid/icon",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "rid",
+        "optional": false
+      }
+    ],
+    "group": "Members and roles"
+  },
+  {
+    "operationId": "delete_api_v1_servers_by_sid_roles_by_rid_icon",
+    "method": "DELETE",
+    "path": "/api/v1/servers/:sid/roles/:rid/icon",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "rid",
+        "optional": false
+      }
+    ],
+    "group": "Members and roles"
+  },
+  {
+    "operationId": "post_api_v1_servers_by_sid_channels",
+    "method": "POST",
+    "path": "/api/v1/servers/:sid/channels",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Channels"
+  },
+  {
+    "operationId": "patch_api_v1_channels_by_cid",
+    "method": "PATCH",
+    "path": "/api/v1/channels/:cid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Channels"
+  },
+  {
+    "operationId": "delete_api_v1_channels_by_cid",
+    "method": "DELETE",
+    "path": "/api/v1/channels/:cid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Channels"
+  },
+  {
+    "operationId": "put_api_v1_channels_by_cid_perms",
+    "method": "PUT",
+    "path": "/api/v1/channels/:cid/perms",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Channels"
+  },
+  {
+    "operationId": "post_api_v1_channels_by_cid_icon",
+    "method": "POST",
+    "path": "/api/v1/channels/:cid/icon",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Channels"
+  },
+  {
+    "operationId": "get_api_v1_emojis",
+    "method": "GET",
+    "path": "/api/v1/emojis",
+    "auth": "bearer",
+    "params": [],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "get_api_v1_servers_by_sid_emojis",
+    "method": "GET",
+    "path": "/api/v1/servers/:sid/emojis",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "post_api_v1_servers_by_sid_emojis",
+    "method": "POST",
+    "path": "/api/v1/servers/:sid/emojis",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "patch_api_v1_servers_by_sid_emojis_by_eid",
+    "method": "PATCH",
+    "path": "/api/v1/servers/:sid/emojis/:eid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "eid",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "delete_api_v1_servers_by_sid_emojis_by_eid",
+    "method": "DELETE",
+    "path": "/api/v1/servers/:sid/emojis/:eid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "eid",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "get_api_v1_emojis_by_eid_info",
+    "method": "GET",
+    "path": "/api/v1/emojis/:eid/info",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "eid",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "get_api_v1_channels_by_cid_shop",
+    "method": "GET",
+    "path": "/api/v1/channels/:cid/shop",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Channels"
+  },
+  {
+    "operationId": "post_api_v1_channels_by_cid_shop_by_rid",
+    "method": "POST",
+    "path": "/api/v1/channels/:cid/shop/:rid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      },
+      {
+        "name": "rid",
+        "optional": false
+      }
+    ],
+    "group": "Channels"
+  },
+  {
+    "operationId": "get_api_v1_channels_by_cid_shop_by_rid_status",
+    "method": "GET",
+    "path": "/api/v1/channels/:cid/shop/:rid/status",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      },
+      {
+        "name": "rid",
+        "optional": false
+      }
+    ],
+    "group": "Channels"
+  },
+  {
+    "operationId": "delete_api_v1_channels_by_cid_shop_by_rid",
+    "method": "DELETE",
+    "path": "/api/v1/channels/:cid/shop/:rid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      },
+      {
+        "name": "rid",
+        "optional": false
+      }
+    ],
+    "group": "Channels"
+  },
+  {
+    "operationId": "get_api_v1_channels_by_cid_starboard",
+    "method": "GET",
+    "path": "/api/v1/channels/:cid/starboard",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Channels"
+  },
+  {
+    "operationId": "get_api_v1_channels_by_cid_webhooks",
+    "method": "GET",
+    "path": "/api/v1/channels/:cid/webhooks",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Webhooks"
+  },
+  {
+    "operationId": "post_api_v1_channels_by_cid_webhooks",
+    "method": "POST",
+    "path": "/api/v1/channels/:cid/webhooks",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Webhooks"
+  },
+  {
+    "operationId": "patch_api_v1_hooks_by_wid",
+    "method": "PATCH",
+    "path": "/api/v1/hooks/:wid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "wid",
+        "optional": false
+      }
+    ],
+    "group": "Webhooks"
+  },
+  {
+    "operationId": "delete_api_v1_hooks_by_wid",
+    "method": "DELETE",
+    "path": "/api/v1/hooks/:wid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "wid",
+        "optional": false
+      }
+    ],
+    "group": "Webhooks"
+  },
+  {
+    "operationId": "post_api_v1_hooks_by_wid_avatar",
+    "method": "POST",
+    "path": "/api/v1/hooks/:wid/avatar",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "wid",
+        "optional": false
+      }
+    ],
+    "group": "Webhooks"
+  },
+  {
+    "operationId": "get_api_v1_sounds",
+    "method": "GET",
+    "path": "/api/v1/sounds",
+    "auth": "bearer",
+    "params": [],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "get_api_v1_servers_by_sid_sounds",
+    "method": "GET",
+    "path": "/api/v1/servers/:sid/sounds",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "post_api_v1_servers_by_sid_sounds",
+    "method": "POST",
+    "path": "/api/v1/servers/:sid/sounds",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "patch_api_v1_servers_by_sid_sounds_by_id",
+    "method": "PATCH",
+    "path": "/api/v1/servers/:sid/sounds/:id",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "delete_api_v1_servers_by_sid_sounds_by_id",
+    "method": "DELETE",
+    "path": "/api/v1/servers/:sid/sounds/:id",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "get_api_v1_unfurl",
+    "method": "GET",
+    "path": "/api/v1/unfurl",
+    "auth": "bearer",
+    "params": [],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "get_api_v1_bots",
+    "method": "GET",
+    "path": "/api/v1/bots",
+    "auth": "bearer",
+    "params": [],
+    "group": "Bots"
+  },
+  {
+    "operationId": "post_api_v1_bots",
+    "method": "POST",
+    "path": "/api/v1/bots",
+    "auth": "bearer",
+    "params": [],
+    "group": "Bots"
+  },
+  {
+    "operationId": "post_api_v1_bots_gallery_add",
+    "method": "POST",
+    "path": "/api/v1/bots/gallery/add",
+    "auth": "bearer",
+    "params": [],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_api_v1_bots_by_name_by_username",
+    "method": "GET",
+    "path": "/api/v1/bots/by-name/:username",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "username",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "post_api_v1_bots_by_name_by_username_add",
+    "method": "POST",
+    "path": "/api/v1/bots/by-name/:username/add",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "username",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "patch_api_v1_bots_by_id",
+    "method": "PATCH",
+    "path": "/api/v1/bots/:id",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "post_api_v1_bots_by_id_avatar",
+    "method": "POST",
+    "path": "/api/v1/bots/:id/avatar",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "post_api_v1_bots_by_id_token",
+    "method": "POST",
+    "path": "/api/v1/bots/:id/token",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "delete_api_v1_bots_by_id",
+    "method": "DELETE",
+    "path": "/api/v1/bots/:id",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Bots"
+  },
+  {
+    "operationId": "get_api_v1_yt_stream_by_id",
+    "method": "GET",
+    "path": "/api/v1/yt/stream/:id",
+    "auth": "none",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "post_api_v1_yt_by_id_prepare",
+    "method": "POST",
+    "path": "/api/v1/yt/:id/prepare",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "get_api_v1_yt_by_id_status",
+    "method": "GET",
+    "path": "/api/v1/yt/:id/status",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "post_api_v1_yt_by_id_save",
+    "method": "POST",
+    "path": "/api/v1/yt/:id/save",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube",
+    "scope": "media"
+  },
+  {
+    "operationId": "get_api_v1_webhooks_by_wid_by_token",
+    "method": "GET",
+    "path": "/api/v1/webhooks/:wid/:token",
+    "auth": "none",
+    "params": [
+      {
+        "name": "wid",
+        "optional": false
+      },
+      {
+        "name": "token",
+        "optional": false
+      }
+    ],
+    "group": "Webhooks"
+  },
+  {
+    "operationId": "post_api_v1_webhooks_by_wid_by_token",
+    "method": "POST",
+    "path": "/api/v1/webhooks/:wid/:token",
+    "auth": "none",
+    "params": [
+      {
+        "name": "wid",
+        "optional": false
+      },
+      {
+        "name": "token",
+        "optional": false
+      }
+    ],
+    "group": "Webhooks"
+  },
+  {
+    "operationId": "delete_api_v1_webhooks_by_wid_by_token",
+    "method": "DELETE",
+    "path": "/api/v1/webhooks/:wid/:token",
+    "auth": "none",
+    "params": [
+      {
+        "name": "wid",
+        "optional": false
+      },
+      {
+        "name": "token",
+        "optional": false
+      }
+    ],
+    "group": "Webhooks"
+  },
+  {
+    "operationId": "get_well_known_bonfire",
+    "method": "GET",
+    "path": "/.well-known/bonfire",
+    "auth": "none",
+    "params": [],
+    "group": "Discovery and build info"
+  },
+  {
+    "operationId": "get_health",
+    "method": "GET",
+    "path": "/health",
+    "auth": "none",
+    "params": [],
+    "group": "Discovery and build info"
+  },
+  {
+    "operationId": "get_api_v1_instance_info",
+    "method": "GET",
+    "path": "/api/v1/instance/info",
+    "auth": "none",
+    "params": [],
+    "group": "Discovery and build info"
+  },
+  {
+    "operationId": "post_api_v1_auth_velora",
+    "method": "POST",
+    "path": "/api/v1/auth/velora",
+    "auth": "none",
+    "params": [],
+    "group": "Sign-in and session"
+  },
+  {
+    "operationId": "post_api_v1_auth_register",
+    "method": "POST",
+    "path": "/api/v1/auth/register",
+    "auth": "none",
+    "params": [],
+    "group": "Sign-in and session"
+  },
+  {
+    "operationId": "post_api_v1_auth_login",
+    "method": "POST",
+    "path": "/api/v1/auth/login",
+    "auth": "none",
+    "params": [],
+    "group": "Sign-in and session"
+  },
+  {
+    "operationId": "post_api_v1_auth_logout",
+    "method": "POST",
+    "path": "/api/v1/auth/logout",
+    "auth": "bearer",
+    "params": [],
+    "group": "Sign-in and session"
+  },
+  {
+    "operationId": "get_api_v1_me",
+    "method": "GET",
+    "path": "/api/v1/me",
+    "auth": "bearer",
+    "params": [],
+    "group": "Sign-in and session"
+  },
+  {
+    "operationId": "post_api_v1_instance_claim",
+    "method": "POST",
+    "path": "/api/v1/instance/claim",
+    "auth": "bearer",
+    "params": [],
+    "group": "Instance administration"
+  },
+  {
+    "operationId": "get_api_v1_instance_settings",
+    "method": "GET",
+    "path": "/api/v1/instance/settings",
+    "auth": "bearer",
+    "params": [],
+    "group": "Instance administration"
+  },
+  {
+    "operationId": "patch_api_v1_instance_settings",
+    "method": "PATCH",
+    "path": "/api/v1/instance/settings",
+    "auth": "bearer",
+    "params": [],
+    "group": "Instance administration"
+  },
+  {
+    "operationId": "post_api_v1_instance_velora_register",
+    "method": "POST",
+    "path": "/api/v1/instance/velora/register",
+    "auth": "bearer",
+    "params": [],
+    "group": "Instance administration"
+  },
+  {
+    "operationId": "get_api_v1_instance_owner_attestation",
+    "method": "GET",
+    "path": "/api/v1/instance/owner-attestation",
+    "auth": "bearer",
+    "params": [],
+    "group": "Instance administration"
+  },
+  {
+    "operationId": "post_api_v1_import_velora",
+    "method": "POST",
+    "path": "/api/v1/import/velora",
+    "auth": "bearer",
+    "params": [],
+    "group": "Backups, export and import"
+  },
+  {
+    "operationId": "post_api_v1_instance_restart",
+    "method": "POST",
+    "path": "/api/v1/instance/restart",
+    "auth": "bearer",
+    "params": [],
+    "group": "Instance administration"
+  },
+  {
+    "operationId": "get_api_v1_instance_admins",
+    "method": "GET",
+    "path": "/api/v1/instance/admins",
+    "auth": "bearer",
+    "params": [],
+    "group": "Instance administration"
+  },
+  {
+    "operationId": "put_api_v1_instance_admins_by_uid",
+    "method": "PUT",
+    "path": "/api/v1/instance/admins/:uid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "uid",
+        "optional": false
+      }
+    ],
+    "group": "Instance administration"
+  },
+  {
+    "operationId": "delete_api_v1_instance_admins_by_uid",
+    "method": "DELETE",
+    "path": "/api/v1/instance/admins/:uid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "uid",
+        "optional": false
+      }
+    ],
+    "group": "Instance administration"
+  },
+  {
+    "operationId": "get_api_v1_channels_by_cid_messages",
+    "method": "GET",
+    "path": "/api/v1/channels/:cid/messages",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Messages"
+  },
+  {
+    "operationId": "post_api_v1_channels_by_cid_messages",
+    "method": "POST",
+    "path": "/api/v1/channels/:cid/messages",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Messages"
+  },
+  {
+    "operationId": "post_api_v1_channels_by_cid_read",
+    "method": "POST",
+    "path": "/api/v1/channels/:cid/read",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Messages"
+  },
+  {
+    "operationId": "get_api_v1_channels_by_cid_search",
+    "method": "GET",
+    "path": "/api/v1/channels/:cid/search",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Messages"
+  },
+  {
+    "operationId": "get_api_v1_servers_by_sid_search",
+    "method": "GET",
+    "path": "/api/v1/servers/:sid/search",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Messages"
+  },
+  {
+    "operationId": "get_api_v1_channels_by_cid_pins",
+    "method": "GET",
+    "path": "/api/v1/channels/:cid/pins",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Messages"
+  },
+  {
+    "operationId": "patch_api_v1_messages_by_id",
+    "method": "PATCH",
+    "path": "/api/v1/messages/:id",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Messages"
+  },
+  {
+    "operationId": "delete_api_v1_messages_by_id",
+    "method": "DELETE",
+    "path": "/api/v1/messages/:id",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Messages"
+  },
+  {
+    "operationId": "put_api_v1_messages_by_id_reactions_by_emoji",
+    "method": "PUT",
+    "path": "/api/v1/messages/:id/reactions/:emoji",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      },
+      {
+        "name": "emoji",
+        "optional": false
+      }
+    ],
+    "group": "Messages"
+  },
+  {
+    "operationId": "delete_api_v1_messages_by_id_reactions_by_emoji",
+    "method": "DELETE",
+    "path": "/api/v1/messages/:id/reactions/:emoji",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      },
+      {
+        "name": "emoji",
+        "optional": false
+      }
+    ],
+    "group": "Messages"
+  },
+  {
+    "operationId": "put_api_v1_messages_by_id_pin",
+    "method": "PUT",
+    "path": "/api/v1/messages/:id/pin",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Messages"
+  },
+  {
+    "operationId": "delete_api_v1_messages_by_id_pin",
+    "method": "DELETE",
+    "path": "/api/v1/messages/:id/pin",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Messages"
+  },
+  {
+    "operationId": "post_api_v1_media_upload",
+    "method": "POST",
+    "path": "/api/v1/media/upload",
+    "auth": "bearer",
+    "params": [],
+    "group": "Uploads and media import",
+    "scope": "media"
+  },
+  {
+    "operationId": "post_api_v1_media_import",
+    "method": "POST",
+    "path": "/api/v1/media/import",
+    "auth": "bearer",
+    "params": [],
+    "group": "Uploads and media import",
+    "scope": "media"
+  },
+  {
+    "operationId": "get_api_v1_servers_by_sid_export",
+    "method": "GET",
+    "path": "/api/v1/servers/:sid/export",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Backups, export and import"
+  },
+  {
+    "operationId": "post_api_v1_import",
+    "method": "POST",
+    "path": "/api/v1/import",
+    "auth": "bearer",
+    "params": [],
+    "group": "Backups, export and import"
+  },
+  {
+    "operationId": "get_api_v1_instance_backups",
+    "method": "GET",
+    "path": "/api/v1/instance/backups",
+    "auth": "bearer",
+    "params": [],
+    "group": "Backups, export and import"
+  },
+  {
+    "operationId": "post_api_v1_instance_backups",
+    "method": "POST",
+    "path": "/api/v1/instance/backups",
+    "auth": "bearer",
+    "params": [],
+    "group": "Backups, export and import"
+  },
+  {
+    "operationId": "get_api_v1_instance_backups_by_id_download",
+    "method": "GET",
+    "path": "/api/v1/instance/backups/:id/download",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Backups, export and import"
+  },
+  {
+    "operationId": "delete_api_v1_instance_backups_by_id",
+    "method": "DELETE",
+    "path": "/api/v1/instance/backups/:id",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Backups, export and import"
+  },
+  {
+    "operationId": "post_api_v1_instance_backups_by_id_restore",
+    "method": "POST",
+    "path": "/api/v1/instance/backups/:id/restore",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "id",
+        "optional": false
+      }
+    ],
+    "group": "Backups, export and import"
+  },
+  {
+    "operationId": "post_api_v1_instance_restore",
+    "method": "POST",
+    "path": "/api/v1/instance/restore",
+    "auth": "bearer",
+    "params": [],
+    "group": "Backups, export and import"
+  },
+  {
+    "operationId": "get_api_v1_bridge_settings",
+    "method": "GET",
+    "path": "/api/v1/bridge/settings",
+    "auth": "bearer",
+    "params": [],
+    "group": "Bridges"
+  },
+  {
+    "operationId": "patch_api_v1_bridge_settings",
+    "method": "PATCH",
+    "path": "/api/v1/bridge/settings",
+    "auth": "bearer",
+    "params": [],
+    "group": "Bridges"
+  },
+  {
+    "operationId": "get_api_v1_bridge_platforms",
+    "method": "GET",
+    "path": "/api/v1/bridge/platforms",
+    "auth": "bearer",
+    "params": [],
+    "group": "Bridges"
+  },
+  {
+    "operationId": "get_api_v1_bridge_by_platform_guilds",
+    "method": "GET",
+    "path": "/api/v1/bridge/:platform/guilds",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "platform",
+        "optional": false
+      }
+    ],
+    "group": "Bridges"
+  },
+  {
+    "operationId": "get_api_v1_bridge_servers_by_sid",
+    "method": "GET",
+    "path": "/api/v1/bridge/servers/:sid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Bridges"
+  },
+  {
+    "operationId": "put_api_v1_bridge_servers_by_sid",
+    "method": "PUT",
+    "path": "/api/v1/bridge/servers/:sid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Bridges"
+  },
+  {
+    "operationId": "patch_api_v1_bridge_servers_by_sid",
+    "method": "PATCH",
+    "path": "/api/v1/bridge/servers/:sid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Bridges"
+  },
+  {
+    "operationId": "delete_api_v1_bridge_servers_by_sid",
+    "method": "DELETE",
+    "path": "/api/v1/bridge/servers/:sid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Bridges"
+  },
+  {
+    "operationId": "put_api_v1_bridge_servers_by_sid_channels_by_cid",
+    "method": "PUT",
+    "path": "/api/v1/bridge/servers/:sid/channels/:cid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Bridges"
+  },
+  {
+    "operationId": "get_api_v1_channels_by_cid_cloudlink",
+    "method": "GET",
+    "path": "/api/v1/channels/:cid/cloudlink",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Bridges"
+  },
+  {
+    "operationId": "post_api_v1_channels_by_cid_cloudlink_reconnect",
+    "method": "POST",
+    "path": "/api/v1/channels/:cid/cloudlink/reconnect",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Bridges"
+  },
+  {
+    "operationId": "get_api_v1_game_downloads",
+    "method": "GET",
+    "path": "/api/v1/game/downloads",
+    "auth": "none",
+    "params": [],
+    "group": "Bonfire Link (Minecraft)"
+  },
+  {
+    "operationId": "get_api_v1_game_servers_by_sid_instances",
+    "method": "GET",
+    "path": "/api/v1/game/servers/:sid/instances",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Bonfire Link (Minecraft)"
+  },
+  {
+    "operationId": "delete_api_v1_game_servers_by_sid_instances_by_iid",
+    "method": "DELETE",
+    "path": "/api/v1/game/servers/:sid/instances/:iid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "iid",
+        "optional": false
+      }
+    ],
+    "group": "Bonfire Link (Minecraft)"
+  },
+  {
+    "operationId": "get_api_v1_game_unclaimed",
+    "method": "GET",
+    "path": "/api/v1/game/unclaimed",
+    "auth": "bearer",
+    "params": [],
+    "group": "Bonfire Link (Minecraft)"
+  },
+  {
+    "operationId": "get_api_v1_game_connected",
+    "method": "GET",
+    "path": "/api/v1/game/connected",
+    "auth": "bearer",
+    "params": [],
+    "group": "Bonfire Link (Minecraft)"
+  },
+  {
+    "operationId": "post_api_v1_game_connected_by_iid_link",
+    "method": "POST",
+    "path": "/api/v1/game/connected/:iid/link",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "iid",
+        "optional": false
+      }
+    ],
+    "group": "Bonfire Link (Minecraft)"
+  },
+  {
+    "operationId": "post_api_v1_game_claims",
+    "method": "POST",
+    "path": "/api/v1/game/claims",
+    "auth": "bearer",
+    "params": [],
+    "group": "Bonfire Link (Minecraft)"
+  },
+  {
+    "operationId": "get_api_v1_game_claims_by_code",
+    "method": "GET",
+    "path": "/api/v1/game/claims/:code",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "code",
+        "optional": false
+      }
+    ],
+    "group": "Bonfire Link (Minecraft)"
+  },
+  {
+    "operationId": "get_api_v1_game_channels_by_cid_status",
+    "method": "GET",
+    "path": "/api/v1/game/channels/:cid/status",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Bonfire Link (Minecraft)"
+  },
+  {
+    "operationId": "get_api_v1_game_channels_by_cid_console",
+    "method": "GET",
+    "path": "/api/v1/game/channels/:cid/console",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Bonfire Link (Minecraft)"
+  },
+  {
+    "operationId": "post_api_v1_game_channels_by_cid_console",
+    "method": "POST",
+    "path": "/api/v1/game/channels/:cid/console",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Bonfire Link (Minecraft)"
+  },
+  {
+    "operationId": "get_api_v1_game_servers_by_sid_audit",
+    "method": "GET",
+    "path": "/api/v1/game/servers/:sid/audit",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Bonfire Link (Minecraft)"
+  }
+]

@@ -1,0 +1,2 @@
+# REST has no runtime dependencies. This extra adds user websocket support.
+websockets>=14,<18
