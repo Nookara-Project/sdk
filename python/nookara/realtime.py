@@ -18,10 +18,11 @@ class RealtimeClient:
     unrelated events. Reconnect explicitly, then refetch history; no replay exists.
     """
 
-    def __init__(self, token, *, url="wss://nookara.cc/", timeout=30, allow_insecure=False):
+    def __init__(self, token, *, url="wss://nookara.cc/", timeout=30, allow_insecure=False, origin=None):
         if not url.startswith("wss://") and not (allow_insecure and url.startswith("ws://")):
             raise ValueError("Use wss:// for a production websocket")
         self._token, self.url, self.timeout = token, url, timeout
+        self.origin = origin
         self._socket = None
         self._reader = None
         self._pending = {}
@@ -36,7 +37,7 @@ class RealtimeClient:
         except ImportError:
             raise ImportError("Install nookara[realtime] to use websockets") from None
         self._events = asyncio.Queue(maxsize=256)
-        self._socket = await connect(self.url, open_timeout=self.timeout, max_size=8 * 1024 * 1024)
+        self._socket = await connect(self.url, open_timeout=self.timeout, max_size=8 * 1024 * 1024, origin=self.origin)
         try:
             await self._socket.send(json.dumps({"type": "auth_token", "token": self._token}))
             deadline = asyncio.get_running_loop().time() + self.timeout

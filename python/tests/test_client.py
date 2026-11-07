@@ -219,6 +219,20 @@ class RealtimeTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual([x['type'] for x in seen],['auth_token','chat_hello','chat_send','set_rich_presence','clear_rich_presence','chat_presence_watch','chat_presence_watch'])
         self.assertEqual([len(x['usernames']) for x in seen if x['type']=='chat_presence_watch'],[200,50])
 
+    async def test_app_token_sends_its_origin(self):
+        from websockets.asyncio.server import serve
+        origins=[]
+        async def handler(ws):
+            origins.append(ws.request.headers.get('Origin'))
+            await ws.recv()
+            await ws.send(json.dumps({'type':'auth_success','scopes':1,'tos_required':False}))
+            async for _ in ws: pass
+        async with serve(handler,'127.0.0.1',0) as server:
+            port=server.sockets[0].getsockname()[1]
+            async with RealtimeClient('dummy',url=f'ws://127.0.0.1:{port}',allow_insecure=True,origin='http://localhost'): pass
+            async with RealtimeClient('dummy',url=f'ws://127.0.0.1:{port}',allow_insecure=True): pass
+        self.assertEqual(origins,['http://localhost',None])
+
     async def test_auth_rejection_and_tos(self):
         from websockets.asyncio.server import serve
         for reply in [{'type':'auth_error','error':'invalid_token'}, {'type':'auth_success','tos_required':True,'scopes':2048}]:

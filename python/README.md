@@ -485,6 +485,7 @@ The Velora and Bonfire names are gone from the API. Every old name still works a
 - Keywords: `velora_url=` is `nookara_url=` (`Instance`, `BotProgram`), `velora_client=` / `velora=` are `nookara` (`login_with_nookara`, `enable_signing`, `verify_message`, `Ember`). `Instance.velora_origin` is `nookara_origin`, `Ember.velora` is `Ember.nookara`.
 - The one-method-per-route names still follow the URL, so routes under `/bonfire/...` keep names like `get_bonfire_instances`.
 - Examples use `NOOKARA_TOKEN` and `NOOKARA_BOT_TOKEN`, and sign in with `login_app`.
+- New: `RealtimeClient(token, origin=...)`. Nookara's socket only takes an app's token with one of the app's authorized URLs as the Origin, so pass the `origin` that `login_app` gave you.
 
 ## Changes in 0.6.1
 
