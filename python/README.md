@@ -473,6 +473,28 @@ input has a strict JSON Schema and not every privileged operation is tested live
 server remains authoritative. Internal bridge/payment integration credentials and
 deployment callbacks are not public client APIs.
 
+## Changes in 0.9.1
+
+New routes for Ember's Inbox, each with a `Client` helper and a one-method-per-route name (all need Chat unless noted):
+
+| Helper | Route |
+|---|---|
+| `inbox_mentions(before=, limit=)` | `GET /chat/inbox/mentions`: the last 30 days of messages in your servers that mention you, newest first, with `channel_name`, `server_name`, `server_icon` and `unread` |
+| `saved_messages(before=, limit=)` | `GET /chat/saved`: `{saved, has_more}`; entries can be `missing` (original gone) or `hidden` (a DM without Read Instant Messages) |
+| `save_message(kind, message_id)` / `save_message("group", snapshot=...)` | `POST /chat/saved`: returns the saved id. `kind` is `channel`, `dm` (needs Read Instant Messages) or `group`. At most 500 (`too_many_saved`) |
+| `unsave_message(saved_id)` | `DELETE /chat/saved/:id` |
+| `saved_ids(kind, ids)` | `POST /chat/saved/check`: `{message id: saved id}` |
+| `translate(text, to="en", source=None)` | `POST /chat/translate`: `{text, from, to}`; 3000 characters, 40 a minute |
+| `cancel_friend_request(username)` | `DELETE /friends/request/:id` (Manage Friends) after finding the id in `outgoing` of `GET /friends/requests`; `True` when a pending request was taken back |
+
+```python
+for item in nookara.saved_messages()["saved"]:
+    print(item["kind"], item.get("message") or "gone")
+sid = nookara.save_message("channel", 123456)
+nookara.unsave_message(sid)
+print(nookara.translate("Bonjour!", "en")["text"])
+```
+
 ## Changes in 0.9.0
 
 **Breaking:** the Velora and Bonfire names are removed from the API. Rename them as below; there are no

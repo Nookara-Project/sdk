@@ -478,6 +478,60 @@ class Client(Endpoints):
         """Every signing key of an account, revoked ones included (public)."""
         return self.get_bonfire_keys_user_by_userid(userId=user_id)["keys"]
 
+    def inbox_mentions(self, *, before=None, limit=None):
+        """Ember's Inbox, Mentions (needs Chat): messages from the last 30 days in your servers that mention you
+        (``@name``, a reply to you, ``@everyone`` / ``@here``, one of your roles), newest first.
+        Returns ``{messages, has_more}``; each message has ``channel_name``, ``server_name``, ``server_icon`` and
+        ``unread``. ``before`` is a message id for the next page; ``limit`` is 1 to 50 (default 30)."""
+        return self.get_chat_inbox_mentions(query={"before": before, "limit": limit})
+
+    def saved_messages(self, *, before=None, limit=None):
+        """Your saved messages, newest first (needs Chat): ``{saved: [{id, kind, saved_at, message?, with?,
+        missing?, hidden?}], has_more}``. ``kind`` is ``channel``, ``dm`` or ``group``. ``missing`` means the
+        original is gone or you lost access; ``hidden`` is a saved DM this token may not read (no Read Instant
+        Messages). ``before`` is a saved id; ``limit`` is 1 to 100 (default 50)."""
+        return self.get_chat_saved(query={"before": before, "limit": limit})
+
+    def save_message(self, kind, message_id=None, *, snapshot=None):
+        """Save a message and return its saved id. ``kind="channel"``: ``message_id`` is a channel message id.
+        ``kind="dm"``: ``message_id`` is the DM id (needs Read Instant Messages). ``kind="group"``: pass
+        ``snapshot={room, room_name, user, message, created_at, id}`` instead. At most 500 saved
+        (``APIError`` with ``too_many_saved``)."""
+        if kind not in ("channel", "dm", "group"):
+            raise ValueError("kind must be channel, dm or group")
+        if kind == "group":
+            if not snapshot:
+                raise ValueError("a group message needs a snapshot")
+            body = {"kind": kind, "snapshot": snapshot}
+        else:
+            if message_id is None:
+                raise ValueError("message_id is required")
+            body = {"kind": kind, "id": str(message_id)}
+        return self.post_chat_saved(json=body)["id"]
+
+    def unsave_message(self, saved_id):
+        """Remove a saved message by its saved id (what ``save_message`` returned)."""
+        return self.delete_chat_saved_by_id(id=saved_id)
+
+    def saved_ids(self, kind, ids):
+        """Which of these messages are saved? ``{message id: saved id}``; unsaved ones are left out (200 ids at most)."""
+        return self.post_chat_saved_check(json={"kind": kind, "ids": [str(i) for i in ids]})["saved"]
+
+    def translate(self, text, to="en", *, source=None):
+        """Translate text on Nookara (needs Chat; 3000 characters, 40 a minute). ``to`` is a language tag such as
+        ``"en"`` or ``"pt-BR"``; ``source`` is optional (detected). Returns ``{text, from, to}``."""
+        return self.post_chat_translate(json={"text": text, "to": to, "from": source} if source else {"text": text, "to": to})
+
+    def cancel_friend_request(self, username):
+        """Take back a friend request you sent that hasn't been answered (needs View Friends and Manage Friends).
+        Returns True, or False when there was no pending request to that person."""
+        name = str(username).strip().lower()
+        for req in self.get_friends_requests().get("outgoing", []):
+            if str(req.get("to_username", "")).lower() == name:
+                self.delete_friends_request_by_id(id=req["id"])
+                return True
+        return False
+
     def ember_jwks(self):
         """Nookara's identity keys (JWKS), used to verify instance tokens, receipts and bot-add tickets."""
         return self.get_well_known_bonfire_jwks_json()

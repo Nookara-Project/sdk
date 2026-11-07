@@ -3897,6 +3897,32 @@
       "legacy": false
     },
     {
+      "operationId": "delete_friends_request_by_id",
+      "group": "friends",
+      "method": "DELETE",
+      "path": "/friends/request/:id",
+      "auth": "bearer",
+      "scopes": [
+        "FRIENDS_MANAGE"
+      ],
+      "params": [
+        {
+          "name": "id",
+          "optional": false
+        }
+      ],
+      "query": [],
+      "body": [],
+      "files": [],
+      "errors": [
+        "request_not_found"
+      ],
+      "notes": "Takes back a friend request you sent that is still pending (the id comes from outgoing in GET /friends/requests). Returns {success:true}; 404 request_not_found for anything else. The other person gets a friend_request_cancelled event.",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
       "operationId": "delete_friends_by_username",
       "group": "friends",
       "method": "DELETE",
@@ -7692,6 +7718,158 @@
       "staffOnly": false,
       "captcha": false,
       "legacy": true
+    },
+    {
+      "operationId": "post_chat_translate",
+      "group": "chat",
+      "method": "POST",
+      "path": "/chat/translate",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [],
+      "query": [],
+      "body": [
+        "text",
+        "to",
+        "from"
+      ],
+      "files": [],
+      "errors": [
+        "nothing_to_translate",
+        "bad_language",
+        "rate_limited",
+        "translate_unavailable",
+        "translate_failed"
+      ],
+      "notes": "Translates text on Nookara (Ember uses it where the browser has no translator). text up to 3000 characters, to is a language tag like en or pt-BR, from is optional (auto-detected). 40 a minute per account. Returns {text, from, to}.",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
+      "operationId": "delete_chat_saved_by_id",
+      "group": "chat",
+      "method": "DELETE",
+      "path": "/chat/saved/:id",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [
+        {
+          "name": "id",
+          "optional": false
+        }
+      ],
+      "query": [],
+      "body": [],
+      "files": [],
+      "errors": [],
+      "notes": "Removes a saved message by its saved id (the id from POST /chat/saved or GET /chat/saved). Always {ok:true}.",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
+      "operationId": "post_chat_saved",
+      "group": "chat",
+      "method": "POST",
+      "path": "/chat/saved",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [],
+      "query": [],
+      "body": [
+        "kind",
+        "id",
+        "snapshot"
+      ],
+      "files": [],
+      "errors": [
+        "bad_kind",
+        "bad_snapshot",
+        "message_not_found",
+        "too_many_saved",
+        "insufficient_scope"
+      ],
+      "notes": "Saves a message. kind channel: id is a channel message id. kind dm: id is the DM id, and the token needs Read Instant Messages. kind group: send snapshot {room, room_name, user, message, created_at, id} instead of id (group chats keep no history on the server). At most 500 saved. Returns {ok, id}; saving the same message again returns the same id.",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
+      "operationId": "post_chat_saved_check",
+      "group": "chat",
+      "method": "POST",
+      "path": "/chat/saved/check",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [],
+      "query": [],
+      "body": [
+        "kind",
+        "ids"
+      ],
+      "files": [],
+      "errors": [],
+      "notes": "Which of these messages are saved? kind channel, dm or group, ids up to 200 message ids (group: room:id). Returns {saved: {message ref: saved id}}; messages that are not saved are left out.",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
+      "operationId": "get_chat_saved",
+      "group": "chat",
+      "method": "GET",
+      "path": "/chat/saved",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [],
+      "query": [
+        "before",
+        "limit"
+      ],
+      "body": [],
+      "files": [],
+      "errors": [
+        "insufficient_scope"
+      ],
+      "notes": "Ember Inbox, Saved. before is a saved id; limit 1 to 100 (default 50). Returns {saved: [{id, kind, saved_at, message?, with?, missing?, hidden?}], has_more}. kind is channel, dm or group; missing means the original is gone or you lost access; hidden means a saved DM and the token lacks Read Instant Messages. DM messages use the normal /im shape (an encrypted envelope for end-to-end encrypted DMs).",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
+      "operationId": "get_chat_inbox_mentions",
+      "group": "chat",
+      "method": "GET",
+      "path": "/chat/inbox/mentions",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [],
+      "query": [
+        "before",
+        "limit"
+      ],
+      "body": [],
+      "files": [],
+      "errors": [
+        "insufficient_scope"
+      ],
+      "notes": "Ember Inbox, Mentions. The last 30 days of messages in your servers that mention you (@name, a reply to you, @everyone or @here, one of your roles), newest first, only channels you can see. before is a message id; limit 1 to 50 (default 30). Returns {messages: [message + channel_name, server_name, server_icon, unread], has_more}.",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
     },
     {
       "operationId": "get_chat_unfurl",
@@ -17146,6 +17324,13 @@
       "type": "voice_sound_failed",
       "fields": [
         "reason",
+        "type"
+      ]
+    },
+    {
+      "type": "friend_request_cancelled",
+      "fields": [
+        "from",
         "type"
       ]
     }

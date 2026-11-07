@@ -634,6 +634,10 @@ class Endpoints:
         """PATCH /friends/request/:id/decline. See the API reference for scopes and payloads."""
         return self.call('patch_friends_request_by_id_decline', id=id, query=query, json=json, data=data, files=files, raw=raw)
 
+    def delete_friends_request_by_id(self, *, id, query=None, json=None, data=None, files=None, raw=False):
+        """DELETE /friends/request/:id. See the API reference for scopes and payloads."""
+        return self.call('delete_friends_request_by_id', id=id, query=query, json=json, data=data, files=files, raw=raw)
+
     def delete_friends_by_username(self, *, username, query=None, json=None, data=None, files=None, raw=False):
         """DELETE /friends/:username. See the API reference for scopes and payloads."""
         return self.call('delete_friends_by_username', username=username, query=query, json=json, data=data, files=files, raw=raw)
@@ -1181,6 +1185,30 @@ class Endpoints:
     def get_chat_channels_by_cid_pins(self, *, cid, query=None, json=None, data=None, files=None, raw=False):
         """GET /chat/channels/:cid/pins. See the API reference for scopes and payloads."""
         return self.call('get_chat_channels_by_cid_pins', cid=cid, query=query, json=json, data=data, files=files, raw=raw)
+
+    def post_chat_translate(self, *, query=None, json=None, data=None, files=None, raw=False):
+        """POST /chat/translate. See the API reference for scopes and payloads."""
+        return self.call('post_chat_translate', query=query, json=json, data=data, files=files, raw=raw)
+
+    def delete_chat_saved_by_id(self, *, id, query=None, json=None, data=None, files=None, raw=False):
+        """DELETE /chat/saved/:id. See the API reference for scopes and payloads."""
+        return self.call('delete_chat_saved_by_id', id=id, query=query, json=json, data=data, files=files, raw=raw)
+
+    def post_chat_saved(self, *, query=None, json=None, data=None, files=None, raw=False):
+        """POST /chat/saved. See the API reference for scopes and payloads."""
+        return self.call('post_chat_saved', query=query, json=json, data=data, files=files, raw=raw)
+
+    def post_chat_saved_check(self, *, query=None, json=None, data=None, files=None, raw=False):
+        """POST /chat/saved/check. See the API reference for scopes and payloads."""
+        return self.call('post_chat_saved_check', query=query, json=json, data=data, files=files, raw=raw)
+
+    def get_chat_saved(self, *, query=None, json=None, data=None, files=None, raw=False):
+        """GET /chat/saved. See the API reference for scopes and payloads."""
+        return self.call('get_chat_saved', query=query, json=json, data=data, files=files, raw=raw)
+
+    def get_chat_inbox_mentions(self, *, query=None, json=None, data=None, files=None, raw=False):
+        """GET /chat/inbox/mentions. See the API reference for scopes and payloads."""
+        return self.call('get_chat_inbox_mentions', query=query, json=json, data=data, files=files, raw=raw)
 
     def get_chat_unfurl(self, *, query=None, json=None, data=None, files=None, raw=False):
         """GET /chat/unfurl. See the API reference for scopes and payloads."""
