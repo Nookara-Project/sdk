@@ -176,7 +176,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Needs Chat. Returns {default_instance, instances: [{url, position, added_at, muted, push, auto_join}]}: the Bonfire servers saved on the account. The official server (default_instance) is added once per account; auto_join is true until a client confirms with POST /bonfire/instances/default-joined.",
+      "notes": "Needs Chat. Returns {default_instance, instances: [{url, position, added_at, muted, push, auto_join}]}: the Ember servers saved on the account. The official server (default_instance) is added once per account; auto_join is true until a client confirms with POST /bonfire/instances/default-joined.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -2111,7 +2111,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Public. What the official Bonfire apps ask for: {version, scopes: [{id, bit, required: false, since, name, reason}], permissions_integer, ...}. Nothing is required; every scope is the person's choice.",
+      "notes": "Public. What the official Ember apps ask for: {version, scopes: [{id, bit, required: false, since, name, reason}], permissions_integer, ...}. Nothing is required; every scope is the person's choice.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -2128,7 +2128,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Any token. Compares the token with what Bonfire asks for: {granted, effective, disabled, not_granted: [...]}. Informational: not_granted never blocks. Also works as a general \"which scopes did I get?\" call.",
+      "notes": "Any token. Compares the token with what Ember asks for: {granted, effective, disabled, not_granted: [...]}. Informational: not_granted never blocks. Also works as a general \"which scopes did I get?\" call.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -2195,7 +2195,7 @@
       "errors": [
         "server_error"
       ],
-      "notes": "Official apps: revokes the calling Bonfire app token (never a website session).",
+      "notes": "Official apps: revokes the calling Ember app token (never a website session).",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -4387,7 +4387,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4414,7 +4414,7 @@
         "not_a_member",
         "not_allowed"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4446,7 +4446,7 @@
         "not_allowed",
         "not_linked"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4474,7 +4474,7 @@
         "not_allowed",
         "rate_limited"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4506,7 +4506,7 @@
         "server_read_only",
         "too_many_instances"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4532,7 +4532,7 @@
       "errors": [
         "claim_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4560,7 +4560,7 @@
         "not_a_game_channel",
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4591,7 +4591,7 @@
         "not_a_game_channel",
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4630,7 +4630,7 @@
         "server_read_only",
         "timeout"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4659,7 +4659,7 @@
         "not_a_member",
         "not_allowed"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4683,7 +4683,7 @@
       "errors": [
         "invalid_invite"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4725,7 +4725,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4744,7 +4744,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4763,7 +4763,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4791,7 +4791,7 @@
         "too_many_joined",
         "too_many_servers"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4817,7 +4817,7 @@
       "errors": [
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4852,7 +4852,7 @@
         "not_allowed",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4884,7 +4884,7 @@
         "not_allowed",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4920,7 +4920,7 @@
         "server_read_only",
         "too_many_roles"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4951,7 +4951,7 @@
         "role_too_high",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -4993,7 +4993,7 @@
         "role_too_high",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5027,7 +5027,7 @@
         "role_too_high",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5065,7 +5065,7 @@
         "role_too_high",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5103,7 +5103,7 @@
         "role_too_high",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5138,7 +5138,7 @@
         "server_not_found",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5168,7 +5168,7 @@
       "errors": [
         "name_required"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5207,7 +5207,7 @@
         "server_read_only",
         "shop_admin_role"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5234,7 +5234,7 @@
         "not_allowed",
         "server_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5261,7 +5261,7 @@
         "not_allowed",
         "server_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5290,7 +5290,7 @@
         "owner_only",
         "server_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5322,7 +5322,7 @@
         "server_read_only",
         "too_many_joined"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5354,7 +5354,7 @@
         "server_read_only",
         "too_many_joined"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5381,7 +5381,7 @@
         "not_a_member",
         "owner_cannot_leave"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5410,7 +5410,7 @@
       "errors": [
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5445,7 +5445,7 @@
         "server_read_only",
         "user_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5478,7 +5478,7 @@
         "server_read_only",
         "user_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5510,7 +5510,7 @@
         "not_allowed",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5542,7 +5542,7 @@
         "not_allowed",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5571,7 +5571,7 @@
         "not_allowed",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5600,7 +5600,7 @@
         "not_allowed",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5638,7 +5638,7 @@
         "server_read_only",
         "too_many_channels"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5682,7 +5682,7 @@
         "server_read_only",
         "shop_admin_role"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5712,7 +5712,7 @@
         "not_allowed",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5739,7 +5739,7 @@
         "channel_not_found",
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5766,7 +5766,7 @@
         "channel_not_found",
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5797,7 +5797,7 @@
         "channel_not_found",
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5833,7 +5833,7 @@
         "server_not_found",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5862,7 +5862,7 @@
         "channel_not_found",
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5891,7 +5891,7 @@
         "channel_not_found",
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5922,7 +5922,7 @@
         "not_allowed",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5950,7 +5950,7 @@
         "not_allowed",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -5977,7 +5977,7 @@
         "storage_limit_exceeded",
         "upload_suspended"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -6293,7 +6293,7 @@
       ],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -6665,7 +6665,7 @@
       "errors": [
         "server_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -6692,7 +6692,7 @@
         "not_found",
         "server_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -6720,7 +6720,7 @@
         "not_allowed",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -6755,7 +6755,7 @@
         "server_read_only",
         "too_many_emojis"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -6790,7 +6790,7 @@
         "not_allowed",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -6823,7 +6823,7 @@
         "not_found",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -6842,7 +6842,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -6866,7 +6866,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -6894,7 +6894,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -6926,7 +6926,7 @@
       ],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -6950,7 +6950,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -6978,7 +6978,7 @@
       ],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7005,7 +7005,7 @@
       ],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7031,7 +7031,7 @@
       ],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7062,7 +7062,7 @@
       ],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7174,7 +7174,7 @@
       "errors": [
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7200,7 +7200,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7233,7 +7233,7 @@
         "too_many_reactions",
         "unknown_emoji"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7266,7 +7266,7 @@
         "too_many_reactions",
         "unknown_emoji"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7353,7 +7353,7 @@
         "not_allowed",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7479,7 +7479,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7503,7 +7503,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7533,7 +7533,7 @@
         "file"
       ],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7565,7 +7565,7 @@
       ],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7593,7 +7593,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7627,7 +7627,7 @@
         "server_read_only",
         "too_many_pins"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7661,7 +7661,7 @@
         "server_read_only",
         "too_many_pins"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7688,7 +7688,7 @@
         "channel_not_found",
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7711,7 +7711,7 @@
       "errors": [
         "rate_limited"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7796,7 +7796,7 @@
         "not_a_member",
         "not_a_shop"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7837,7 +7837,7 @@
         "role_not_found",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7875,7 +7875,7 @@
         "role_not_found",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7902,7 +7902,7 @@
         "no_webhooks_here",
         "not_allowed"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7933,7 +7933,7 @@
         "server_read_only",
         "too_many_webhooks"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7969,7 +7969,7 @@
         "server_read_only",
         "webhook_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -7997,7 +7997,7 @@
         "server_read_only",
         "webhook_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8031,7 +8031,7 @@
         "server_read_only",
         "webhook_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8048,7 +8048,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8065,7 +8065,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8082,7 +8082,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8099,7 +8099,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8116,7 +8116,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8133,7 +8133,7 @@
       "body": [],
       "files": [],
       "errors": [],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8158,7 +8158,7 @@
         "not_a_member",
         "server_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8182,7 +8182,7 @@
       "errors": [
         "user_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8201,7 +8201,7 @@
       "errors": [
         "cannot_dm_bot"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8226,7 +8226,7 @@
         "not_a_member",
         "server_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8251,7 +8251,7 @@
         "not_a_member",
         "server_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8276,7 +8276,7 @@
         "not_a_member",
         "server_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8306,7 +8306,7 @@
         "server_not_found",
         "user_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8333,7 +8333,7 @@
         "not_a_member",
         "server_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8358,7 +8358,7 @@
         "channel_not_found",
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8383,7 +8383,7 @@
         "channel_not_found",
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8412,7 +8412,7 @@
         "channel_not_found",
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8442,7 +8442,7 @@
         "message_not_found",
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8477,7 +8477,7 @@
         "empty_message",
         "not_a_member"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8513,7 +8513,7 @@
         "not_allowed",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8545,7 +8545,7 @@
         "not_allowed",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8582,7 +8582,7 @@
         "too_many_reactions",
         "unknown_emoji"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8619,7 +8619,7 @@
         "too_many_reactions",
         "unknown_emoji"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8655,7 +8655,7 @@
         "server_read_only",
         "too_many_pins"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8691,7 +8691,7 @@
         "server_read_only",
         "too_many_pins"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8925,7 +8925,7 @@
       "errors": [
         "Unknown Webhook"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -8971,7 +8971,7 @@
         "rate_limited",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -9000,7 +9000,7 @@
         "Unknown Webhook",
         "server_read_only"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
       "legacy": true
@@ -11915,7 +11915,7 @@
         "invalid_instance",
         "unknown_instance"
       ],
-      "notes": "Returns a single-use add-ticket (JWS, 5 minutes) for one Bonfire instance: hand it to POST INSTANCE/api/v1/bots/gallery/add with { ticket, sid }.",
+      "notes": "Returns a single-use add-ticket (JWS, 5 minutes) for one Ember instance: hand it to POST INSTANCE/api/v1/bots/gallery/add with { ticket, sid }.",
       "staffOnly": false,
       "captcha": false,
       "legacy": false
@@ -11934,7 +11934,7 @@
       "errors": [
         "invalid_bot_token"
       ],
-      "notes": "Bot program, not a person: Authorization: Bot TOKEN (the Nookara bot account token). Lists the Bonfire instances the bot is installed on (from the instances' 10-minute sync reports; banned instances and banned bots are left out). Each entry has test: true or false; staff test installs are included with test: true and are not counted as real installs, so skip them. Open one INSTANCE/bot/gateway connection per entry and poll again every few minutes. 120 per minute per IP. Errors: invalid_bot_token (401).",
+      "notes": "Bot program, not a person: Authorization: Bot TOKEN (the Nookara bot account token). Lists the Ember instances the bot is installed on (from the instances' 10-minute sync reports; banned instances and banned bots are left out). Each entry has test: true or false; staff test installs are included with test: true and are not counted as real installs, so skip them. Open one INSTANCE/bot/gateway connection per entry and poll again every few minutes. 120 per minute per IP. Errors: invalid_bot_token (401).",
       "staffOnly": false,
       "captcha": false,
       "legacy": false

@@ -55,4 +55,9 @@ Some routes only work for a website sign-in or one of Nookara's own apps, and th
 
 The Python SDK also has sign-in helpers, websockets and the bot gateway, message signing, encrypted DMs and Ember instance clients. Here you bring a token you already have, and this package covers REST only. Staff routes are left out.
 
-Docs: https://nookara.cc/guides/velora-api
+Guide: https://nookara.cc/guides/node-sdk. Every route: https://nookara.cc/guides/velora-api
+
+## Changes in 0.1.1
+
+- Route descriptions say Ember instead of the old Bonfire name. Method names are unchanged: they follow the URL, so routes under `/bonfire/...` keep names like `get_bonfire_instances`.
+- The README links the new Node guide.

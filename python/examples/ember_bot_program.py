@@ -1,15 +1,15 @@
 """One bot token, every instance it is installed on (gallery installs included).
 
-    VELORA_BOT_TOKEN=... python bonfire_bot_program.py
+    NOOKARA_BOT_TOKEN=... python bonfire_bot_program.py
 """
 import asyncio
 import os
 
-from velora_api import BotProgram
+from nookara import BotProgram
 
 
 async def main():
-    async with BotProgram(os.environ["VELORA_BOT_TOKEN"]) as bot:
+    async with BotProgram(os.environ["NOOKARA_BOT_TOKEN"]) as bot:
         async for event in bot:
             if event["type"] == "MESSAGE_CREATE":
                 message = event["data"]

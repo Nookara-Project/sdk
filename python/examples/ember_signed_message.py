@@ -1,17 +1,17 @@
-"""Send a signed message. Needs the optional extra: pip install "velora-api-client[signing]".
+"""Send a signed message. Needs the optional extra: pip install "nookara[signing]".
 
 The token must hold Chat (2048) and Sign Messages (32768); the account signing key is
 fetched from Nookara and kept in memory only.
 
-    VELORA_TOKEN=... python bonfire_signed_message.py
+    NOOKARA_TOKEN=... python bonfire_signed_message.py
 """
 import os
 
-from velora_api import Client, Instance
+from nookara import Client, Instance
 
-velora = Client(os.environ["VELORA_TOKEN"])
+nookara = Client(os.environ["NOOKARA_TOKEN"])
 instance = Instance("https://chat.ikelene.net")
-instance.login_with_velora(velora, sign=True)
+instance.login_with_nookara(nookara, sign=True)
 
 sent = instance.send_message(instance.channel_id("general"), "Signed from Python")
 print(sent["message"]["verified"])

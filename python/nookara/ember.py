@@ -1,13 +1,13 @@
-"""Your Bonfire servers as one object: the saved instance list of a Nookara account.
+"""Your Ember servers as one object: the saved instance list of a Nookara account.
 
-A person's Bonfire servers (``chat.ikelene.net``, Nookara-hosted ``<slug>-bonfire.ikelene.net`` ones, self-hosted
-ones) are saved on their Nookara account so they follow them between devices. ``Bonfire`` reads that list,
+A person's Ember servers (``chat.ikelene.net``, Nookara-hosted ``e-<slug>.nookara.cc`` ones, self-hosted
+ones) are saved on their Nookara account so they follow them between devices. ``Ember`` reads that list,
 signs in to each instance with a ticket made for that one instance, and gives you ``Instance`` objects and the
 joined communities. Servers that are down, read-only or in local-account mode are reported, never fatal.
 
-    velora = Client(token)                # needs Chat (2048)
-    bonfire = Bonfire(velora, sign="auto")
-    for entry in bonfire.communities():
+    nookara = Client(token)                # needs Chat (2048)
+    ember = Ember(nookara, sign="auto")
+    for entry in ember.communities():
         print(entry["instance"], entry["community"]["name"], entry["error"])
 """
 from __future__ import annotations
@@ -15,40 +15,44 @@ from __future__ import annotations
 from ._origin import normalize_origin
 from .client import APIError, ScopeError, TransportError
 from .instance import Instance
+from . import _compat
 
 
-class Bonfire:
-    """The Bonfire servers of one Nookara account."""
+class Ember:
+    """The Ember servers of one Nookara account."""
 
-    def __init__(self, velora, *, sign=False, timeout=30, allow_insecure=False, instance_factory=None):
-        self.velora = velora
+    def __init__(self, nookara=None, *, sign=False, timeout=30, allow_insecure=False, instance_factory=None, velora=None):
+        if velora is not None:
+            _compat.warn("Ember(velora=...)", "Ember(nookara)")
+            nookara = nookara or velora
+        self.nookara = nookara
         self.sign = sign
         self.timeout, self.allow_insecure = timeout, allow_insecure
         self._factory = instance_factory or (lambda url: Instance(url, timeout=timeout, allow_insecure=allow_insecure,
-                                                                  velora_url=velora.base_url))
+                                                                  nookara_url=nookara.base_url))
         self._instances = {}
 
     def urls(self):
         """The saved instance addresses in the account's order."""
-        return [item["url"] for item in self.velora.bonfire_instances()]
+        return [item["url"] for item in self.nookara.ember_instances()]
 
     def entries(self):
         """Saved list entries: ``{url, position, added_at, muted, push, auto_join}``."""
-        return self.velora.bonfire_instances()
+        return self.nookara.ember_instances()
 
     def add(self, url):
         """Remember a server on the account (this is what "joining a server" in the apps starts with)."""
-        return self.velora.sync_bonfire_instances([normalize_origin(url, allow_insecure=self.allow_insecure)])
+        return self.nookara.sync_ember_instances([normalize_origin(url, allow_insecure=self.allow_insecure)])
 
     def remove(self, url):
         origin = normalize_origin(url, allow_insecure=self.allow_insecure)
         keep = [u for u in self.urls() if u != origin]
         self._instances.pop(origin, None)
-        return self.velora.set_bonfire_instances(keep)
+        return self.nookara.set_ember_instances(keep)
 
     def directory(self, q=None, page=None):
         """Search the public directory of servers that chose to be listed."""
-        return self.velora.bonfire_directory(q, page)
+        return self.nookara.ember_directory(q, page)
 
     def instance(self, url):
         """A signed-in ``Instance`` for one server of the list (cached). Raises ``APIError`` / ``ScopeError`` /
@@ -59,7 +63,7 @@ class Bonfire:
             inst = self._factory(origin)
             if inst.accounts_mode == "local":
                 raise ValueError(origin + " uses its own accounts; sign in with Instance.login()")
-            inst.login_with_velora(self.velora, sign=self.sign)
+            inst.login_with_nookara(self.nookara, sign=self.sign)
             self._instances[origin] = inst
         return inst
 
@@ -88,16 +92,16 @@ class Bonfire:
         return out
 
     def join_default(self):
-        """Join the official server once and tell Nookara, as the Bonfire apps do: it is added to every account
+        """Join the official server once and tell Nookara, as the Ember apps do: it is added to every account
         and ``auto_join`` stays true until a client confirms. Returns the community or None when nothing to do."""
-        listing = self.velora.get_bonfire_instances()
+        listing = self.nookara.get_bonfire_instances()
         default = listing.get("default_instance")
         entry = next((i for i in listing["instances"] if i["url"] == default), None)
         if not default or not entry or not entry.get("auto_join"):
             return None
         inst = self.instance(default)
         joined = inst.join()
-        self.velora.bonfire_default_joined(default)
+        self.nookara.ember_default_joined(default)
         return joined
 
     def close(self):
@@ -107,3 +111,8 @@ class Bonfire:
             except (APIError, TransportError):
                 pass
         self._instances.clear()
+
+    velora = _compat.renamed_attribute("Ember.velora", "nookara")
+
+
+Bonfire = Ember

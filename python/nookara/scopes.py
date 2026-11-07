@@ -1,4 +1,4 @@
-"""Nookara token scopes and Bonfire instance scopes.
+"""Nookara token scopes and Ember instance scopes.
 
 Scopes are *requested*, never required. The person signing in sees a consent screen and
 may untick any of them (the risky ones start unticked), so a token can come back with
@@ -6,6 +6,8 @@ fewer scopes than you asked for. Ask only for what a feature needs, check what y
 with ``Client.granted_scopes()`` / ``Client.has_scope()`` and degrade gracefully.
 """
 from __future__ import annotations
+
+from . import _compat
 
 SCOPES = {
     "PROFILE_READ": 1,
@@ -49,7 +51,7 @@ DEFAULT_OFF = ("PROFILE_SENSITIVE", "ACCOUNT_WRITE", "STORAGE_WRITE", "FRIENDS_M
 
 INSTANCE_SCOPES = {"chat": "CHAT", "voice": "VOICE", "media": "MEDIA_UPLOAD", "sign": "SIGN_MESSAGES"}
 
-BONFIRE_APP_SCOPES = ("PROFILE_READ", "CHAT", "VMAIL_READ", "VMAIL_SEND", "FRIENDS_READ", "FRIENDS_MANAGE",
+EMBER_APP_SCOPES = ("PROFILE_READ", "CHAT", "VMAIL_READ", "VMAIL_SEND", "FRIENDS_READ", "FRIENDS_MANAGE",
                       "MEDIA_UPLOAD", "VOICE", "ACCOUNT_WRITE", "CURRENCY_READ", "CURRENCY_PAY", "SIGN_MESSAGES")
 
 
@@ -93,4 +95,6 @@ def instance_scope_names(scopes):
     return [INSTANCE_SCOPES[s] for s in scopes if s in INSTANCE_SCOPES]
 
 
-BONFIRE_APP_MASK = scope_mask(*BONFIRE_APP_SCOPES)
+EMBER_APP_MASK = scope_mask(*EMBER_APP_SCOPES)
+
+__getattr__ = _compat.module_getattr(__name__, {"BONFIRE_APP_SCOPES": "EMBER_APP_SCOPES", "BONFIRE_APP_MASK": "EMBER_APP_MASK"}, globals())

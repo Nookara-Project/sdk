@@ -9,8 +9,8 @@ from unittest.mock import patch
 
 project_root = Path(__file__).parents[1]
 sys.path.insert(0, str(project_root / 'python' if (project_root / 'python').is_dir() else project_root))
-import velora_api
-from velora_api import (APIError, BotClient, BuyerError, Client, InvalidBotToken, InvalidPaymentRequest, MerchantUnavailable,
+import nookara
+from nookara import (APIError, BotClient, BuyerError, Client, InvalidBotToken, InvalidPaymentRequest, MerchantUnavailable,
                         NotCancellable, OrderConflict, PaymentError, PaymentInProgress, PaymentNotFound, PaymentRateLimited,
                         PaymentTimeout, is_paid)
 
@@ -124,7 +124,7 @@ class ValidationTests(unittest.TestCase):
             BotClient('')
         self.assertEqual(self.bot.auth_scheme, 'Bot')
         self.assertNotIn('T', repr(self.bot).replace('BotClient', ''))
-        self.assertIs(velora_api.BotClient, BotClient)
+        self.assertIs(nookara.BotClient, BotClient)
 
     def test_is_paid(self):
         self.assertTrue(is_paid({'status': 'paid'}))
@@ -170,13 +170,13 @@ class WaitTests(unittest.TestCase):
 
     def test_rate_limit_backs_off_and_continues(self):
         limited = APIError(429, {'error': 'rate_limited', 'retry_after': 7})
-        replies = [velora_api.botpayments.payment_error(limited), dict(PENDING, status='paid')]
+        replies = [nookara.botpayments.payment_error(limited), dict(PENDING, status='paid')]
         self.assertTrue(is_paid(self.wait(replies, timeout=100, poll=1)))
         self.assertEqual(self.sleeps[0], 7)
 
     def test_other_errors_propagate(self):
         with self.assertRaises(InvalidBotToken):
-            self.wait([velora_api.botpayments.payment_error(APIError(401, {'error': 'invalid_bot_token'}))])
+            self.wait([nookara.botpayments.payment_error(APIError(401, {'error': 'invalid_bot_token'}))])
 
 
 if __name__ == '__main__':

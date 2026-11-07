@@ -1,7 +1,7 @@
 import os
-from velora_api import Client
+from nookara import Client
 
-api=Client(os.environ['VELORA_TOKEN'])
+api=Client(os.environ['NOOKARA_TOKEN'])
 api.set_activity('Python example',key='python-example',state='Testing activity',ttl=60)
 try:
     input('Press Enter to clear this example activity...')

@@ -7,10 +7,10 @@ pip install "nookara[signing]"    # cryptography, for signed messages and encryp
 ```
 
 ```python
-from nookara import Client, login, scope_mask
+from nookara import Client, Ember, Instance, login_app
 ```
 
-`import velora_api` keeps working for older code, and the examples below still use that name.
+Older code that says `import velora_api`, `Bonfire` or `login_with_velora` keeps working and shows a `DeprecationWarning` with the new name (see Changes in 0.9.0).
 
 **What's in it:** sign-in, profiles, friends, DMs, group chats, notifications, storage, credits, Ember chat and bots, bot payments and carts, Products, cart and direct pay, claims and reports, Nookara Drive, Forums, Devices and Apps, as one named method per route.
 
@@ -31,9 +31,9 @@ To charge someone from your App, send them to checkout with `add_to_cart`, or us
 ## About this client
 
 Nookara is the identity and platform API: accounts, direct messages, groups, friends,
-credits, instance tickets, signing keys and hosting. **Bonfire** is the chat system. Every
-Bonfire server is an **instance** at its own web address (the main community is
-`https://chat.ikelene.net`; Nookara-hosted ones are `https://<slug>-bonfire.ikelene.net`;
+credits, instance tickets, signing keys and hosting. **Ember** is the chat system. Every
+Ember server is an **instance** at its own web address (the main community is
+`https://chat.ikelene.net`; Nookara-hosted ones are `https://e-<slug>.nookara.cc`;
 you can also self-host). One instance holds one community. This package talks to both.
 
 It supports Python 3.10+ and exposes every documented REST operation as a named
@@ -49,13 +49,16 @@ optional websocket dependency only, not the Nookara package itself.
 
 ## Sign in, and what scopes mean now
 
-```python
-from velora_api import Client, login, scope_mask
+Create an app in [My Account > Apps](https://nookara.cc/me#apps) with `http://localhost` as an
+authorized URL (no port: it covers any port) and the scopes you need, then sign in with its ID:
 
-token = login(project_name="My Python client", scopes=scope_mask("PROFILE_READ", "CHAT"))
-velora = Client(token)
-print(velora.scope_names())          # what the person actually allowed
-print(velora.bonfire_instances())    # the Bonfire servers saved on this account
+```python
+from nookara import Client, login_app
+
+token, origin = login_app("app_0123456789abcdef0123")
+nookara = Client(token, origin=origin)   # an app's token only works from its authorized URLs
+print(nookara.scope_names())           # what the person actually allowed
+print(nookara.ember_instances())       # the Ember servers saved on this account
 ```
 
 The browser shows a consent screen. **Scopes are requested, never required**: the person
@@ -63,19 +66,19 @@ can untick any of them (the risky ones start unticked), so a token can come back
 fewer scopes than you asked for. Ask only for what you use, then check:
 
 ```python
-velora.has_scope("MEDIA_UPLOAD")     # True / False  (names, labels such as "Upload Media", or bits)
-velora.granted_scopes()              # the usable mask (approved and not switched off by an admin)
-velora.require_scope("CHAT")         # raises ScopeError with a clear message
+nookara.has_scope("MEDIA_UPLOAD")     # True / False  (names, labels such as "Upload Media", or bits)
+nookara.granted_scopes()              # the usable mask (approved and not switched off by an admin)
+nookara.require_scope("CHAT")         # raises ScopeError with a clear message
 ```
 
 A call without the scope raises `ScopeError` (a subclass of `APIError`) with `scope`,
 `label` and `disabled_by_admin`, so you can show "log in again to use this" instead of
-crashing. `login()` never asks for a password. Project names that start with
-`Bonfire (` are reserved for the official apps. `optional_scopes=` is still accepted
-and merged into `scopes`. To print the URL yourself use `login(..., on_url=print)`.
-Do not print the returned token. For an existing token use `Client(os.environ["VELORA_TOKEN"])`.
+crashing. `login_app()` never asks for a password. To print the URL yourself use
+`login_app(..., on_url=print)`. `login(project_name=..., scopes=...)` is the legacy login with a
+permissions integer: it and the tokens it made stop working on 3 December 2026.
+Do not print the returned token. For an existing token use `Client(os.environ["NOOKARA_TOKEN"])`.
 
-| Scope | Bit | Default on the consent screen | Bonfire instance scope |
+| Scope | Bit | Default on the consent screen | Ember instance scope |
 |---|---|---|---|
 | View Basic Profile | 1 | on | |
 | View Sensitive Info | 2 | off | |
@@ -91,19 +94,19 @@ Do not print the returned token. For an existing token use `Client(os.environ["V
 | Nookara Voice | 16384 | on | `voice` |
 | Sign Messages | 32768 | off | `sign` (signed messages) |
 
-`velora_api.SCOPES`, `SCOPE_LABELS`, `DEFAULT_OFF`, `INSTANCE_SCOPES`,
+`nookara.SCOPES`, `SCOPE_LABELS`, `DEFAULT_OFF`, `INSTANCE_SCOPES`,
 `scope_mask()`, `scope_names()` and `has_scope()` give you the same table in code.
 
-## Bonfire servers (instances)
+## Ember servers (instances)
 
 ```python
-from velora_api import Client, Instance
+from nookara import Client, Instance
 
-velora = Client(token)                              # needs Chat (2048)
+nookara = Client(token)                              # needs Chat (2048)
 chat = Instance("https://chat.ikelene.net")
 info = chat.discover()                              # /.well-known/bonfire, no login
 print(info["name"], info["accounts_mode"], info["build"]["version"], info["read_only"])
-chat.login_with_velora(velora, sign="auto")         # Nookara-login instances
+chat.login_with_nookara(nookara, sign="auto")         # Nookara-login instances
 # chat.login("name", "password")                    # local-account instances
 # chat.register("name", "password")
 
@@ -114,7 +117,7 @@ for message in chat.messages(channel, limit=20)["messages"]:
 chat.send_message(channel, "Hello from Python!")
 ```
 
-`login_with_velora` asks Nookara for a short ticket made for that one instance and
+`login_with_nookara` asks Nookara for a short ticket made for that one instance and
 trades it at `POST /api/v1/auth/velora`. Your Nookara token never leaves Nookara. The
 ticket carries the instance scopes the person allowed (`chat`, `voice`, `media`, `sign`);
 `sign="auto"` signs only when Sign Messages was allowed, `sign=True` raises `ScopeError`
@@ -138,13 +141,13 @@ Useful methods: `servers()` / `joined_communities()`, `channels()`, `members()`,
 ### Your servers as one object
 
 ```python
-from velora_api import Bonfire
+from nookara import Ember
 
-bonfire = Bonfire(velora, sign="auto")
-bonfire.join_default()                              # the official server, once per account
-for item in bonfire.communities():                  # one entry per saved server
+ember = Ember(nookara, sign="auto")
+ember.join_default()                              # the official server, once per account
+for item in ember.communities():                  # one entry per saved server
     print(item["instance"], (item["community"] or {}).get("name"), item["error"])
-bonfire.add("https://camp-bonfire.ikelene.net")     # saved on the account, follows the person between devices
+ember.add("https://e-camp.nookara.cc")     # saved on the account, follows the person between devices
 ```
 
 A server that is down, banned, in local-account mode, or where Chat was declined is
@@ -165,12 +168,12 @@ Uploads also need the community's `allow_uploads` and the channel's Attach permi
 ### Signing and verifying
 
 ```python
-chat.login_with_velora(velora, sign=True)           # account key from Nookara, kept in memory
+chat.login_with_nookara(nookara, sign=True)           # account key from Nookara, kept in memory
 sent = chat.send_message(channel, "Signed")
 ok, reason = chat.verify_message(sent["message"])   # you check it, not the instance's `verified` flag
 ```
 
-Signing is optional on every velora-mode instance and never required. It needs the
+Signing is optional on every Nookara-login instance and never required. It needs the
 Sign Messages scope and the `signing` extra. Signatures follow protocol section 8, including
 `url:` entries for link-only GIFs. `verify_message` reads the public key from Nookara and
 checks owner, revocation time and the Ed25519 signature.
@@ -178,7 +181,7 @@ checks owner, revocation time and the Ed25519 signature.
 ### Webhooks need no login
 
 ```python
-from velora_api import execute_webhook
+from nookara import execute_webhook
 execute_webhook("https://chat.ikelene.net/api/v1/webhooks/ID/TOKEN", "Build finished")
 ```
 
@@ -189,7 +192,7 @@ token once) and uses a bot token. REST is Discord-style at `/bot/v1` with numeri
 bot gateway is `/bot/gateway`:
 
 ```python
-bot = Instance("https://chat.ikelene.net", bot_token=os.environ["BONFIRE_BOT_TOKEN"])
+bot = Instance("https://chat.ikelene.net", bot_token=os.environ["EMBER_BOT_TOKEN"])
 async with bot.bot_gateway() as gateway:
     async for event in gateway:                    # {"type": "MESSAGE_CREATE", "data": {...}}
         ...
@@ -201,9 +204,9 @@ gallery (Discovery > Bots) so others add it to their servers. Each instance make
 bot account for it, but the token is the same. A bot program serves all of them:
 
 ```python
-from velora_api import BotProgram
+from nookara import BotProgram
 
-async with BotProgram(os.environ["VELORA_BOT_TOKEN"]) as bot:   # GET /bonfire/bots/self/installs
+async with BotProgram(os.environ["NOOKARA_BOT_TOKEN"]) as bot:   # GET /bonfire/bots/self/installs
     async for event in bot:                                      # {"instance", "type", "data", "seq"}
         if event["type"] == "MESSAGE_CREATE" and event["data"]["content"] == "!ping":
             await bot.send(event["instance"], event["data"]["channel_id"], "pong")
@@ -217,7 +220,7 @@ going when one instance fails. Gallery owner calls: `list_gallery()`, `save_gall
 ### User gateway
 
 ```python
-chat.login_with_velora(velora)
+chat.login_with_nookara(nookara)
 async with chat.gateway() as gateway:
     async for event in gateway:
         if event["type"] == "chat_message":
@@ -230,18 +233,18 @@ It reconnects with capped backoff and jitter (1s to 30s), pings every 25 s, and 
 close codes 4001 and 4003. There is no replay: after `gateway_ready` follows a drop,
 refetch history over REST and dedupe by id.
 
-### Other Nookara-side Bonfire helpers
+### Other Nookara-side Ember helpers
 
-`Client`: `instance_token(url)`, `signing_key()`, `bonfire_instances()`,
-`set_bonfire_instances(urls)`, `sync_bonfire_instances(urls)`, `bonfire_default_instance()`,
-`bonfire_default_joined()`, `bonfire_instance_prefs()`, `bonfire_directory(q)`,
-`bonfire_profiles(ids)`, `bonfire_key(kid)`, `bonfire_jwks()`, `bonfire_scopes()`,
-`bonfire_import_platforms()` / `start_bonfire_import()` (Discord and Fluxer bundles),
+`Client`: `instance_token(url)`, `signing_key()`, `ember_instances()`,
+`set_ember_instances(urls)`, `sync_ember_instances(urls)`, `ember_default_instance()`,
+`ember_default_joined()`, `ember_instance_prefs()`, `ember_directory(q)`,
+`ember_profiles(ids)`, `ember_key(kid)`, `ember_jwks()`, `ember_scopes()`,
+`ember_import_platforms()` / `start_ember_import()` (Discord and Fluxer bundles),
 and hosting: `hosting_plans()`, `hosting_servers()`,
 `create_hosting_server(slug, name, plan, weeks=)`, `buy_hosting_weeks(slug, weeks)`,
 `backup_hosting_server(slug)`, `hosting_backups()`, `upload_hosting_backup(...)`,
 `delete_hosting_server(slug)`. Plus is prepaid in weeks and never renews by itself; it is
-free for Nookara Pro. Examples are in `examples/bonfire_*.py`.
+free for Nookara Pro. Examples are in `examples/ember_*.py`.
 
 ## Nookara REST methods
 
@@ -250,9 +253,9 @@ legacy and read-only now (writes answer `server_read_only` with `moved_to`). Dir
 messages, groups, friends, storage, credits and presence are unchanged.
 
 ```python
-velora.send_dm("someone", "Hello from Python!")
-velora.set_activity("My game", state="In the menu", ttl=600)
-velora.clear_activity()
+nookara.send_dm("someone", "Hello from Python!")
+nookara.set_activity("My game", state="In the menu", ttl=600)
+nookara.clear_activity()
 ```
 
 The old `servers()`, `server()`, `messages()` and `send_message()` helpers on `Client`
@@ -262,14 +265,14 @@ new work.
 Group chats have reactions, edits and pins, and DMs have pins (0.6.3):
 
 ```python
-velora.patch_groups_by_room_messages_by_id(room="grp_x", id="a1b2c3", json={"message": "fixed"})  # your own message
-velora.delete_groups_by_room_messages_by_id(room="grp_x", id="a1b2c3")                             # your own message
-velora.put_groups_by_room_messages_by_id_reactions_by_emoji(room="grp_x", id="a1b2c3", emoji="\N{THUMBS UP SIGN}")
-velora.delete_groups_by_room_messages_by_id_reactions_by_emoji(room="grp_x", id="a1b2c3", emoji="\N{THUMBS UP SIGN}")
-velora.put_groups_by_room_messages_by_id_pin(room="grp_x", id="a1b2c3")    # any member, 50 per group
-velora.get_groups_by_room_pins(room="grp_x")["messages"]
-velora.put_im_by_id_pin(id=123)                                            # either person, 50 per conversation
-velora.get_im_with_by_username_pins(username="someone")["messages"]
+nookara.patch_groups_by_room_messages_by_id(room="grp_x", id="a1b2c3", json={"message": "fixed"})  # your own message
+nookara.delete_groups_by_room_messages_by_id(room="grp_x", id="a1b2c3")                             # your own message
+nookara.put_groups_by_room_messages_by_id_reactions_by_emoji(room="grp_x", id="a1b2c3", emoji="\N{THUMBS UP SIGN}")
+nookara.delete_groups_by_room_messages_by_id_reactions_by_emoji(room="grp_x", id="a1b2c3", emoji="\N{THUMBS UP SIGN}")
+nookara.put_groups_by_room_messages_by_id_pin(room="grp_x", id="a1b2c3")    # any member, 50 per group
+nookara.get_groups_by_room_pins(room="grp_x")["messages"]
+nookara.put_im_by_id_pin(id=123)                                            # either person, 50 per conversation
+nookara.get_im_with_by_username_pins(username="someone")["messages"]
 ```
 
 The realtime client gets `room_message_edited`, `room_message_reactions`, `room_message_deleted`, `room_pins_update`,
@@ -286,8 +289,8 @@ chat.post_api_v1_servers_by_sid_roles(
     sid="YOUR_SERVER_SID", json={"name": "Member", "permissions": 257}
 )
 chat.call("get_api_v1_servers_by_sid", sid="YOUR_SERVER_SID")
-velora.call("get_bonfire_hosting_plans")
-velora.request("GET", "/bonfire/instances")
+nookara.call("get_bonfire_hosting_plans")
+nookara.request("GET", "/bonfire/instances")
 ```
 
 Use `query={...}` for queries, `json={...}` for JSON, or `data={...}, files={...}` for
@@ -299,7 +302,7 @@ with a 64 MiB limit; server limits can be smaller.
 ## Errors
 
 ```python
-from velora_api import APIError, ScopeError, TransportError
+from nookara import APIError, ScopeError, TransportError
 
 try:
     chat.upload("picture.png")
@@ -321,10 +324,10 @@ Redirects are rejected so credentials are never forwarded.
 ```python
 import asyncio
 import os
-from velora_api import RealtimeClient
+from nookara import RealtimeClient
 
 async def main():
-    async with RealtimeClient(os.environ["VELORA_TOKEN"]) as socket:
+    async with RealtimeClient(os.environ["NOOKARA_TOKEN"]) as socket:
         await socket.set_activity("My Python app", state="Connected")
         async for event in socket:
             if event.get("type") in ("im_received", "presence_update"):
@@ -336,7 +339,7 @@ asyncio.run(main())
 This is Nookara's own socket: presence, direct messages, groups, calls. Entering the context
 waits for `auth_success`, checks `tos_required`, starts the reader and sends `chat_hello`
 when the Chat scope is granted. Its `chat_*` frames only concern legacy Nookara-hosted
-servers; Bonfire chat uses the instance gateway above. `rpc()` is only for frames with nonce
+servers; Ember chat uses the instance gateway above. `rpc()` is only for frames with nonce
 replies. On disconnect, reconnect, authenticate, refetch REST state and rebuild presence.
 There is no durable websocket replay.
 
@@ -349,13 +352,13 @@ including two peer connections and subscription snapshots.
 These Nookara-hosted routes are read-only now; use the instance bots and webhooks above.
 
 ```python
-bot = Client(os.environ["VELORA_BOT_TOKEN"], auth_scheme="Bot")
+bot = Client(os.environ["NOOKARA_BOT_TOKEN"], auth_scheme="Bot")
 me = bot.get_chat_api_v1_users_me()
 ```
 
-## Game servers (Bonfire Link, Minecraft)
+## Game servers (Ember Link, Minecraft)
 
-On a Bonfire instance the game plugin connects out to the instance
+On a Ember instance the game plugin connects out to the instance
 (`bonfire server https://chat.example` in the game console); an admin picks it from the
 connected list:
 
@@ -367,7 +370,7 @@ print(chat.game_status(GAME_CHANNEL_CID))
 ```
 
 `Client.game_*` still exist for the legacy Nookara routes. Console commands may require the
-website or the Bonfire app (`console_needs_bonfire`).
+website or the Ember app (`console_needs_bonfire`).
 
 ## Bot payments (0.5.0)
 
@@ -376,7 +379,7 @@ opens the returned `pay_url`, signs in with their normal login (no scopes, no ap
 and presses Pay. The credits go to the bot's owner. There is no webhook, so you poll.
 
 ```python
-from velora_api import BotClient, is_paid, OrderConflict, BuyerError, PaymentError
+from nookara import BotClient, is_paid, OrderConflict, BuyerError, PaymentError
 
 bot = BotClient(os.environ["BOT_TOKEN"])
 request = bot.create_payment_request("alice", 20, "ord-1001", description="Premium pack",
@@ -408,14 +411,14 @@ Friend requests, credits, store sales, badges, membership, hosting and messages 
 notifications (the bell on the site and in Ember). System DMs are gone: those messages are notifications now.
 
 ```python
-page = velora.notifications(unread=True, limit=20)      # {"notifications": [...], "next_cursor": ..., "unread": n}
+page = nookara.notifications(unread=True, limit=20)      # {"notifications": [...], "next_cursor": ..., "unread": n}
 for n in page["notifications"]:
     print(n["category"], n["title"], n["body"])          # plain text, **bold** is the only markup
-velora.mark_notifications_read([n["id"] for n in page["notifications"]])   # or mark_notifications_read(all=True)
-print(velora.unread_notifications())
-for category in velora.notification_settings():          # locked ones (system, moderation) are always on
+nookara.mark_notifications_read([n["id"] for n in page["notifications"]])   # or mark_notifications_read(all=True)
+print(nookara.unread_notifications())
+for category in nookara.notification_settings():          # locked ones (system, moderation) are always on
     print(category["key"], category["list"], category["email"], category["locked"])
-velora.set_notification_settings({"friends": {"email": False}})
+nookara.set_notification_settings({"friends": {"email": False}})
 ```
 
 `mark_notifications_unread(ids)` and `delete_notification(id)` complete the set; the generated methods are
@@ -424,7 +427,7 @@ velora.set_notification_settings({"friends": {"email": False}})
 and `patch_account_notification_settings`. Live changes arrive on the user websocket:
 
 ```python
-async with RealtimeClient(os.environ["VELORA_TOKEN"]) as socket:
+async with RealtimeClient(os.environ["NOOKARA_TOKEN"]) as socket:
     async for event in socket.notification_events():     # notification_new / notifications_updated
         print(event["type"], event["unread"])
 ```
@@ -440,7 +443,7 @@ moderation and reports use the real bot); clients show the alias with a mask ico
 "Posted by BOT as ALIAS". Only bot tokens may set an alias; a user or session token gets `403 alias_bots_only` (`APIError`), also for `alias=None` and on the gateway `chat_send`.
 
 ```python
-from velora_api import Instance, make_alias
+from nookara import Instance, make_alias
 
 bot = Instance("https://chat.ikelene.net", bot_token=os.environ["BOT_TOKEN"])
 sent = bot.bot_send("CHANNEL_ID", "Welcome in!", alias={"name": "Narrator", "avatar_url": "https://example.com/n.png"})
@@ -469,6 +472,19 @@ The catalogue records the live API on 2026-10-19. Staff-only routes are left out
 input has a strict JSON Schema and not every privileged operation is tested live. The
 server remains authoritative. Internal bridge/payment integration credentials and
 deployment callbacks are not public client APIs.
+
+## Changes in 0.9.0
+
+The Velora and Bonfire names are gone from the API. Every old name still works and raises a
+`DeprecationWarning` that says the new one. Wire formats, routes and error codes don't change.
+
+- The package is `nookara`. `import velora_api` (and `velora_api.client` and the other modules) is a warning shim.
+- `Bonfire` is `Ember`, and `nookara.bonfire` is `nookara.ember`. `BONFIRE_APP_MASK` / `BONFIRE_APP_SCOPES` are `EMBER_APP_MASK` / `EMBER_APP_SCOPES`.
+- `Instance.login_with_velora` is `login_with_nookara`, `register_with_velora` is `register_with_nookara`, `import_from_velora` is `import_from_nookara`.
+- `Client.bonfire_*` helpers are `ember_*` (`ember_instances`, `set_ember_instances`, `sync_ember_instances`, `ember_default_instance`, `ember_default_joined`, `ember_instance_prefs`, `ember_profiles`, `ember_key`, `ember_user_keys`, `ember_jwks`, `ember_payout`, `ember_import_platforms`, `ember_import_guilds`, `ember_import_job`, `ember_directory`, `ember_session`, `ember_scopes`), and `start_bonfire_import` is `start_ember_import`.
+- Keywords: `velora_url=` is `nookara_url=` (`Instance`, `BotProgram`), `velora_client=` / `velora=` are `nookara` (`login_with_nookara`, `enable_signing`, `verify_message`, `Ember`). `Instance.velora_origin` is `nookara_origin`, `Ember.velora` is `Ember.nookara`.
+- The one-method-per-route names still follow the URL, so routes under `/bonfire/...` keep names like `get_bonfire_instances`.
+- Examples use `NOOKARA_TOKEN` and `NOOKARA_BOT_TOKEN`, and sign in with `login_app`.
 
 ## Changes in 0.6.1
 

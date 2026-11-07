@@ -10,11 +10,11 @@ from unittest.mock import patch
 
 project_root = Path(__file__).parents[1]
 sys.path.insert(0, str(project_root / 'python' if (project_root / 'python').is_dir() else project_root))
-from velora_api import APIError, BotGateway, Client, Instance, InstanceGateway, Signer, execute_webhook, normalize_origin
-from velora_api import signing
-from velora_api.instance import INSTANCE_OPERATIONS, parse_webhook_url
+from nookara import APIError, BotGateway, Client, Instance, InstanceGateway, Signer, execute_webhook, normalize_origin
+from nookara import signing
+from nookara.instance import INSTANCE_OPERATIONS, parse_webhook_url
 
-VELORA_TOKEN = 'velora-secret-token'
+NOOKARA_TOKEN = 'velora-secret-token'
 SESSION = 'instance-session-token'
 
 
@@ -79,10 +79,10 @@ class InstanceRestTests(unittest.TestCase):
         self.assertEqual(self.instance().url, self.base)
 
     def test_velora_token_never_reaches_instance(self):
-        velora = Client(VELORA_TOKEN, base_url='http://127.0.0.1:1', allow_insecure=True)
-        with patch.object(velora, 'post_bonfire_instance_token', return_value={'token': 'ticket.jwt.sig'}) as mint:
+        nookara = Client(NOOKARA_TOKEN, base_url='http://127.0.0.1:1', allow_insecure=True)
+        with patch.object(nookara, 'post_bonfire_instance_token', return_value={'token': 'ticket.jwt.sig'}) as mint:
             inst = self.instance()
-            result = inst.login_with_velora(velora)
+            result = inst.login_with_nookara(nookara)
         mint.assert_called_once_with(json={'instance': self.base})
         self.assertEqual(result['session'], SESSION)
         method, path, headers, body = Handler.seen[-1]
@@ -90,12 +90,12 @@ class InstanceRestTests(unittest.TestCase):
         self.assertNotIn('Authorization', headers)
         self.assertEqual(json.loads(body), {'token': 'ticket.jwt.sig'})
         for _, _, h, b in Handler.seen:
-            self.assertNotIn(VELORA_TOKEN.encode(), b)
-            self.assertNotIn(VELORA_TOKEN, json.dumps(h))
+            self.assertNotIn(NOOKARA_TOKEN.encode(), b)
+            self.assertNotIn(NOOKARA_TOKEN, json.dumps(h))
         self.assertEqual(inst.session, SESSION)
         self.assertNotIn(SESSION, repr(inst))
         with self.assertRaises(TypeError):
-            inst.login_with_velora(inst)
+            inst.login_with_nookara(inst)
 
     def test_local_account_flows_and_logout(self):
         inst = self.instance()
@@ -256,14 +256,14 @@ class SigningTests(unittest.TestCase):
         self.assertIn('signature', sent[2]['json'])
 
     def test_enable_signing_fetches_key_from_velora_only(self):
-        velora = Client(VELORA_TOKEN, base_url='https://velora.ikelene.net')
+        nookara = Client(NOOKARA_TOKEN, base_url='https://velora.ikelene.net')
         inst = Instance('https://chat.ikelene.net')
         inst.info = {'software': 'bonfire-server', 'velora': {'issuer': 'https://velora.ikelene.net/'}}
-        with patch.object(velora, 'get_bonfire_signing_key', return_value=self.key_response) as get:
-            signer = inst.enable_signing(velora)
+        with patch.object(nookara, 'get_bonfire_signing_key', return_value=self.key_response) as get:
+            signer = inst.enable_signing(nookara)
         get.assert_called_once_with()
         self.assertEqual(signer.iss, 'https://velora.ikelene.net')
-        via_new = Client(VELORA_TOKEN, base_url='https://nookara.cc')
+        via_new = Client(NOOKARA_TOKEN, base_url='https://nookara.cc')
         with patch.object(via_new, 'get_bonfire_signing_key', return_value=self.key_response):
             self.assertEqual(inst.enable_signing(via_new).iss, 'https://velora.ikelene.net')
         bare = Instance('https://chat.ikelene.net')
@@ -281,7 +281,7 @@ class VeloraSideTests(unittest.TestCase):
         c = Client('t')
         with patch.object(c, 'get_bonfire_instances', return_value={'instances': [{'url': 'https://a.example'}]}), \
                 patch.object(c, 'put_bonfire_instances', return_value={'instances': []}) as put:
-            c.sync_bonfire_instances(['https://B.example:443/x', 'https://a.example'])
+            c.sync_ember_instances(['https://B.example:443/x', 'https://a.example'])
         self.assertEqual(put.call_args.kwargs['json'], {'instances': [{'url': 'https://a.example'}, {'url': 'https://b.example'}]})
         with patch.object(c, 'post_bonfire_hosting_servers', return_value={}) as post:
             c.create_hosting_server('camp', 'Camp', 'plus', weeks=2)
@@ -290,7 +290,7 @@ class VeloraSideTests(unittest.TestCase):
             c.delete_hosting_server('camp')
         self.assertEqual(delete.call_args.kwargs, {'slug': 'camp', 'json': {'confirm': 'camp'}})
         with patch.object(c, 'get_bonfire_directory', return_value={}) as directory:
-            c.bonfire_directory('game')
+            c.ember_directory('game')
         self.assertEqual(directory.call_args.kwargs['query'], {'q': 'game', 'page': None})
 
 

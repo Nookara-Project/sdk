@@ -10,8 +10,8 @@ from unittest.mock import patch
 
 project_root = Path(__file__).parents[1]
 sys.path.insert(0, str(project_root / 'python' if (project_root / 'python').is_dir() else project_root))
-from velora_api import APIError, Client, RealtimeClient, login
-from velora_api.client import OPERATIONS
+from nookara import APIError, Client, RealtimeClient, login
+from nookara.client import OPERATIONS
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -134,7 +134,7 @@ class RestTests(unittest.TestCase):
             send.assert_called_once_with(cid='cid',json={'message':'Hello','reply_to':'12','attachments':[]})
 
     def test_login_flow_and_heartbeat_grace(self):
-        module=importlib.import_module('velora_api.client')
+        module=importlib.import_module('nookara.client')
         with patch.object(module,'Client') as client, patch.object(module.time,'sleep'):
             client.return_value.post_auth_ext_code.return_value={'code':'code'}
             client.return_value.get_auth_ext_code_status.side_effect=[{'ready':False,'alive':False},{'ready':True,'token':'dummy'}]

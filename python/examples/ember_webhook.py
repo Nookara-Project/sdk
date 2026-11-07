@@ -1,4 +1,4 @@
-"""Post to a Bonfire channel through a webhook URL. No account, no login.
+"""Post to a Ember channel through a webhook URL. No account, no login.
 
 Make the webhook in the channel settings (Webhooks) and keep the URL secret:
 
@@ -6,7 +6,7 @@ Make the webhook in the channel settings (Webhooks) and keep the URL secret:
 """
 import os
 
-from velora_api import APIError, execute_webhook
+from nookara import APIError, execute_webhook
 
 try:
     execute_webhook(os.environ["BONFIRE_WEBHOOK_URL"], "Build finished", username="Build service")

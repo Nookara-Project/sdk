@@ -1,13 +1,16 @@
-"""Ask the person to approve a token, then see what they actually allowed.
+"""Sign in through your registered app, then see what the person actually allowed.
 
-Scopes are requested, never required: the consent screen lets them untick any scope.
+Create the app in My Account > Apps with http://localhost as an authorized URL, and put its ID in NOOKARA_APP_ID.
+The sign-in screen lets the person switch any scope off.
 """
-from velora_api import Client, login, scope_mask
+import os
 
-token = login(project_name="Example Python client", scopes=scope_mask("PROFILE_READ", "CHAT", "MEDIA_UPLOAD"))
-velora = Client(token)
-print("Allowed:", velora.scope_names())
-if not velora.has_scope("CHAT"):
-    raise SystemExit("Chat Messaging was not allowed: Bonfire servers need it. Run this again and keep it ticked.")
-for entry in velora.bonfire_instances():
+from nookara import Client, login_app
+
+token, origin = login_app(os.environ["NOOKARA_APP_ID"])
+nookara = Client(token, origin=origin)
+print("Allowed:", nookara.scope_names())
+if not nookara.has_scope("CHAT"):
+    raise SystemExit("Chat wasn't allowed, and Ember servers need it. Sign in again and keep it on.")
+for entry in nookara.ember_instances():
     print(entry["url"], "muted" if entry["muted"] else "")

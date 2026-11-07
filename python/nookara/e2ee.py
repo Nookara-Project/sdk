@@ -4,7 +4,7 @@ Nookara's DMs are encrypted on the device, so a token alone only gets locked mes
 own keys and asks the person to link it: they approve it from Ember by entering a code. After that it reads
 new DMs (old ones too if they tick that), sends signed DMs, and can be unlinked any time.
 
-    from velora_api import login_app, EncryptedDMs
+    from nookara import login_app, EncryptedDMs
 
     client = login_app(...)                                 # needs the Direct Messages permission
     dms = EncryptedDMs(client, key_file="nookara-dms.json")

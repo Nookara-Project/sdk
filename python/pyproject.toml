@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nookara"
-version = "0.8.0"
+version = "0.9.0"
 description = "Python SDK for Nookara: sign-in, profiles, friends, chat, credits and payments, storage, and bots."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -20,10 +20,10 @@ all = ["websockets>=14,<18", "cryptography>=42"]
 [project.urls]
 Homepage = "https://nookara.cc"
 Source = "https://github.com/Nookara-Project/sdk"
-Documentation = "https://nookara.cc/guides/velora-api"
+Documentation = "https://nookara.cc/guides/python-sdk"
 
 [tool.setuptools]
-packages = ["velora_api", "nookara"]
+packages = ["nookara", "velora_api"]
 
 [tool.setuptools.package-data]
-velora_api = ["catalogue.json", "instance_catalogue.json", "py.typed"]
+nookara = ["catalogue.json", "instance_catalogue.json", "py.typed"]

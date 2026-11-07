@@ -1,15 +1,15 @@
 """Upload a file and import a link, then post both. Needs the Upload Media scope.
 
-    VELORA_TOKEN=... python bonfire_upload.py picture.png https://example.com/cat.png
+    NOOKARA_TOKEN=... python bonfire_upload.py picture.png https://example.com/cat.png
 """
 import os
 import sys
 
-from velora_api import Client, Instance, ScopeError
+from nookara import Client, Instance, ScopeError
 
-velora = Client(os.environ["VELORA_TOKEN"])
+nookara = Client(os.environ["NOOKARA_TOKEN"])
 chat = Instance("https://chat.ikelene.net")
-chat.login_with_velora(velora)
+chat.login_with_nookara(nookara)
 channel = chat.channel_id("general")
 try:
     first = chat.upload(sys.argv[1], cid=channel)

@@ -1,14 +1,14 @@
-"""List the channels of a Bonfire server.
+"""List the channels of a Ember server.
 
-    VELORA_TOKEN=... python read_channels.py https://chat.ikelene.net
+    NOOKARA_TOKEN=... python read_channels.py https://chat.ikelene.net
 """
 import os
 import sys
 
-from velora_api import Client, Instance
+from nookara import Client, Instance
 
-velora = Client(os.environ["VELORA_TOKEN"])
+nookara = Client(os.environ["NOOKARA_TOKEN"])
 chat = Instance(sys.argv[1] if len(sys.argv) > 1 else "https://chat.ikelene.net")
-chat.login_with_velora(velora)
+chat.login_with_nookara(nookara)
 for channel in chat.channels():
     print(channel["cid"], channel["name"], channel["type"])

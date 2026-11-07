@@ -95,7 +95,7 @@ class RealtimeClient:
             await self.send("chat_presence_watch", usernames=names[i:i + 200])
 
     async def game_events(self):
-        """Yield only Bonfire Link frames: game_status, game_console, game_linked, game_unlinked.
+        """Yield only Ember Link frames: game_status, game_console, game_linked, game_unlinked.
 
         Needs the Chat scope. This reads the same queue as plain iteration; use one or the other.
         """

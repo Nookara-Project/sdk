@@ -13,6 +13,7 @@ from urllib.parse import quote, urlencode, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from ._origin import normalize_origin
+from . import _compat
 from ._version import __version__
 from .endpoints import Endpoints
 from .scopes import SCOPE_LABELS, has_scope as _has_scope, scope_bit, scope_names as _scope_names
@@ -255,27 +256,27 @@ class Client(Endpoints):
         return self.request("GET", f"/products/{quote(str(product_id), safe='')}/access")
 
     def servers(self):
-        """Legacy: Nookara-hosted servers that have not moved. Use ``Instance.servers()`` for Bonfire."""
-        warnings.warn("Nookara-hosted chat is legacy and read-only; use Instance for Bonfire servers", DeprecationWarning, stacklevel=2)
+        """Legacy: Nookara-hosted servers that have not moved. Use ``Instance.servers()`` for Ember."""
+        warnings.warn("Nookara-hosted chat is legacy and read-only; use Instance for Ember servers", DeprecationWarning, stacklevel=2)
         return self.get_chat_servers()["servers"]
 
     def server(self, sid):
         """Legacy: one Nookara-hosted server (read-only)."""
-        warnings.warn("Nookara-hosted chat is legacy and read-only; use Instance for Bonfire servers", DeprecationWarning, stacklevel=2)
+        warnings.warn("Nookara-hosted chat is legacy and read-only; use Instance for Ember servers", DeprecationWarning, stacklevel=2)
         return self.get_chat_servers_by_sid(sid=sid)
 
     def messages(self, cid, *, before=None, after=None, limit=50):
         """Legacy: history of a Nookara-hosted channel (read-only)."""
-        warnings.warn("Nookara-hosted chat is legacy and read-only; use Instance for Bonfire servers", DeprecationWarning, stacklevel=2)
+        warnings.warn("Nookara-hosted chat is legacy and read-only; use Instance for Ember servers", DeprecationWarning, stacklevel=2)
         return self.get_chat_channels_by_cid_messages(cid=cid, query={"before": before, "after": after, "limit": limit})
 
     def send_message(self, cid, message, *, reply_to=None, attachments=None):
-        """Legacy: writes answer ``server_read_only``. Use ``Instance.send_message`` for Bonfire."""
-        warnings.warn("Nookara-hosted chat is legacy and read-only; use Instance for Bonfire servers", DeprecationWarning, stacklevel=2)
+        """Legacy: writes answer ``server_read_only``. Use ``Instance.send_message`` for Ember."""
+        warnings.warn("Nookara-hosted chat is legacy and read-only; use Instance for Ember servers", DeprecationWarning, stacklevel=2)
         return self.post_chat_channels_by_cid_messages(cid=cid, json={"message": message, "reply_to": reply_to, "attachments": attachments or []})
 
     def send_dm(self, username, message):
-        raise RuntimeError("Direct messages are end-to-end encrypted now, so plain text is refused. Use velora_api.EncryptedDMs: it makes this client's keys and asks the person to approve it.")
+        raise RuntimeError("Direct messages are end-to-end encrypted now, so plain text is refused. Use nookara.EncryptedDMs: it makes this client's keys and asks the person to approve it.")
 
     def lookup(self, username):
         """One public profile (GET /account/lookup/:username). Friends-only profiles are limited for non-friends."""
@@ -297,7 +298,7 @@ class Client(Endpoints):
 
     def members(self, sid, *, limit=None, offset=None):
         """Legacy: one page of a Nookara-hosted server's member list (``total`` / ``next_offset`` when paged)."""
-        warnings.warn("Nookara-hosted chat is legacy and read-only; use Instance for Bonfire servers", DeprecationWarning, stacklevel=2)
+        warnings.warn("Nookara-hosted chat is legacy and read-only; use Instance for Ember servers", DeprecationWarning, stacklevel=2)
         return self.get_chat_servers_by_sid_members(sid=sid, query={"limit": limit, "offset": offset})
 
     def can_reply_to_status(self, username):
@@ -402,14 +403,14 @@ class Client(Endpoints):
     def game_audit(self, sid, *, before=None):
         return self.get_chat_game_servers_by_sid_audit(sid=sid, query={"before": before})
 
-    def bonfire_session(self):
+    def ember_session(self):
         """``GET /bonfire/session`` for any token: ``{granted, effective, disabled, not_granted, ...}``.
         ``granted`` is the mask the person approved, ``effective`` also drops what an admin switched off."""
         return self.get_bonfire_session()
 
     def granted_scopes(self):
         """The scope mask this token can use right now (approved and not switched off by an admin)."""
-        return int(self.bonfire_session()["effective"])
+        return int(self.ember_session()["effective"])
 
     def scope_names(self):
         """Identifiers of the usable scopes, for example ``["PROFILE_READ", "CHAT"]``."""
@@ -426,8 +427,8 @@ class Client(Endpoints):
             raise ScopeError(403, {"error": "insufficient_scope", "required_scope": bit})
         return bit
 
-    def bonfire_scopes(self):
-        """What the official Bonfire apps ask for (public): ``[{id, bit, required: False, name, reason, ...}]``."""
+    def ember_scopes(self):
+        """What the official Ember apps ask for (public): ``[{id, bit, required: False, name, reason, ...}]``."""
         return self.get_bonfire_scopes_json()["scopes"]
 
     def instance_token(self, url):
@@ -438,47 +439,47 @@ class Client(Endpoints):
         """The account's Ed25519 signing key (needs the Sign Messages scope). Keep it in memory."""
         return self.get_bonfire_signing_key()
 
-    def bonfire_instances(self):
+    def ember_instances(self):
         return self.get_bonfire_instances()["instances"]
 
-    def set_bonfire_instances(self, urls):
+    def set_ember_instances(self, urls):
         """Replace the saved instance list with these URLs, in this order."""
         return self.put_bonfire_instances(json={"instances": [{"url": normalize_origin(u)} for u in urls]})["instances"]
 
-    def sync_bonfire_instances(self, local_urls=()):
+    def sync_ember_instances(self, local_urls=()):
         """Union of the saved list (server order first) and local_urls; saves and returns it."""
         merged = []
-        for url in [i["url"] for i in self.bonfire_instances()] + [normalize_origin(u) for u in local_urls]:
+        for url in [i["url"] for i in self.ember_instances()] + [normalize_origin(u) for u in local_urls]:
             if url not in merged:
                 merged.append(url)
-        return self.set_bonfire_instances(merged)
+        return self.set_ember_instances(merged)
 
-    def bonfire_default_instance(self):
+    def ember_default_instance(self):
         """The official server every account gets once (``GET /bonfire/instances`` -> ``default_instance``), or None."""
         return self.get_bonfire_instances()["default_instance"]
 
-    def bonfire_default_joined(self, url=None):
+    def ember_default_joined(self, url=None):
         """Tell Nookara this client joined (or skipped) the official server, so other devices do not auto-join again."""
         return self.post_bonfire_instances_default_joined(json={"url": normalize_origin(url)} if url else {})["instances"]
 
-    def bonfire_instance_prefs(self, url, *, muted=None, push=None):
+    def ember_instance_prefs(self, url, *, muted=None, push=None):
         """Per-server push consent: ``muted=True`` mutes it, ``push=False`` stops offline-mention pushes."""
         body = {"url": normalize_origin(url), "muted": muted, "push": push}
         return self.patch_bonfire_instances_prefs(json={k: v for k, v in body.items() if v is not None})
 
-    def bonfire_profiles(self, ids):
+    def ember_profiles(self, ids):
         """Current names and pictures of Nookara accounts (public, up to 100 ids): ``[{id, username, display_name, pfp}]``."""
         return self.get_bonfire_profiles(query={"ids": ",".join(str(i) for i in ids)})["profiles"]
 
-    def bonfire_key(self, kid):
+    def ember_key(self, kid):
         """Public signing key by id (public): ``{kid, user_id, public_key, created_at, revoked_at}``."""
         return self.get_bonfire_keys_kid_by_kid(kid=kid)
 
-    def bonfire_user_keys(self, user_id):
+    def ember_user_keys(self, user_id):
         """Every signing key of an account, revoked ones included (public)."""
         return self.get_bonfire_keys_user_by_userid(userId=user_id)["keys"]
 
-    def bonfire_jwks(self):
+    def ember_jwks(self):
         """Nookara's identity keys (JWKS), used to verify instance tokens, receipts and bot-add tickets."""
         return self.get_well_known_bonfire_jwks_json()
 
@@ -486,30 +487,30 @@ class Client(Endpoints):
         """The official bonfire-server build instances compare themselves with (public)."""
         return self.get_bonfire_server_latest_json()
 
-    def bonfire_payout(self, url):
+    def ember_payout(self, url):
         """Who is paid for role-shop purchases on an instance you own."""
         return self.get_bonfire_instances_payout(query={"url": normalize_origin(url)})
 
-    def bonfire_import_platforms(self):
+    def ember_import_platforms(self):
         """Discord / Fluxer import sources and whether your account is linked: ``[{id, name, ready, bot, invite, linked}]``."""
         return self.get_bonfire_import_platforms()["platforms"]
 
-    def bonfire_import_guilds(self, platform):
+    def ember_import_guilds(self, platform):
         return self.get_bonfire_import_by_platform_guilds(platform=platform)["guilds"]
 
-    def start_bonfire_import(self, platform, guild_id, channels, instance, *, roles=(), options=None):
+    def start_ember_import(self, platform, guild_id, channels, instance, *, roles=(), options=None):
         """Build an import bundle on Nookara. Returns ``{job_id, ticket, instance, expires_at}``; the ticket goes to
-        ``Instance.import_from_velora``. The bundle has channels, roles and emoji, no members or messages."""
+        ``Instance.import_from_nookara``. The bundle has channels, roles and emoji, no members or messages."""
         body = {"platform": platform, "guild_id": guild_id, "channels": list(channels), "roles": list(roles),
                 "instance": normalize_origin(instance)}
         if options:
             body["options"] = options
         return self.post_bonfire_import(json=body)
 
-    def bonfire_import_job(self, job_id):
+    def ember_import_job(self, job_id):
         return self.get_bonfire_import_by_job_id(job_id=job_id)
 
-    def bonfire_directory(self, q=None, page=None):
+    def ember_directory(self, q=None, page=None):
         """Public directory of listed instances; no sign-in needed."""
         return self.get_bonfire_directory(query={"q": q, "page": page})
 
@@ -582,7 +583,7 @@ class Client(Endpoints):
         return {k: v for k, v in fields.items() if v is not None}
 
     def bot_installs(self):
-        """For a *bot program* (``Client(bot_token, auth_scheme="Bot")``): the Bonfire instances this Nookara bot is
+        """For a *bot program* (``Client(bot_token, auth_scheme="Bot")``): the Ember instances this Nookara bot is
         installed on, ``[{origin, name, test, added_at, seen_at}]``. Open one ``Instance(origin, bot_token=...)`` bot
         gateway per entry (see ``BotProgram``) and poll again every few minutes."""
         return self.get_bonfire_bots_self_installs()["instances"]
@@ -600,7 +601,7 @@ class Client(Endpoints):
         return self.get_bonfire_hosting_servers_by_url(query={"url": url})["server"]
 
     def create_hosting_server(self, slug, name, plan="starter", *, weeks=None, restore_backup=None):
-        """Create a Nookara-hosted Bonfire server (<slug>-bonfire.ikelene.net). Plus is prepaid in weeks."""
+        """Create a Nookara-hosted Ember server (e-<slug>.nookara.cc). Plus is prepaid in weeks."""
         body = {"slug": slug, "name": name, "plan": plan, "weeks": weeks, "restore_backup": restore_backup}
         return self.post_bonfire_hosting_servers(json={k: v for k, v in body.items() if v is not None})
 
@@ -633,6 +634,26 @@ class Client(Endpoints):
 
     def delete_hosting_backup(self, backup_id):
         return self.delete_bonfire_hosting_backups_by_id(id=backup_id)
+
+
+_compat.add_aliases(Client, {'bonfire_scopes': 'ember_scopes',
+    'bonfire_instances': 'ember_instances',
+    'set_bonfire_instances': 'set_ember_instances',
+    'sync_bonfire_instances': 'sync_ember_instances',
+    'bonfire_default_instance': 'ember_default_instance',
+    'bonfire_default_joined': 'ember_default_joined',
+    'bonfire_instance_prefs': 'ember_instance_prefs',
+    'bonfire_profiles': 'ember_profiles',
+    'bonfire_key': 'ember_key',
+    'bonfire_user_keys': 'ember_user_keys',
+    'bonfire_jwks': 'ember_jwks',
+    'bonfire_payout': 'ember_payout',
+    'bonfire_import_platforms': 'ember_import_platforms',
+    'bonfire_import_guilds': 'ember_import_guilds',
+    'start_bonfire_import': 'start_ember_import',
+    'bonfire_import_job': 'ember_import_job',
+    'bonfire_directory': 'ember_directory',
+    'bonfire_session': 'ember_session'})
 
 
 def login_app(app_id, *, port=0, timeout=300, on_url=None, base_url=BASE_URL, allow_insecure=False):
@@ -692,7 +713,7 @@ def login(*, project_name="Python Nookara client", scopes=2049, optional_scopes=
     ``scopes`` is the mask you *request* (``scope_mask("PROFILE_READ", "CHAT")`` is 2049). Nothing can be
     required any more: the person may untick any scope, so check what came back with
     ``Client(token).granted_scopes()`` and handle ``ScopeError``. ``optional_scopes`` is kept for old code and
-    is simply merged into ``scopes``. Project names that start with ``Bonfire (`` are reserved for the official apps.
+    is simply merged into ``scopes``. Project names that start with ``Ember (`` are reserved for the official apps.
     """
     if not isinstance(scopes, int) or not isinstance(optional_scopes, int) or scopes < 0 or optional_scopes < 0:
         raise ValueError("Use integer scope masks")
@@ -700,7 +721,7 @@ def login(*, project_name="Python Nookara client", scopes=2049, optional_scopes=
     if not 0 < requested <= 65535:
         raise ValueError("Request at least one supported scope (bits up to 32768)")
     if re.match(r"\s*bonfire\s*\(", project_name, re.I):
-        raise ValueError("Project names starting with 'Bonfire (' are reserved for the official apps")
+        raise ValueError("Project names starting with 'Ember (' are reserved for the official apps")
     client = Client(base_url=base_url)
     mask = requested << 16
     code = client.post_auth_ext_code(json={"project_name": project_name, "permissions_integer": mask})["code"]

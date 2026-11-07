@@ -1,4 +1,4 @@
-"""A bot on a Bonfire instance: answers "!ping" with "pong".
+"""A bot on a Ember instance: answers "!ping" with "pong".
 
 Create the bot in the instance (Server settings, Bots) or with Instance.create_bot(),
 add it to the community, and keep its token private:
@@ -8,7 +8,7 @@ add it to the community, and keep its token private:
 import asyncio
 import os
 
-from velora_api import Instance
+from nookara import Instance
 
 bot = Instance(os.environ.get("BONFIRE_URL", "https://chat.ikelene.net"),
                bot_token=os.environ["BONFIRE_BOT_TOKEN"])

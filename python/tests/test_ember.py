@@ -13,10 +13,10 @@ from unittest.mock import patch
 
 project_root = Path(__file__).parents[1]
 sys.path.insert(0, str(project_root / 'python' if (project_root / 'python').is_dir() else project_root))
-from velora_api import (APIError, Bonfire, BotProgram, Client, Instance, ScopeError, Signer, TransportError, login,
-                        scope_mask, scope_names, has_scope, verify_message, BONFIRE_APP_MASK, SCOPES)
-from velora_api import signing
-from velora_api.client import login as client_login
+from nookara import (APIError, Ember, BotProgram, Client, Instance, ScopeError, Signer, TransportError, login,
+                        scope_mask, scope_names, has_scope, verify_message, EMBER_APP_MASK, SCOPES)
+from nookara import signing
+from nookara.client import login as client_login
 
 
 def b64(data):
@@ -58,10 +58,10 @@ class ScopeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             scope_mask(3)
         self.assertEqual(sorted(SCOPES.values()), sorted(1 << i for i in range(16)))
-        self.assertEqual(BONFIRE_APP_MASK & 2048, 2048)
+        self.assertEqual(EMBER_APP_MASK & 2048, 2048)
 
     def test_login_requests_scopes_and_reserves_bonfire_names(self):
-        with patch('velora_api.client.Client') as client, patch('velora_api.client.time.sleep'):
+        with patch('nookara.client.Client') as client, patch('nookara.client.time.sleep'):
             client.return_value.post_auth_ext_code.return_value = {'code': 'c'}
             client.return_value.get_auth_ext_code_status.return_value = {'ready': True, 'token': 'tok'}
             urls = []
@@ -160,12 +160,12 @@ class InstanceScopeTests(unittest.TestCase):
                                                     'build': {'version': '0.1.0', 'commit': None}, 'read_only': False, 'community': {'sid': 'sC', 'name': 'Home'}}),
         }
 
-    def velora_client(self, scp):
-        velora = Client('velora-secret', base_url='http://127.0.0.1:1', allow_insecure=True)
-        patcher = patch.object(velora, 'post_bonfire_instance_token', return_value={'token': ticket(scp)})
+    def nookara(self, scp):
+        nookara = Client('velora-secret', base_url='http://127.0.0.1:1', allow_insecure=True)
+        patcher = patch.object(nookara, 'post_bonfire_instance_token', return_value={'token': ticket(scp)})
         patcher.start()
         self.addCleanup(patcher.stop)
-        return velora
+        return nookara
 
     def instance(self):
         return Instance(self.base, allow_insecure=True)
@@ -183,7 +183,7 @@ class InstanceScopeTests(unittest.TestCase):
 
     def test_ticket_scopes_are_kept_and_media_is_checked_early(self):
         inst = self.instance()
-        inst.login_with_velora(self.velora_client(['chat']))
+        inst.login_with_nookara(self.nookara(['chat']))
         self.assertEqual(inst.scopes, ['chat'])
         self.assertTrue(inst.has_scope('CHAT'))
         self.assertFalse(inst.has_scope('media'))
@@ -196,7 +196,7 @@ class InstanceScopeTests(unittest.TestCase):
 
     def test_media_calls_when_allowed(self):
         inst = self.instance()
-        inst.login_with_velora(self.velora_client(['chat', 'media']))
+        inst.login_with_nookara(self.nookara(['chat', 'media']))
         Handler.seen.clear()
         inst.upload(('a.txt', b'hello', 'text/plain'), cid='c1')
         self.assertEqual(Handler.seen[-1][1], '/api/v1/media/upload?sid=sC&cid=c1')
@@ -207,13 +207,13 @@ class InstanceScopeTests(unittest.TestCase):
 
     def test_sign_auto_skips_when_declined_and_true_raises(self):
         inst = self.instance()
-        velora = self.velora_client(['chat'])
-        with patch.object(velora, 'get_bonfire_signing_key', side_effect=ScopeError(403, {'error': 'insufficient_scope', 'required_scope': 32768})) as key:
-            inst.login_with_velora(velora, sign='auto')
+        nookara = self.nookara(['chat'])
+        with patch.object(nookara, 'get_bonfire_signing_key', side_effect=ScopeError(403, {'error': 'insufficient_scope', 'required_scope': 32768})) as key:
+            inst.login_with_nookara(nookara, sign='auto')
             key.assert_not_called()
             self.assertIsNone(inst.signer)
             with self.assertRaises(ScopeError):
-                self.instance().login_with_velora(velora, sign=True)
+                self.instance().login_with_nookara(nookara, sign=True)
 
     def test_scopes_fetched_from_me_when_not_from_a_ticket(self):
         Handler.responses[('GET', '/api/v1/me')] = (200, {'user': {}, 'scopes': ['chat', 'voice']})
@@ -255,7 +255,7 @@ class InstanceScopeTests(unittest.TestCase):
         self.assertEqual(Handler.seen[-1][1], '/api/v1/game/connected?q=mc')
         inst.claim('ABCD-EFGH')
         self.assertEqual(json.loads(Handler.seen[-1][3]), {'code': 'ABCD-EFGH'})
-        inst.import_from_velora('bit_x')
+        inst.import_from_nookara('bit_x')
         self.assertEqual(Handler.seen[-1][:2], ('POST', '/api/v1/import/velora'))
         inst.instance_info()
         self.assertEqual(Handler.seen[-1][1], '/api/v1/instance/info')
@@ -302,7 +302,7 @@ class VerifyTests(unittest.TestCase):
             signing.attachment_refs([{'url': 'https://evil.example/a.gif'}])
 
 
-class FakeVelora:
+class FakeNookara:
     base_url = 'https://velora.example'
 
     def __init__(self, urls, default_joined=True):
@@ -310,26 +310,26 @@ class FakeVelora:
         self.saved = None
         self.joined_default = None
 
-    def bonfire_instances(self):
+    def ember_instances(self):
         return [{'url': u} for u in self.urls]
 
-    def sync_bonfire_instances(self, local):
+    def sync_ember_instances(self, local):
         self.urls = list(dict.fromkeys(self.urls + [normalize(u) for u in local]))
         return self.urls
 
-    def set_bonfire_instances(self, urls):
+    def set_ember_instances(self, urls):
         self.urls = list(urls)
         return self.urls
 
     def get_bonfire_instances(self):
         return {'default_instance': 'https://chat.example', 'instances': [{'url': 'https://chat.example', 'auto_join': True}]}
 
-    def bonfire_default_joined(self, url=None):
+    def ember_default_joined(self, url=None):
         self.joined_default = url
 
 
 def normalize(u):
-    from velora_api import normalize_origin
+    from nookara import normalize_origin
     return normalize_origin(u)
 
 
@@ -339,7 +339,7 @@ class FakeInstance:
         self.info = {'read_only': False}
         self.joined = False
 
-    def login_with_velora(self, velora, sign=False):
+    def login_with_nookara(self, nookara, sign=False):
         if self.fail:
             raise self.fail
 
@@ -363,8 +363,8 @@ class HubTests(unittest.TestCase):
             'https://nochat.example': FakeInstance('https://nochat.example', fail=ScopeError(403, {'error': 'insufficient_scope'})),
             'https://banned.example': FakeInstance('https://banned.example', fail=APIError(403, {'error': 'instance_banned'})),
         }
-        velora = FakeVelora(list(fakes))
-        hub = Bonfire(velora, instance_factory=lambda url: fakes[url])
+        nookara = FakeNookara(list(fakes))
+        hub = Ember(nookara, instance_factory=lambda url: fakes[url])
         result = {item['instance']: item for item in hub.communities()}
         self.assertEqual(result['https://a.example']['community'], {'name': 'A'})
         self.assertEqual(result['https://down.example']['error'], 'unreachable')
@@ -374,12 +374,12 @@ class HubTests(unittest.TestCase):
 
     def test_add_remove_and_default_join(self):
         fakes = {'https://chat.example': FakeInstance('https://chat.example')}
-        velora = FakeVelora(['https://chat.example'])
-        hub = Bonfire(velora, instance_factory=lambda url: fakes[url])
+        nookara = FakeNookara(['https://chat.example'])
+        hub = Ember(nookara, instance_factory=lambda url: fakes[url])
         self.assertEqual(hub.add('https://New.Example:443/x'), ['https://chat.example', 'https://new.example'])
         self.assertEqual(hub.remove('https://new.example'), ['https://chat.example'])
         self.assertEqual(hub.join_default(), {'sid': 's'})
-        self.assertEqual(velora.joined_default, 'https://chat.example')
+        self.assertEqual(nookara.joined_default, 'https://chat.example')
         self.assertTrue(fakes['https://chat.example'].joined)
 
 
@@ -448,15 +448,15 @@ class BotProgramTests(unittest.IsolatedAsyncioTestCase):
 
     def test_installs_filters_test_installs(self):
         program = BotProgram('bot-token')
-        with patch.object(program._velora, 'bot_installs', return_value=[{'origin': 'https://a.example/', 'test': False}, {'origin': 'https://t.example', 'test': True}, {'origin': 'nonsense'}]):
+        with patch.object(program._nookara, 'bot_installs', return_value=[{'origin': 'https://a.example/', 'test': False}, {'origin': 'https://t.example', 'test': True}, {'origin': 'nonsense'}]):
             self.assertEqual(program.installs(), ['https://a.example'])
             program.include_test = True
             self.assertEqual(program.installs(), ['https://a.example', 'https://t.example'])
 
-    def test_velora_bot_installs_request(self):
+    def test_nookara_bot_installs_request(self):
         program = BotProgram('bot-token')
-        with patch.object(program._velora, 'request', return_value={'instances': []}) as req:
-            program._velora.bot_installs()
+        with patch.object(program._nookara, 'request', return_value={'instances': []}) as req:
+            program._nookara.bot_installs()
             self.assertEqual(req.call_args[0], ('GET', '/bonfire/bots/self/installs'))
             self.assertTrue(req.call_args[1]['auth'])
 
@@ -465,17 +465,17 @@ class PublicDispatchTests(unittest.TestCase):
     def test_velora_helpers_dispatch(self):
         c = Client('t', base_url='http://127.0.0.1:1', allow_insecure=True)
         with patch.object(c, 'request', return_value={'profiles': [], 'keys': [], 'scopes': [], 'instances': [], 'platforms': [], 'guilds': []}) as req:
-            c.bonfire_profiles([1, 2]); self.assertEqual((req.call_args[0], req.call_args[1]['query']), (('GET', '/bonfire/profiles'), {'ids': '1,2'}))
-            c.bonfire_key('k_1'); self.assertEqual(req.call_args[0], ('GET', '/bonfire/keys/kid/k_1'))
-            c.bonfire_user_keys(5); self.assertEqual(req.call_args[0], ('GET', '/bonfire/keys/user/5'))
-            c.bonfire_jwks(); self.assertEqual(req.call_args[0], ('GET', '/.well-known/bonfire/jwks.json'))
+            c.ember_profiles([1, 2]); self.assertEqual((req.call_args[0], req.call_args[1]['query']), (('GET', '/bonfire/profiles'), {'ids': '1,2'}))
+            c.ember_key('k_1'); self.assertEqual(req.call_args[0], ('GET', '/bonfire/keys/kid/k_1'))
+            c.ember_user_keys(5); self.assertEqual(req.call_args[0], ('GET', '/bonfire/keys/user/5'))
+            c.ember_jwks(); self.assertEqual(req.call_args[0], ('GET', '/.well-known/bonfire/jwks.json'))
             c.server_latest(); self.assertEqual(req.call_args[0], ('GET', '/bonfire/server-latest.json'))
-            c.bonfire_scopes(); self.assertEqual(req.call_args[0], ('GET', '/bonfire/scopes.json'))
-            c.bonfire_default_joined('https://chat.ikelene.net'); self.assertEqual((req.call_args[0], req.call_args[1]['json']), (('POST', '/bonfire/instances/default-joined'), {'url': 'https://chat.ikelene.net'}))
-            c.bonfire_instance_prefs('https://chat.ikelene.net', muted=True); self.assertEqual((req.call_args[0], req.call_args[1]['json']), (('PATCH', '/bonfire/instances/prefs'), {'url': 'https://chat.ikelene.net', 'muted': True}))
-            c.start_bonfire_import('discord', '1', ['2'], 'https://chat.example'); self.assertEqual(req.call_args[0], ('POST', '/bonfire/import'))
-            c.bonfire_import_job('j1'); self.assertEqual(req.call_args[0], ('GET', '/bonfire/import/j1'))
-            c.bonfire_payout('https://chat.ikelene.net'); self.assertEqual(req.call_args[1]['query'], {'url': 'https://chat.ikelene.net'})
+            c.ember_scopes(); self.assertEqual(req.call_args[0], ('GET', '/bonfire/scopes.json'))
+            c.ember_default_joined('https://chat.ikelene.net'); self.assertEqual((req.call_args[0], req.call_args[1]['json']), (('POST', '/bonfire/instances/default-joined'), {'url': 'https://chat.ikelene.net'}))
+            c.ember_instance_prefs('https://chat.ikelene.net', muted=True); self.assertEqual((req.call_args[0], req.call_args[1]['json']), (('PATCH', '/bonfire/instances/prefs'), {'url': 'https://chat.ikelene.net', 'muted': True}))
+            c.start_ember_import('discord', '1', ['2'], 'https://chat.example'); self.assertEqual(req.call_args[0], ('POST', '/bonfire/import'))
+            c.ember_import_job('j1'); self.assertEqual(req.call_args[0], ('GET', '/bonfire/import/j1'))
+            c.ember_payout('https://chat.ikelene.net'); self.assertEqual(req.call_args[1]['query'], {'url': 'https://chat.ikelene.net'})
 
 
 if __name__ == '__main__':

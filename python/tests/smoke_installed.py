@@ -2,8 +2,8 @@
 import asyncio
 import hashlib
 from pathlib import Path
-from velora_api import APIError, Client, Instance, RealtimeClient
-from velora_api.client import OPERATIONS
+from nookara import APIError, Client, Instance, RealtimeClient
+from nookara.client import OPERATIONS
 
 root=Path(__file__).parents[1]
 api=Client()
@@ -18,10 +18,10 @@ else:
     raise AssertionError('Invalid token unexpectedly accepted')
 assert len(OPERATIONS)>=450
 print('Installed wheel: %d operations; live health/discovery/gateway and invalid-token rejection passed'%len(OPERATIONS))
-scopes=api.bonfire_scopes()
+scopes=api.ember_scopes()
 assert scopes and all(s['required'] is False for s in scopes)
-assert api.bonfire_jwks()['keys']
-assert 'results' in api.bonfire_directory()
+assert api.ember_jwks()['keys']
+assert 'results' in api.ember_directory()
 assert 'results' in api.list_gallery()
 assert api.server_latest()['build_id']
 chat=Instance('https://chat.ikelene.net')
@@ -29,7 +29,7 @@ info=chat.discover()
 assert info['software']=='bonfire-server' and info['accounts_mode'] in ('velora','local') and 'build' in info
 assert chat.instance_info()['software']=='bonfire-server'
 try:
-    Client('velora-docs-deliberately-invalid-token').bonfire_session()
+    Client('velora-docs-deliberately-invalid-token').ember_session()
 except APIError as exc:
     assert exc.status==401
 print('Live Bonfire reads passed: scopes.json, JWKS, directory, gallery, server-latest, chat.ikelene.net discovery and info')
@@ -49,7 +49,7 @@ for relative in ['assets/css/shared-nav.css','assets/js/shared-nav.js','assets/j
     destination.write_bytes(api.request('GET','/'+relative,auth=False,raw=True))
 print('Current public navigation assets ready for local preview')
 
-from velora_api import BotClient, InvalidBotToken, __version__
+from nookara import BotClient, InvalidBotToken, __version__
 assert __version__ == '0.5.9', __version__
 try:
     BotClient('velora-docs-deliberately-invalid-token').list_payment_requests()

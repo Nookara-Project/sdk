@@ -8,7 +8,7 @@ payment requests as your bot. The credits land in the balance of the bot's owner
 import os
 import sys
 
-from velora_api import BotClient, BuyerError, OrderConflict, PaymentError, PaymentTimeout, is_paid
+from nookara import BotClient, BuyerError, OrderConflict, PaymentError, PaymentTimeout, is_paid
 
 bot = BotClient(os.environ["BOT_TOKEN"])
 buyer, amount = sys.argv[1], int(sys.argv[2])

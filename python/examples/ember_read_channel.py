@@ -1,14 +1,14 @@
-"""Read the latest messages of a channel on a Bonfire instance (Nookara login).
+"""Read the latest messages of a channel on a Ember instance (Nookara login).
 
-    VELORA_TOKEN=... python bonfire_read_channel.py
+    NOOKARA_TOKEN=... python bonfire_read_channel.py
 """
 import os
 
-from velora_api import Client, Instance
+from nookara import Client, Instance
 
-velora = Client(os.environ["VELORA_TOKEN"])
+nookara = Client(os.environ["NOOKARA_TOKEN"])
 instance = Instance("https://chat.ikelene.net")
-instance.login_with_velora(velora)
+instance.login_with_nookara(nookara)
 
 channel = instance.channel_id("#general")
 for message in instance.messages(channel, limit=20)["messages"]:

@@ -7,8 +7,8 @@ Client libraries for the [Nookara](https://nookara.cc) API.
 | [`python/`](python) | [`nookara`](https://pypi.org/project/nookara/) on PyPI | `pip install nookara` |
 | [`node/`](node) | [`nookara`](https://www.npmjs.com/package/nookara) on npm | `npm install nookara` |
 
-Both are generated from the same route catalogue (`python/velora_api/catalogue.json`, copied to `node/catalogue/`).
-Full API reference: https://nookara.cc/guides/velora-api
+Both are generated from the same route catalogue (`python/nookara/catalogue.json`, copied to `node/catalogue/`).
+Guides: [Python](https://nookara.cc/guides/python-sdk), [Node](https://nookara.cc/guides/node-sdk). Every route: https://nookara.cc/guides/velora-api
 
 ## Tests
 

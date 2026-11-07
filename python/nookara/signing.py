@@ -1,4 +1,4 @@
-"""Optional message signing (Bonfire protocol section 8).
+"""Optional message signing (Ember protocol section 8).
 
 Canonical JSON and payload building need nothing but the standard library.
 Producing signatures needs the optional ``cryptography`` package
@@ -97,7 +97,7 @@ def payload_from_message(message, *, iss, instance):
 def verify_message(message, key, *, iss, instance):
     """Check a signed message yourself instead of trusting its ``verified`` flag. Needs ``cryptography``.
 
-    ``key`` is the public key record from Nookara (``Client.bonfire_key(message["signature"]["kid"])``).
+    ``key`` is the public key record from Nookara (``Client.ember_key(message["signature"]["kid"])``).
     Returns ``(True, "ok")`` or ``(False, reason)`` with reason one of ``unsigned``, ``wrong_user``, ``revoked``,
     ``bad_key``, ``bad_signature`` or ``mismatch``.
     """

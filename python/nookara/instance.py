@@ -1,8 +1,8 @@
-"""Bonfire instances: discovery, sessions, community REST, uploads, invites, webhooks, bots, backups and signing.
+"""Ember instances: discovery, sessions, community REST, uploads, invites, webhooks, bots, backups and signing.
 
 An instance is a server at its own URL (the main one is https://chat.ikelene.net, Nookara hosts
-``<slug>-bonfire.ikelene.net`` servers, and anyone can self-host). It holds one community. Nookara is only
-the identity provider: ``login_with_velora`` asks Nookara for a short token meant for that one instance and
+``e-<slug>.nookara.cc`` servers, and anyone can self-host). It holds one community. Nookara is only
+the identity provider: ``login_with_nookara`` asks Nookara for a short token meant for that one instance and
 trades it for an instance session. Your Nookara token is never sent to an instance.
 
 Scopes are optional on the consent screen. The ticket carries the instance scopes the person allowed
@@ -19,6 +19,7 @@ from urllib.parse import urlsplit
 
 from ._origin import normalize_origin
 from .client import APIError, Client, ScopeError, _safe_part
+from . import _compat
 from .instance_endpoints import InstanceEndpoints
 from .scopes import INSTANCE_SCOPES
 from .signing import attachment_refs
@@ -64,7 +65,7 @@ def parse_webhook_url(url):
     p = urlsplit(url)
     m = re.fullmatch(r'/api/v1/webhooks/([^/]+)/([^/]+)', p.path)
     if not m or p.query or p.fragment:
-        raise ValueError('Not a Bonfire webhook URL (expected /api/v1/webhooks/<id>/<token>)')
+        raise ValueError('Not a Ember webhook URL (expected /api/v1/webhooks/<id>/<token>)')
     return normalize_origin(f'{p.scheme}://{p.netloc}', allow_insecure=p.scheme == 'http'), m[1], m[2]
 
 
@@ -85,12 +86,13 @@ class Instance(InstanceEndpoints):
     """An instance origin plus (optionally) one instance session or one bot token."""
 
     def __init__(self, url, session=None, *, bot_token=None, timeout=30, allow_insecure=False,
-                 velora_url='https://nookara.cc'):
+                 nookara_url='https://nookara.cc', velora_url=None):
         if session and bot_token:
             raise ValueError('Use a session or bot token')
         self.url = normalize_origin(url, allow_insecure=allow_insecure)
         self.allow_insecure = allow_insecure
-        self.velora_origin = normalize_origin(velora_url, allow_insecure=allow_insecure)
+        nookara_url = _compat.legacy_kwarg('velora_url', velora_url, 'nookara_url', nookara_url, 'https://nookara.cc')
+        self.nookara_origin = normalize_origin(nookara_url, allow_insecure=allow_insecure)
         self._http = Client(bot_token or session, base_url=self.url,
                             auth_scheme='Bot' if bot_token else 'Bearer',
                             timeout=timeout, allow_insecure=allow_insecure)
@@ -133,7 +135,7 @@ class Instance(InstanceEndpoints):
         ``read_only``, ``community`` ({sid, name, member_count, join_policy}) and ``instance_key``."""
         self.info = self.get_well_known_bonfire()
         if not isinstance(self.info, dict) or self.info.get('software') != 'bonfire-server':
-            raise ValueError('Not a Bonfire server (no bonfire-server discovery document)')
+            raise ValueError('Not a Ember server (no bonfire-server discovery document)')
         if self.info.get('community'):
             self._community = self.info['community']['sid']
         return self.info
@@ -174,7 +176,7 @@ class Instance(InstanceEndpoints):
     @property
     def scopes(self):
         """Instance scopes this session holds: a list of ``chat``, ``voice``, ``media``, ``sign``.
-        Known right after ``login_with_velora``; otherwise fetched once from ``/api/v1/me``."""
+        Known right after ``login_with_nookara``; otherwise fetched once from ``/api/v1/me``."""
         if self._scopes is None:
             self._scopes = list((self.me() or {}).get('scopes') or [])
         return list(self._scopes)
@@ -199,24 +201,27 @@ class Instance(InstanceEndpoints):
         self.user = result['user']
         return result
 
-    def login_with_velora(self, velora_client, *, sign=False):
+    def login_with_nookara(self, nookara=None, *, sign=False, velora_client=None):
         """Sign in with a Nookara account (instances in Nookara-login mode).
 
-        ``velora_client`` is a Nookara ``Client`` that holds Chat (2048); without it Nookara answers
+        ``nookara`` is a Nookara ``Client`` that holds Chat (2048); without it Nookara answers
         ``ScopeError``. Nookara issues a ticket for this instance only, and just that ticket crosses to the instance.
         ``sign=True`` signs messages automatically and needs Sign Messages (32768) (``ScopeError`` otherwise);
         ``sign="auto"`` signs when the person allowed it and quietly sends unsigned messages when not.
         """
-        if isinstance(velora_client, Instance):
+        if velora_client is not None:
+            _compat.warn('velora_client=', 'login_with_nookara(nookara)')
+            nookara = nookara or velora_client
+        if isinstance(nookara, Instance):
             raise TypeError('Pass the Nookara client, not an instance')
-        ticket = velora_client.post_bonfire_instance_token(json={'instance': self.url})
+        ticket = nookara.post_bonfire_instance_token(json={'instance': self.url})
         result = self._authenticate('velora', {'token': ticket['token']})
         self._scopes = _ticket_scopes(ticket['token'])
         if sign == 'auto':
             if 'sign' in (self._scopes or []):
-                self.enable_signing(velora_client)
+                self.enable_signing(nookara)
         elif sign:
-            self.enable_signing(velora_client)
+            self.enable_signing(nookara)
         return result
 
     def login(self, username, password):
@@ -240,10 +245,13 @@ class Instance(InstanceEndpoints):
         """``{user, instance_admin, instance_owner, scopes}`` for this session."""
         return self.get_api_v1_me()
 
-    def enable_signing(self, velora_client):
+    def enable_signing(self, nookara=None, *, velora_client=None):
         """Fetch the account signing key from Nookara (not the instance) and sign messages from now on."""
         from .signing import Signer
-        key = velora_client.get_bonfire_signing_key()
+        if velora_client is not None:
+            _compat.warn('velora_client=', 'enable_signing(nookara)')
+            nookara = nookara or velora_client
+        key = nookara.get_bonfire_signing_key()
         self.signer = Signer.from_key_response(key, iss=self.issuer())
         return self.signer
 
@@ -258,19 +266,22 @@ class Instance(InstanceEndpoints):
                 pass
         return DEFAULT_ISSUER
 
-    def verify_message(self, message, velora=None):
+    def verify_message(self, message, nookara=None, *, velora=None):
         """Check a signed message yourself (do not trust its ``verified`` flag). Needs ``nookara[signing]``.
 
         Returns ``(True, "ok")`` or ``(False, reason)``; ``(False, "unsigned")`` for a message without a signature.
-        ``velora`` is a ``Client`` (an anonymous one is made for you); the public key is read from Nookara.
+        ``nookara`` is a ``Client`` (an anonymous one is made for you); the public key is read from Nookara.
         """
         from .signing import verify_message
         signature = message.get('signature')
         if not signature:
             return False, 'unsigned'
-        velora = velora or Client(base_url=self.velora_origin, allow_insecure=self.allow_insecure)
+        if velora is not None:
+            _compat.warn('velora=', 'verify_message(message, nookara)')
+            nookara = nookara or velora
+        nookara = nookara or Client(base_url=self.nookara_origin, allow_insecure=self.allow_insecure)
         try:
-            key = velora.get_bonfire_keys_kid_by_kid(kid=signature['kid'])
+            key = nookara.get_bonfire_keys_kid_by_kid(kid=signature['kid'])
         except APIError as exc:
             if exc.status == 404:
                 return False, 'unknown_key'
@@ -299,7 +310,7 @@ class Instance(InstanceEndpoints):
         if sign is False or (sign is None and self.signer is None):
             return None
         if self.signer is None:
-            raise ValueError('Signing needs login_with_velora(client, sign=True) or enable_signing()')
+            raise ValueError('Signing needs login_with_nookara(client, sign=True) or enable_signing()')
         if not self.user or not self.user.get('velora_id'):
             raise ValueError('Only Nookara accounts can sign messages')
         hashes = attachment_refs(attachments)
@@ -644,7 +655,7 @@ class Instance(InstanceEndpoints):
     def remove_admin(self, uid):
         return self.delete_api_v1_instance_admins_by_uid(uid=uid)
 
-    def register_with_velora(self):
+    def register_with_nookara(self):
         """Register now with Nookara (push, payments, daily credits, voice broker, directory). Admins only."""
         return self.post_api_v1_instance_velora_register()
 
@@ -660,12 +671,12 @@ class Instance(InstanceEndpoints):
         """Create the community from an export zip (only while the instance has no community)."""
         return self.post_api_v1_import(files={'file': path})
 
-    def import_from_velora(self, ticket):
-        """Create the community from a Discord / Fluxer bundle prepared with ``Client.start_bonfire_import``."""
+    def import_from_nookara(self, ticket):
+        """Create the community from a Discord / Fluxer bundle prepared with ``Client.start_ember_import``."""
         return self.post_api_v1_import_velora(json={'ticket': ticket})
 
     def game_connected(self, *, q=None, tag=None, page=None):
-        """Game servers that connected with ``bonfire server <this url>`` and wait to be linked (Manage server)."""
+        """Game servers that connected with ``ember server <this url>`` and wait to be linked (Manage server)."""
         return self.get_api_v1_game_connected(query={'q': q, 'tag': tag, 'page': page})
 
     def game_link(self, iid, *, cid=None):
@@ -673,7 +684,7 @@ class Instance(InstanceEndpoints):
         return self.post_api_v1_game_connected_by_iid_link(iid=iid, json={'cid': cid} if cid else {})
 
     def game_claim(self, cid=None, *, hint=None):
-        """Alternative: a code to run as ``bonfire link CODE`` in the game server's console."""
+        """Alternative: a code to run as ``ember link CODE`` in the game server's console."""
         body = {k: v for k, v in {'cid': cid, 'hint': hint}.items() if v}
         return self.post_api_v1_game_claims(json=body)
 
@@ -684,7 +695,7 @@ class Instance(InstanceEndpoints):
         return self.get_api_v1_game_channels_by_cid_status(cid=cid)
 
     def game_exec(self, cid, command):
-        """Run a console command (Manage server; the Bonfire apps and the website may be required by the server)."""
+        """Run a console command (Manage server; the Ember apps and the website may be required by the server)."""
         return self.post_api_v1_game_channels_by_cid_console(cid=cid, json={'command': command})
 
     def bridge_platforms(self):
@@ -716,3 +727,8 @@ def _ticket_scopes(token):
         return [s for s in scp if s in INSTANCE_SCOPES] if isinstance(scp, list) else None
     except (IndexError, ValueError, TypeError):
         return None
+
+
+_compat.add_aliases(Instance, {'login_with_velora': 'login_with_nookara', 'register_with_velora': 'register_with_nookara',
+                               'import_from_velora': 'import_from_nookara'})
+Instance.velora_origin = _compat.renamed_attribute('Instance.velora_origin', 'nookara_origin')
