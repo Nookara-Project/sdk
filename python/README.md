@@ -473,6 +473,10 @@ input has a strict JSON Schema and not every privileged operation is tested live
 server remains authoritative. Internal bridge/payment integration credentials and
 deployment callbacks are not public client APIs.
 
+## Changes in 0.9.2
+
+Ember Beta status (needs Chat): `ember_beta()` is `GET /chat/beta` and answers `{beta, membership, product}`; `beta` is true only with a live active or trialing Ember Beta membership. `refresh_ember_beta()` is `POST /chat/beta/refresh`, the same answer without the 30 second cache.
+
 ## Changes in 0.9.1
 
 New routes for Ember's Inbox, each with a `Client` helper and a one-method-per-route name (all need Chat unless noted):

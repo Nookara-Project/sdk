@@ -1210,6 +1210,14 @@ class Endpoints:
         """GET /chat/inbox/mentions. See the API reference for scopes and payloads."""
         return self.call('get_chat_inbox_mentions', query=query, json=json, data=data, files=files, raw=raw)
 
+    def get_chat_beta(self, *, query=None, json=None, data=None, files=None, raw=False):
+        """GET /chat/beta. See the API reference for scopes and payloads."""
+        return self.call('get_chat_beta', query=query, json=json, data=data, files=files, raw=raw)
+
+    def post_chat_beta_refresh(self, *, query=None, json=None, data=None, files=None, raw=False):
+        """POST /chat/beta/refresh. See the API reference for scopes and payloads."""
+        return self.call('post_chat_beta_refresh', query=query, json=json, data=data, files=files, raw=raw)
+
     def get_chat_unfurl(self, *, query=None, json=None, data=None, files=None, raw=False):
         """GET /chat/unfurl. See the API reference for scopes and payloads."""
         return self.call('get_chat_unfurl', query=query, json=json, data=data, files=files, raw=raw)

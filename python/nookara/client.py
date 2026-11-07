@@ -532,6 +532,17 @@ class Client(Endpoints):
                 return True
         return False
 
+    def ember_beta(self):
+        """Do you have Ember Beta? (needs Chat). Returns ``{beta, membership, product}``: ``beta`` is True only with a
+        live active or trialing membership of the Ember Beta product (selling it doesn't count), ``membership`` is
+        ``{status, period, current_period_end, cancel_at_period_end, test}`` or None, ``product`` is the public
+        product view or None. The server caches the answer for 30 seconds."""
+        return self.get_chat_beta()
+
+    def refresh_ember_beta(self):
+        """Same answer as ``ember_beta()`` but skips the 30 second cache (use it right after a purchase or a cancel)."""
+        return self.post_chat_beta_refresh()
+
     def ember_jwks(self):
         """Nookara's identity keys (JWKS), used to verify instance tokens, receipts and bot-add tickets."""
         return self.get_well_known_bonfire_jwks_json()

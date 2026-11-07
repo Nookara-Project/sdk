@@ -7749,6 +7749,48 @@
       "legacy": false
     },
     {
+      "operationId": "get_chat_beta",
+      "group": "chat",
+      "method": "GET",
+      "path": "/chat/beta",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [],
+      "query": [],
+      "body": [],
+      "files": [],
+      "errors": [
+        "insufficient_scope"
+      ],
+      "notes": "Ember Beta status. Returns {beta, membership, product}. beta is true only with a live active or trialing membership of the Ember Beta product (selling the product does not count); membership is {status, period, current_period_end, cancel_at_period_end, test} or null; product is the public product view (or null if it is not on sale). Cached for 30 seconds per account.",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
+      "operationId": "post_chat_beta_refresh",
+      "group": "chat",
+      "method": "POST",
+      "path": "/chat/beta/refresh",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [],
+      "query": [],
+      "body": [],
+      "files": [],
+      "errors": [
+        "insufficient_scope"
+      ],
+      "notes": "Same answer as GET /chat/beta, skipping the 30 second cache (use it right after a purchase or a cancel).",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
       "operationId": "delete_chat_saved_by_id",
       "group": "chat",
       "method": "DELETE",
