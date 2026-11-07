@@ -7,7 +7,6 @@ with ``Client.granted_scopes()`` / ``Client.has_scope()`` and degrade gracefully
 """
 from __future__ import annotations
 
-from . import _compat
 
 SCOPES = {
     "PROFILE_READ": 1,
@@ -96,5 +95,3 @@ def instance_scope_names(scopes):
 
 
 EMBER_APP_MASK = scope_mask(*EMBER_APP_SCOPES)
-
-__getattr__ = _compat.module_getattr(__name__, {"BONFIRE_APP_SCOPES": "EMBER_APP_SCOPES", "BONFIRE_APP_MASK": "EMBER_APP_MASK"}, globals())

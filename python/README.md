@@ -10,7 +10,7 @@ pip install "nookara[signing]"    # cryptography, for signed messages and encryp
 from nookara import Client, Ember, Instance, login_app
 ```
 
-Older code that says `import velora_api`, `Bonfire` or `login_with_velora` keeps working and shows a `DeprecationWarning` with the new name (see Changes in 0.9.0).
+0.9.0 removed the old Velora and Bonfire names: code that says `import velora_api`, `Bonfire` or `login_with_velora` needs the new names in Changes in 0.9.0.
 
 **What's in it:** sign-in, profiles, friends, DMs, group chats, notifications, storage, credits, Ember chat and bots, bot payments and carts, Products, cart and direct pay, claims and reports, Nookara Drive, Forums, Devices and Apps, as one named method per route.
 
@@ -475,17 +475,24 @@ deployment callbacks are not public client APIs.
 
 ## Changes in 0.9.0
 
-The Velora and Bonfire names are gone from the API. Every old name still works and raises a
-`DeprecationWarning` that says the new one. Wire formats, routes and error codes don't change.
+**Breaking:** the Velora and Bonfire names are removed from the API. Rename them as below; there are no
+aliases. Wire formats, routes and error codes don't change.
 
-- The package is `nookara`. `import velora_api` (and `velora_api.client` and the other modules) is a warning shim.
-- `Bonfire` is `Ember`, and `nookara.bonfire` is `nookara.ember`. `BONFIRE_APP_MASK` / `BONFIRE_APP_SCOPES` are `EMBER_APP_MASK` / `EMBER_APP_SCOPES`.
-- `Instance.login_with_velora` is `login_with_nookara`, `register_with_velora` is `register_with_nookara`, `import_from_velora` is `import_from_nookara`.
-- `Client.bonfire_*` helpers are `ember_*` (`ember_instances`, `set_ember_instances`, `sync_ember_instances`, `ember_default_instance`, `ember_default_joined`, `ember_instance_prefs`, `ember_profiles`, `ember_key`, `ember_user_keys`, `ember_jwks`, `ember_payout`, `ember_import_platforms`, `ember_import_guilds`, `ember_import_job`, `ember_directory`, `ember_session`, `ember_scopes`), and `start_bonfire_import` is `start_ember_import`.
-- Keywords: `velora_url=` is `nookara_url=` (`Instance`, `BotProgram`), `velora_client=` / `velora=` are `nookara` (`login_with_nookara`, `enable_signing`, `verify_message`, `Ember`). `Instance.velora_origin` is `nookara_origin`, `Ember.velora` is `Ember.nookara`.
+| Before | Now |
+|---|---|
+| `import velora_api` (and `velora_api.client` and the other modules) | `import nookara` |
+| `Bonfire`, `velora_api.bonfire` | `Ember`, `nookara.ember` |
+| `BONFIRE_APP_MASK`, `BONFIRE_APP_SCOPES` | `EMBER_APP_MASK`, `EMBER_APP_SCOPES` |
+| `Instance.login_with_velora`, `register_with_velora`, `import_from_velora` | `login_with_nookara`, `register_with_nookara`, `import_from_nookara` |
+| `Client.bonfire_instances`, `set_bonfire_instances`, `sync_bonfire_instances`, `bonfire_default_instance`, `bonfire_default_joined`, `bonfire_instance_prefs`, `bonfire_profiles`, `bonfire_key`, `bonfire_user_keys`, `bonfire_jwks`, `bonfire_payout`, `bonfire_import_platforms`, `bonfire_import_guilds`, `bonfire_import_job`, `bonfire_directory`, `bonfire_session`, `bonfire_scopes`, `start_bonfire_import` | the same with `ember` in place of `bonfire` |
+| `velora_url=` (`Instance`, `BotProgram`) | `nookara_url=` |
+| `velora_client=` / `velora=` keywords (`login_with_nookara`, `enable_signing`, `verify_message`, `Ember`) | pass the client as the first argument |
+| `Instance.velora_origin`, `Ember.velora` | `nookara_origin`, `Ember.nookara` |
+
+- Installing 0.9.0 over an older version removes the `velora_api` folder, so old imports fail with `ModuleNotFoundError`.
 - The one-method-per-route names still follow the URL, so routes under `/bonfire/...` keep names like `get_bonfire_instances`.
-- Examples use `NOOKARA_TOKEN` and `NOOKARA_BOT_TOKEN`, and sign in with `login_app`.
 - New: `RealtimeClient(token, origin=...)`. Nookara's socket only takes an app's token with one of the app's authorized URLs as the Origin, so pass the `origin` that `login_app` gave you.
+- Examples use `NOOKARA_TOKEN` and `NOOKARA_BOT_TOKEN`, and sign in with `login_app`.
 
 ## Changes in 0.6.1
 

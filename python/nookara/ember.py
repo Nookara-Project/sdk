@@ -15,16 +15,12 @@ from __future__ import annotations
 from ._origin import normalize_origin
 from .client import APIError, ScopeError, TransportError
 from .instance import Instance
-from . import _compat
 
 
 class Ember:
     """The Ember servers of one Nookara account."""
 
-    def __init__(self, nookara=None, *, sign=False, timeout=30, allow_insecure=False, instance_factory=None, velora=None):
-        if velora is not None:
-            _compat.warn("Ember(velora=...)", "Ember(nookara)")
-            nookara = nookara or velora
+    def __init__(self, nookara, *, sign=False, timeout=30, allow_insecure=False, instance_factory=None):
         self.nookara = nookara
         self.sign = sign
         self.timeout, self.allow_insecure = timeout, allow_insecure
@@ -111,8 +107,3 @@ class Ember:
             except (APIError, TransportError):
                 pass
         self._instances.clear()
-
-    velora = _compat.renamed_attribute("Ember.velora", "nookara")
-
-
-Bonfire = Ember

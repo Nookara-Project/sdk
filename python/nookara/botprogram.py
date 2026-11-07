@@ -20,19 +20,17 @@ from contextlib import suppress
 
 from ._origin import normalize_origin
 from .client import APIError, Client, TransportError
-from . import _compat
 from .instance import Instance
 
 
 class BotProgram:
     """One bot token, many instances."""
 
-    def __init__(self, token, *, nookara_url="https://nookara.cc", velora_url=None, poll_interval=300.0, queue_size=2048,
+    def __init__(self, token, *, nookara_url="https://nookara.cc", poll_interval=300.0, queue_size=2048,
                  include_test=False, allow_insecure=False, instance_factory=None, gateway_factory=None, timeout=30):
         self.token = token
         self.poll_interval, self.include_test = poll_interval, include_test
         self.allow_insecure, self.timeout = allow_insecure, timeout
-        nookara_url = _compat.legacy_kwarg("velora_url", velora_url, "nookara_url", nookara_url, "https://nookara.cc")
         self._nookara = Client(token, base_url=nookara_url, auth_scheme="Bot", timeout=timeout, allow_insecure=allow_insecure)
         self._instance_factory = instance_factory or (lambda origin: Instance(origin, bot_token=token, timeout=timeout,
                                                                               allow_insecure=allow_insecure))

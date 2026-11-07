@@ -23,7 +23,7 @@ Source = "https://github.com/Nookara-Project/sdk"
 Documentation = "https://nookara.cc/guides/python-sdk"
 
 [tool.setuptools]
-packages = ["nookara", "velora_api"]
+packages = ["nookara"]
 
 [tool.setuptools.package-data]
 nookara = ["catalogue.json", "instance_catalogue.json", "py.typed"]

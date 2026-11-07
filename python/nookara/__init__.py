@@ -1,5 +1,4 @@
 """Nookara's Python SDK. Tokens are intentionally excluded from repr and logs."""
-from . import _compat
 from ._origin import normalize_origin
 from ._version import __version__
 from .ember import Ember
@@ -23,5 +22,3 @@ __all__ = ["EncryptedDMs", "KeyChanged", "APIError", "ScopeError", "Client", "Tr
            "is_paid", "Instance", "InstanceGateway", "BotGateway", "Ember", "BotProgram", "Signer", "verify_message",
            "execute_webhook", "make_alias", "normalize_origin", "SCOPES", "SCOPE_LABELS", "DEFAULT_OFF", "INSTANCE_SCOPES",
            "EMBER_APP_MASK", "scope_mask", "scope_names", "scope_bit", "has_scope"]
-
-__getattr__ = _compat.module_getattr(__name__, {"Bonfire": "Ember", "BONFIRE_APP_MASK": "EMBER_APP_MASK"}, globals())

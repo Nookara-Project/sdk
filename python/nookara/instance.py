@@ -19,7 +19,6 @@ from urllib.parse import urlsplit
 
 from ._origin import normalize_origin
 from .client import APIError, Client, ScopeError, _safe_part
-from . import _compat
 from .instance_endpoints import InstanceEndpoints
 from .scopes import INSTANCE_SCOPES
 from .signing import attachment_refs
@@ -86,12 +85,11 @@ class Instance(InstanceEndpoints):
     """An instance origin plus (optionally) one instance session or one bot token."""
 
     def __init__(self, url, session=None, *, bot_token=None, timeout=30, allow_insecure=False,
-                 nookara_url='https://nookara.cc', velora_url=None):
+                 nookara_url='https://nookara.cc'):
         if session and bot_token:
             raise ValueError('Use a session or bot token')
         self.url = normalize_origin(url, allow_insecure=allow_insecure)
         self.allow_insecure = allow_insecure
-        nookara_url = _compat.legacy_kwarg('velora_url', velora_url, 'nookara_url', nookara_url, 'https://nookara.cc')
         self.nookara_origin = normalize_origin(nookara_url, allow_insecure=allow_insecure)
         self._http = Client(bot_token or session, base_url=self.url,
                             auth_scheme='Bot' if bot_token else 'Bearer',
@@ -201,7 +199,7 @@ class Instance(InstanceEndpoints):
         self.user = result['user']
         return result
 
-    def login_with_nookara(self, nookara=None, *, sign=False, velora_client=None):
+    def login_with_nookara(self, nookara, *, sign=False):
         """Sign in with a Nookara account (instances in Nookara-login mode).
 
         ``nookara`` is a Nookara ``Client`` that holds Chat (2048); without it Nookara answers
@@ -209,9 +207,6 @@ class Instance(InstanceEndpoints):
         ``sign=True`` signs messages automatically and needs Sign Messages (32768) (``ScopeError`` otherwise);
         ``sign="auto"`` signs when the person allowed it and quietly sends unsigned messages when not.
         """
-        if velora_client is not None:
-            _compat.warn('velora_client=', 'login_with_nookara(nookara)')
-            nookara = nookara or velora_client
         if isinstance(nookara, Instance):
             raise TypeError('Pass the Nookara client, not an instance')
         ticket = nookara.post_bonfire_instance_token(json={'instance': self.url})
@@ -245,12 +240,9 @@ class Instance(InstanceEndpoints):
         """``{user, instance_admin, instance_owner, scopes}`` for this session."""
         return self.get_api_v1_me()
 
-    def enable_signing(self, nookara=None, *, velora_client=None):
+    def enable_signing(self, nookara):
         """Fetch the account signing key from Nookara (not the instance) and sign messages from now on."""
         from .signing import Signer
-        if velora_client is not None:
-            _compat.warn('velora_client=', 'enable_signing(nookara)')
-            nookara = nookara or velora_client
         key = nookara.get_bonfire_signing_key()
         self.signer = Signer.from_key_response(key, iss=self.issuer())
         return self.signer
@@ -266,7 +258,7 @@ class Instance(InstanceEndpoints):
                 pass
         return DEFAULT_ISSUER
 
-    def verify_message(self, message, nookara=None, *, velora=None):
+    def verify_message(self, message, nookara=None):
         """Check a signed message yourself (do not trust its ``verified`` flag). Needs ``nookara[signing]``.
 
         Returns ``(True, "ok")`` or ``(False, reason)``; ``(False, "unsigned")`` for a message without a signature.
@@ -276,9 +268,6 @@ class Instance(InstanceEndpoints):
         signature = message.get('signature')
         if not signature:
             return False, 'unsigned'
-        if velora is not None:
-            _compat.warn('velora=', 'verify_message(message, nookara)')
-            nookara = nookara or velora
         nookara = nookara or Client(base_url=self.nookara_origin, allow_insecure=self.allow_insecure)
         try:
             key = nookara.get_bonfire_keys_kid_by_kid(kid=signature['kid'])
@@ -727,8 +716,3 @@ def _ticket_scopes(token):
         return [s for s in scp if s in INSTANCE_SCOPES] if isinstance(scp, list) else None
     except (IndexError, ValueError, TypeError):
         return None
-
-
-_compat.add_aliases(Instance, {'login_with_velora': 'login_with_nookara', 'register_with_velora': 'register_with_nookara',
-                               'import_from_velora': 'import_from_nookara'})
-Instance.velora_origin = _compat.renamed_attribute('Instance.velora_origin', 'nookara_origin')

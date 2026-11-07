@@ -13,7 +13,6 @@ from urllib.parse import quote, urlencode, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from ._origin import normalize_origin
-from . import _compat
 from ._version import __version__
 from .endpoints import Endpoints
 from .scopes import SCOPE_LABELS, has_scope as _has_scope, scope_bit, scope_names as _scope_names
@@ -634,26 +633,6 @@ class Client(Endpoints):
 
     def delete_hosting_backup(self, backup_id):
         return self.delete_bonfire_hosting_backups_by_id(id=backup_id)
-
-
-_compat.add_aliases(Client, {'bonfire_scopes': 'ember_scopes',
-    'bonfire_instances': 'ember_instances',
-    'set_bonfire_instances': 'set_ember_instances',
-    'sync_bonfire_instances': 'sync_ember_instances',
-    'bonfire_default_instance': 'ember_default_instance',
-    'bonfire_default_joined': 'ember_default_joined',
-    'bonfire_instance_prefs': 'ember_instance_prefs',
-    'bonfire_profiles': 'ember_profiles',
-    'bonfire_key': 'ember_key',
-    'bonfire_user_keys': 'ember_user_keys',
-    'bonfire_jwks': 'ember_jwks',
-    'bonfire_payout': 'ember_payout',
-    'bonfire_import_platforms': 'ember_import_platforms',
-    'bonfire_import_guilds': 'ember_import_guilds',
-    'start_bonfire_import': 'start_ember_import',
-    'bonfire_import_job': 'ember_import_job',
-    'bonfire_directory': 'ember_directory',
-    'bonfire_session': 'ember_session'})
 
 
 def login_app(app_id, *, port=0, timeout=300, on_url=None, base_url=BASE_URL, allow_insecure=False):
