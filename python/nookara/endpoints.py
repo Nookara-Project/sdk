@@ -1218,6 +1218,10 @@ class Endpoints:
         """POST /chat/beta/refresh. See the API reference for scopes and payloads."""
         return self.call('post_chat_beta_refresh', query=query, json=json, data=data, files=files, raw=raw)
 
+    def get_chat_channels_by_cid_viewers(self, *, cid, query=None, json=None, data=None, files=None, raw=False):
+        """GET /chat/channels/:cid/viewers. See the API reference for scopes and payloads."""
+        return self.call('get_chat_channels_by_cid_viewers', cid=cid, query=query, json=json, data=data, files=files, raw=raw)
+
     def get_chat_unfurl(self, *, query=None, json=None, data=None, files=None, raw=False):
         """GET /chat/unfurl. See the API reference for scopes and payloads."""
         return self.call('get_chat_unfurl', query=query, json=json, data=data, files=files, raw=raw)

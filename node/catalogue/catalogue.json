@@ -7720,6 +7720,34 @@
       "legacy": true
     },
     {
+      "operationId": "get_chat_channels_by_cid_viewers",
+      "group": "chat",
+      "method": "GET",
+      "path": "/chat/channels/:cid/viewers",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [
+        {
+          "name": "cid",
+          "optional": false
+        }
+      ],
+      "query": [],
+      "body": [],
+      "files": [],
+      "errors": [
+        "channel_not_found",
+        "not_a_member",
+        "insufficient_scope"
+      ],
+      "notes": "Who can see a channel, for a member list. Needs access to the channel yourself (404 otherwise). Returns {all: true} when nothing limits who sees it, otherwise {all: false, ids: [user id, ...]} = the server members who can see it (role overwrites, private channels, game console channels; owners, admins and Manage channels always see).",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
       "operationId": "post_chat_translate",
       "group": "chat",
       "method": "POST",

@@ -543,6 +543,13 @@ class Client(Endpoints):
         """Same answer as ``ember_beta()`` but skips the 30 second cache (use it right after a purchase or a cancel)."""
         return self.post_chat_beta_refresh()
 
+    def channel_viewers(self, cid):
+        """Who can see a channel (needs Chat), for a member list. You must be able to see the channel yourself
+        (otherwise 404). Returns ``{"all": True}`` when nothing limits who sees it, or ``{"all": False, "ids": [...]}``
+        with the user ids (strings) of the server members who can (role overwrites, private channels, game console
+        channels; owners, admins and Manage channels always see)."""
+        return self.get_chat_channels_by_cid_viewers(cid=cid)
+
     def ember_jwks(self):
         """Nookara's identity keys (JWKS), used to verify instance tokens, receipts and bot-add tickets."""
         return self.get_well_known_bonfire_jwks_json()

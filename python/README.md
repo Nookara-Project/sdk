@@ -473,6 +473,10 @@ input has a strict JSON Schema and not every privileged operation is tested live
 server remains authoritative. Internal bridge/payment integration credentials and
 deployment callbacks are not public client APIs.
 
+## Changes in 0.9.3
+
+Who can see a channel (needs Chat): `channel_viewers(cid)` is `GET /chat/channels/:cid/viewers` and answers `{"all": True}` when nothing limits who sees the channel, or `{"all": False, "ids": [...]}` with the user ids of the server members who can (you must be able to see the channel yourself, else 404).
+
 ## Changes in 0.9.2
 
 Ember Beta status (needs Chat): `ember_beta()` is `GET /chat/beta` and answers `{beta, membership, product}`; `beta` is true only with a live active or trialing Ember Beta membership. `refresh_ember_beta()` is `POST /chat/beta/refresh`, the same answer without the 30 second cache.
