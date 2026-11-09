@@ -473,6 +473,12 @@ input has a strict JSON Schema and not every privileged operation is tested live
 server remains authoritative. Internal bridge/payment integration credentials and
 deployment callbacks are not public client APIs.
 
+## Changes in 0.9.4
+
+Personal emojis (needs Chat): emojis that belong to your Nookara account and work on every Ember server, in DMs and in group chats (25 for free accounts, 100 with Pro). `personal_emojis()` is `GET /chat/personal-emojis` and answers `{emojis: [{eid, name, animated, url, created_at}], max, pro_max}`. `add_personal_emoji(file, name=None)` uploads a PNG, JPG, GIF or WebP up to 2 MB and returns the emoji; `rename_personal_emoji(eid, name)` and `delete_personal_emoji(eid)` do what they say. In a message they are the same `<:name:eid>` or `<a:name:eid>` as server emojis. `emoji_info(eid)` (`GET /chat/emojis/:eid/info`) now also answers for personal emojis with `{emoji, server: None, personal: {owner: {username, pfp}}}`. Errors: `too_many_emojis`, `file_too_large` (413), `invalid_emoji`, `name_required`, `not_found` (404), `upload_suspended` (403).
+
+Server stickers on Ember servers: `Instance.stickers()` lists the server's stickers (`{stickers: [{tid, name, animated, url}], max: 30}`), `all_stickers()` lists them for every server you are in, and with Manage server `add_sticker(file, name=None)` (PNG, GIF, WebP or APNG up to 512 KB), `rename_sticker(tid, name)` and `delete_sticker(tid)`. Send one with `send_sticker(cid, tid)` or `send_message(cid, '', sticker=tid)` (the instance gateway's `send_message` takes `sticker=` too); a sticker only works in channels of its own server (`unknown_sticker` otherwise). Messages carry `sticker: {tid, name, url, animated}`, or `{tid, name: None, url: None, animated: False, deleted: True}` after the sticker was deleted, and the server sends `chat_stickers_update {server, stickers}` when they change. Errors: `too_many_stickers`, `file_too_large` (413), `images_only`, `no_file`, `name_required`, `unknown_sticker`.
+
 ## Changes in 0.9.3
 
 Who can see a channel (needs Chat): `channel_viewers(cid)` is `GET /chat/channels/:cid/viewers` and answers `{"all": True}` when nothing limits who sees the channel, or `{"all": False, "ids": [...]}` with the user ids of the server members who can (you must be able to see the channel yourself, else 404).

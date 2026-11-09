@@ -1012,6 +1012,74 @@
     "group": "Emoji, sounds, previews and YouTube"
   },
   {
+    "operationId": "get_api_v1_stickers",
+    "method": "GET",
+    "path": "/api/v1/stickers",
+    "auth": "bearer",
+    "params": [],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "get_api_v1_servers_by_sid_stickers",
+    "method": "GET",
+    "path": "/api/v1/servers/:sid/stickers",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "post_api_v1_servers_by_sid_stickers",
+    "method": "POST",
+    "path": "/api/v1/servers/:sid/stickers",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "patch_api_v1_servers_by_sid_stickers_by_tid",
+    "method": "PATCH",
+    "path": "/api/v1/servers/:sid/stickers/:tid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "tid",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
+    "operationId": "delete_api_v1_servers_by_sid_stickers_by_tid",
+    "method": "DELETE",
+    "path": "/api/v1/servers/:sid/stickers/:tid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "tid",
+        "optional": false
+      }
+    ],
+    "group": "Emoji, sounds, previews and YouTube"
+  },
+  {
     "operationId": "get_api_v1_emojis_by_eid_info",
     "method": "GET",
     "path": "/api/v1/emojis/:eid/info",

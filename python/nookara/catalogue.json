@@ -6721,7 +6721,7 @@
       "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
       "staffOnly": false,
       "captcha": false,
-      "legacy": true
+      "legacy": false
     },
     {
       "operationId": "get_chat_servers_by_sid_emojis",
@@ -6853,6 +6853,98 @@
       "staffOnly": false,
       "captcha": false,
       "legacy": true
+    },
+    {
+      "operationId": "get_chat_personal_emojis",
+      "group": "chat",
+      "method": "GET",
+      "path": "/chat/personal-emojis",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [],
+      "query": [],
+      "body": [],
+      "files": [],
+      "errors": [],
+      "notes": "",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
+      "operationId": "post_chat_personal_emojis",
+      "group": "chat",
+      "method": "POST",
+      "path": "/chat/personal-emojis",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [],
+      "query": [],
+      "body": [
+        "name"
+      ],
+      "files": [
+        "file"
+      ],
+      "errors": [],
+      "notes": "",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
+      "operationId": "patch_chat_personal_emojis_by_eid",
+      "group": "chat",
+      "method": "PATCH",
+      "path": "/chat/personal-emojis/:eid",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [
+        {
+          "name": "eid",
+          "optional": false
+        }
+      ],
+      "query": [],
+      "body": [
+        "name"
+      ],
+      "files": [],
+      "errors": [],
+      "notes": "",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
+      "operationId": "delete_chat_personal_emojis_by_eid",
+      "group": "chat",
+      "method": "DELETE",
+      "path": "/chat/personal-emojis/:eid",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [
+        {
+          "name": "eid",
+          "optional": false
+        }
+      ],
+      "query": [],
+      "body": [],
+      "files": [],
+      "errors": [],
+      "notes": "",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
     },
     {
       "operationId": "get_chat_bridge_platforms",

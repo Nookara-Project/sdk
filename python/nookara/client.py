@@ -550,6 +550,32 @@ class Client(Endpoints):
         channels; owners, admins and Manage channels always see)."""
         return self.get_chat_channels_by_cid_viewers(cid=cid)
 
+    def personal_emojis(self):
+        """Your personal emojis (needs Chat): custom emojis that belong to your Nookara account and work on every Ember
+        server, in DMs and in group chats. Returns ``{"emojis": [{eid, name, animated, url, created_at}], "max", "pro_max"}``
+        (``max`` is your limit: 25, or 100 with Pro). In a message use ``<:name:eid>``, or ``<a:name:eid>`` when animated."""
+        return self.get_chat_personal_emojis()
+
+    def add_personal_emoji(self, file, name=None):
+        """Add a personal emoji from a PNG, JPG, GIF or WebP file (a path or ``(name, bytes, mime)``, at most 2 MB).
+        ``name`` is letters, digits and ``_`` up to 32 (the file name is used when you leave it out). Returns the new emoji
+        ``{eid, name, animated, url, created_at}``. Raises ``APIError`` with ``too_many_emojis`` at your limit,
+        ``file_too_large`` (413), ``invalid_emoji`` or ``upload_suspended`` (403)."""
+        return self.post_chat_personal_emojis(data={'name': name} if name else None, files={'file': file})['emoji']
+
+    def rename_personal_emoji(self, eid, name):
+        """Rename one of your personal emojis (``not_found`` if it is not yours)."""
+        return self.patch_chat_personal_emojis_by_eid(eid=eid, json={'name': name})
+
+    def delete_personal_emoji(self, eid):
+        """Delete one of your personal emojis (``not_found`` if it is not yours)."""
+        return self.delete_chat_personal_emojis_by_eid(eid=eid)
+
+    def emoji_info(self, eid):
+        """Who an emoji belongs to (needs Chat). A server emoji answers ``{emoji, server}``; a personal emoji answers
+        ``{emoji, server: None, personal: {owner: {username, pfp}}}``."""
+        return self.get_chat_emojis_by_eid_info(eid=eid)
+
     def ember_jwks(self):
         """Nookara's identity keys (JWKS), used to verify instance tokens, receipts and bot-add tickets."""
         return self.get_well_known_bonfire_jwks_json()

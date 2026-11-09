@@ -427,6 +427,33 @@ class Instance(InstanceEndpoints):
     def emojis(self, sid=None):
         return self.get_api_v1_servers_by_sid_emojis(sid=sid or self.community_id())
 
+    def stickers(self, sid=None):
+        """The server's stickers: ``{"stickers": [{tid, name, animated, url}], "max": 30}`` (members can read them)."""
+        return self.get_api_v1_servers_by_sid_stickers(sid=sid or self.community_id())
+
+    def all_stickers(self):
+        """Stickers of every server you are in that has some: ``[{sid, name, icon, stickers}]``."""
+        return self.get_api_v1_stickers()['servers']
+
+    def add_sticker(self, file, name=None, *, sid=None):
+        """Add a sticker (needs Manage server): a PNG, GIF, WebP or APNG file (path or ``(name, bytes, mime)``, at most
+        512 KB). Returns ``{tid, name, animated, url}``. ``too_many_stickers`` at 30, ``file_too_large`` (413) or
+        ``images_only`` otherwise."""
+        return self.post_api_v1_servers_by_sid_stickers(sid=sid or self.community_id(), data={'name': name} if name else None,
+                                                        files={'file': file})['sticker']
+
+    def rename_sticker(self, tid, name, *, sid=None):
+        """Rename a sticker (needs Manage server)."""
+        return self.patch_api_v1_servers_by_sid_stickers_by_tid(sid=sid or self.community_id(), tid=tid, json={'name': name})
+
+    def delete_sticker(self, tid, *, sid=None):
+        """Delete a sticker (needs Manage server). Old messages keep ``sticker: {deleted: True, ...}``."""
+        return self.delete_api_v1_servers_by_sid_stickers_by_tid(sid=sid or self.community_id(), tid=tid)
+
+    def send_sticker(self, cid, tid, *, reply_to=None, sign=None):
+        """Send a sticker of this channel's own server as a message of its own (the body is empty)."""
+        return self.send_message(cid, '', reply_to=reply_to, sign=sign, sticker=tid)
+
     def create_role(self, name, *, sid=None, **fields):
         return self.post_api_v1_servers_by_sid_roles(sid=sid or self.community_id(), json={'name': name, **fields})
 
@@ -436,8 +463,11 @@ class Instance(InstanceEndpoints):
     def messages(self, cid, *, before=None, after=None, limit=50):
         return self.get_api_v1_channels_by_cid_messages(cid=cid, query=dict(before=before, after=after, limit=limit))
 
-    def send_message(self, cid, message, *, reply_to=None, attachments=None, signature=None, sign=None, alias=None):
+    def send_message(self, cid, message, *, reply_to=None, attachments=None, signature=None, sign=None, alias=None, sticker=None):
         """Post a message. ``sign=None`` signs when signing is enabled; ``False`` never signs.
+
+        ``sticker=<tid>`` sends one of the server's stickers (the message may then be empty). Messages carry
+        ``sticker: {tid, name, url, animated}`` (``{..., deleted: True}`` once it is deleted).
 
         ``alias={"name": ..., "avatar_url": ...}`` (or ``make_alias(...)``) is for bot tokens only."""
         if signature is None:
@@ -447,6 +477,8 @@ class Instance(InstanceEndpoints):
             body['signature'] = signature
         if alias is not None:
             body['alias'] = make_alias(alias)
+        if sticker is not None:
+            body['sticker'] = sticker
         return self.post_api_v1_channels_by_cid_messages(cid=cid, json=body)
 
     def edit_message(self, message_id, message, *, channel=None, sign=None, alias=_UNSET):

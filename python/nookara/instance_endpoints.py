@@ -301,6 +301,26 @@ class InstanceEndpoints:
         """DELETE /api/v1/servers/:sid/emojis/:eid."""
         return self.call('delete_api_v1_servers_by_sid_emojis_by_eid', sid=sid, eid=eid, query=query, json=json, data=data, files=files, raw=raw)
 
+    def get_api_v1_stickers(self, *, query=None, json=None, data=None, files=None, raw=False):
+        """GET /api/v1/stickers."""
+        return self.call('get_api_v1_stickers', query=query, json=json, data=data, files=files, raw=raw)
+
+    def get_api_v1_servers_by_sid_stickers(self, *, sid, query=None, json=None, data=None, files=None, raw=False):
+        """GET /api/v1/servers/:sid/stickers."""
+        return self.call('get_api_v1_servers_by_sid_stickers', sid=sid, query=query, json=json, data=data, files=files, raw=raw)
+
+    def post_api_v1_servers_by_sid_stickers(self, *, sid, query=None, json=None, data=None, files=None, raw=False):
+        """POST /api/v1/servers/:sid/stickers."""
+        return self.call('post_api_v1_servers_by_sid_stickers', sid=sid, query=query, json=json, data=data, files=files, raw=raw)
+
+    def patch_api_v1_servers_by_sid_stickers_by_tid(self, *, sid, tid, query=None, json=None, data=None, files=None, raw=False):
+        """PATCH /api/v1/servers/:sid/stickers/:tid."""
+        return self.call('patch_api_v1_servers_by_sid_stickers_by_tid', sid=sid, tid=tid, query=query, json=json, data=data, files=files, raw=raw)
+
+    def delete_api_v1_servers_by_sid_stickers_by_tid(self, *, sid, tid, query=None, json=None, data=None, files=None, raw=False):
+        """DELETE /api/v1/servers/:sid/stickers/:tid."""
+        return self.call('delete_api_v1_servers_by_sid_stickers_by_tid', sid=sid, tid=tid, query=query, json=json, data=data, files=files, raw=raw)
+
     def get_api_v1_emojis_by_eid_info(self, *, eid, query=None, json=None, data=None, files=None, raw=False):
         """GET /api/v1/emojis/:eid/info."""
         return self.call('get_api_v1_emojis_by_eid_info', eid=eid, query=query, json=json, data=data, files=files, raw=raw)

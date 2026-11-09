@@ -274,9 +274,12 @@ class InstanceGateway(_Gateway):
         finally:
             self._pending.pop(nonce, None)
 
-    async def send_message(self, channel, message, *, reply_to=None, attachments=None, sign=None, alias=None):
-        """chat_send with the server's ``chat_ack`` as the result (signed when signing is enabled). ``alias`` is for bots only."""
+    async def send_message(self, channel, message, *, reply_to=None, attachments=None, sign=None, alias=None, sticker=None):
+        """chat_send with the server's ``chat_ack`` as the result (signed when signing is enabled). ``alias`` is for bots only.
+        ``sticker=<tid>`` sends one of the server's stickers (the message may be empty)."""
         fields = {'channel': channel, 'message': message}
+        if sticker is not None:
+            fields['sticker'] = sticker
         if alias is not None:
             from .instance import make_alias
             fields['alias'] = make_alias(alias)
