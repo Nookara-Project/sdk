@@ -473,6 +473,22 @@ input has a strict JSON Schema and not every privileged operation is tested live
 server remains authoritative. Internal bridge/payment integration credentials and
 deployment callbacks are not public client APIs.
 
+## Changes in 0.9.6
+
+Desktop and phone apps can sign in through their own app link (Nookara 2026-11): add a link like `myapp://signed-in` under My Account > Apps > Desktop app links, register that scheme with the system, then:
+
+```python
+import webbrowser, nookara
+
+pending = nookara.start_app_link_login("app_...", "myapp://signed-in")
+webbrowser.open(pending.url)
+# ...later, when the system opens your app with myapp://signed-in?nookara_code=...&nookara_grant=...&state=...
+token, scopes = pending.finish(link_your_app_was_opened_with)
+# or, if the link didn't open: pending.finish(grant=code_the_person_pasted)
+```
+
+It uses PKCE (`code_challenge` on `POST /auth/ext-code`, `code_verifier` on `POST /auth/ext-code/exchange`), so another program that catches the link gets nothing. `login_app()` now sends PKCE too, which makes its token a desktop one: it works from your program with no Origin header (from a web page, still only on the App's sites).
+
 ## Changes in 0.9.5
 
 Three new App scopes (they sit above the old 16 bits, so only a registered App's token can hold them):

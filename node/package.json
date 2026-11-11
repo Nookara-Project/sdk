@@ -1,6 +1,6 @@
 {
   "name": "nookara",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Node SDK for Nookara: sign-in, profiles, friends, chat, credits and payments, storage, and bots.",
   "license": "MIT",
   "author": "Ikelene <me@ikelene.net>",

@@ -754,14 +754,72 @@ class Client(Endpoints):
         return self.delete_bonfire_hosting_backups_by_id(id=backup_id)
 
 
+def _pkce():
+    import base64, hashlib, secrets
+    verifier = secrets.token_urlsafe(48)
+    challenge = base64.urlsafe_b64encode(hashlib.sha256(verifier.encode("ascii")).digest()).rstrip(b"=").decode("ascii")
+    return verifier, challenge
+
+
+class AppLinkLogin:
+    """A desktop App's sign-in in progress (see ``start_app_link_login``). Keep it until the app link comes back.
+
+    ``url`` is the page to open in the person's browser. ``finish(link)`` takes the whole link your app was opened with
+    (``myapp://signed-in?nookara_code=...&nookara_grant=...&state=...``), or ``finish(grant=...)`` the sign-in code the
+    person pasted, and returns ``(token, scopes)``. It works once and only within 10 minutes.
+    """
+
+    def __init__(self, client, app_id, link, code, state, verifier, url):
+        self._client, self.app_id, self.link, self.code, self.state, self._verifier, self.url = client, app_id, link, code, state, verifier, url
+
+    def matches(self, link):
+        """Is this app link the answer to this sign-in (same code and state)?"""
+        from urllib.parse import parse_qs
+        q = {k: v[0] for k, v in parse_qs(urlsplit(str(link)).query).items()}
+        return q.get("nookara_code") == self.code and q.get("state") == self.state
+
+    def finish(self, link=None, *, grant=None):
+        from urllib.parse import parse_qs
+        if link is not None:
+            q = {k: v[0] for k, v in parse_qs(urlsplit(str(link)).query).items()}
+            if q.get("nookara_code") != self.code or q.get("state") != self.state:
+                raise ValueError("That app link belongs to a different sign-in")
+            grant = q.get("nookara_grant")
+        if not grant or not re.fullmatch(r"[A-Za-z0-9_-]{16,128}", str(grant).strip()):
+            raise ValueError("Pass the app link your app was opened with, or the sign-in code")
+        result = self._client.request("POST", "/auth/ext-code/exchange", json={"code": self.code, "grant": str(grant).strip(), "code_verifier": self._verifier}, auth=False)
+        return result["token"], result.get("scopes")
+
+
+def start_app_link_login(app_id, link, *, base_url=BASE_URL, allow_insecure=False):
+    """Start signing in a desktop or phone app that has an app link (My Account > Apps > Desktop app links).
+
+    ``link`` is one of those links exactly, like ``myapp://signed-in``; your app has to be registered with the system to open
+    it. Returns an ``AppLinkLogin``: open its ``url`` in the browser, and when the system opens your app with the link, pass
+    that link to ``finish()``. It uses PKCE, so a grant some other program catches is useless without this object.
+    The token works with no Origin (from your program), and from a web page only on the App's own sites.
+    """
+    import secrets
+    if not re.fullmatch(r"app_[0-9a-f]{20}", str(app_id)):
+        raise ValueError("Use the app ID from My Account > Apps")
+    verifier, challenge = _pkce()
+    state = secrets.token_urlsafe(24)
+    client = Client(base_url=base_url, allow_insecure=allow_insecure)
+    code = client.request("POST", "/auth/ext-code", json={"app_id": app_id, "redirect_uri": link, "code_challenge": challenge, "code_challenge_method": "S256", "state": state}, auth=False)["code"]
+    url = base_url.rstrip("/") + "/login?" + urlencode({"code": code})
+    return AppLinkLogin(client, app_id, link, code, state, verifier, url)
+
+
 def login_app(app_id, *, port=0, timeout=300, on_url=None, base_url=BASE_URL, allow_insecure=False):
     """Sign in through a registered app (My Account > Apps). Returns ``(token, origin)``. Never asks for a password.
 
     The app needs ``http://localhost`` in its authorized URLs: the browser comes back to a small one-shot server on this
-    computer with a one-time grant, which is swapped for the token. App tokens only work from the app's authorized URLs, so
-    make your client with the origin this returns: ``Client(token, origin=origin)``. Outside a browser that header is
-    only a promise, so keep the token as private as a password.
+    computer with a one-time grant, which is swapped for the token. Since 0.9.6 this uses PKCE, which makes it a desktop
+    sign-in: the token works from your program with no Origin at all, and from a web page only on the App's own sites.
+    ``Client(token, origin=origin)`` keeps working too. Keep the token as private as a password.
+    For an app with its own app link (myapp://...), use ``start_app_link_login`` instead.
     """
+    import secrets
     import http.server, threading
     from urllib.parse import parse_qs
     if not re.fullmatch(r"app_[0-9a-f]{20}", str(app_id)):
@@ -788,7 +846,8 @@ def login_app(app_id, *, port=0, timeout=300, on_url=None, base_url=BASE_URL, al
     origin = "http://localhost:%d" % server.server_address[1]
     client = Client(base_url=base_url, allow_insecure=allow_insecure)
     try:
-        code = client.request("POST", "/auth/ext-code", json={"app_id": app_id, "redirect_uri": origin + "/signed-in"}, auth=False)["code"]
+        verifier, challenge = _pkce()
+        code = client.request("POST", "/auth/ext-code", json={"app_id": app_id, "redirect_uri": origin + "/signed-in", "code_challenge": challenge, "code_challenge_method": "S256"}, auth=False)["code"]
         url = base_url.rstrip("/") + "/login?" + urlencode({"code": code})
         if on_url:
             on_url(url)
@@ -801,7 +860,7 @@ def login_app(app_id, *, port=0, timeout=300, on_url=None, base_url=BASE_URL, al
         server.server_close()
     if got.get("nookara_code") != code or "nookara_grant" not in got:
         raise TimeoutError("Nookara sign-in was not completed before the authorization code expired")
-    result = client.request("POST", "/auth/ext-code/exchange", json={"code": code, "grant": got["nookara_grant"]}, auth=False)
+    result = client.request("POST", "/auth/ext-code/exchange", json={"code": code, "grant": got["nookara_grant"], "code_verifier": verifier}, auth=False)
     return result["token"], origin
 
 

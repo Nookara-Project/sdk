@@ -145,6 +145,37 @@ for (const id of Object.keys(ROUTES)) {
   if (!Client.prototype[id]) Client.prototype[id] = function (args) { return this.call(id, args); };
 }
 
+// ── desktop App sign-in (app links, PKCE): startAppLinkLogin -> open .url -> .finish(link) ──
+const b64url = buf => Buffer.from(buf).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+export async function startAppLinkLogin(appId, link, { baseUrl = BASE_URL, allowInsecure = false, fetch: fetchFn = null } = {}) {
+  if (!/^app_[0-9a-f]{20}$/.test(String(appId))) throw new TypeError('Use the app ID from My Account > Apps');
+  const { createHash, randomBytes } = await import('node:crypto');
+  const verifier = b64url(randomBytes(48));
+  const challenge = b64url(createHash('sha256').update(verifier).digest());
+  const state = b64url(randomBytes(24));
+  const client = new Client(null, { baseUrl, allowInsecure, fetch: fetchFn });
+  const { code } = await client.request('POST', '/auth/ext-code', { auth: false, json: { app_id: appId, redirect_uri: link, code_challenge: challenge, code_challenge_method: 'S256', state } });
+  const url = `${baseUrl.replace(/\/+$/, '')}/login?code=${encodeURIComponent(code)}`;
+  const params = l => { try { return new URL(String(l)).searchParams; } catch { return new URLSearchParams(); } };
+  return {
+    appId, link, code, state, url,
+    /** is this app link the answer to this sign-in? */
+    matches: l => { const q = params(l); return q.get('nookara_code') === code && q.get('state') === state; },
+    /** finish(link) with the link your app was opened with, or finish(null, { grant }) with the sign-in code the person pasted -> { token, scopes } */
+    async finish(l, { grant } = {}) {
+      if (l != null) {
+        const q = params(l);
+        if (q.get('nookara_code') !== code || q.get('state') !== state) throw new Error('That app link belongs to a different sign-in');
+        grant = q.get('nookara_grant');
+      }
+      grant = String(grant ?? '').trim();
+      if (!/^[A-Za-z0-9_-]{16,128}$/.test(grant)) throw new TypeError('Pass the app link your app was opened with, or the sign-in code');
+      const r = await client.request('POST', '/auth/ext-code/exchange', { auth: false, json: { code, grant, code_verifier: verifier } });
+      return { token: r.token, scopes: r.scopes };
+    },
+  };
+}
+
 export const scope_mask = (...names) => names.reduce((m, n) => { if (!(n in SCOPES)) throw new TypeError(`Unknown scope: ${n}`); return m | SCOPES[n]; }, 0);
 export const scope_names = mask => Object.keys(SCOPES).filter(n => (Number(mask) & SCOPES[n]) === SCOPES[n] && SCOPES[n]);
 export const has_scope = (mask, name) => (Number(mask) & SCOPES[name]) === SCOPES[name];

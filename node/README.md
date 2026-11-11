@@ -57,6 +57,10 @@ The Python SDK also has sign-in helpers, websockets and the bot gateway, message
 
 Guide: https://nookara.cc/guides/node-sdk. Every route: https://nookara.cc/guides/velora-api
 
+## Changes in 0.1.3
+
+- `startAppLinkLogin(appId, link)` signs in a desktop App through its app link (My Account > Apps > Desktop app links), with PKCE. Open `.url` in the browser; when the system opens your app with `myapp://signed-in?nookara_code=...&nookara_grant=...&state=...`, call `.finish(thatLink)` (or `.finish(null, { grant })` with the sign-in code the person pasted) for `{ token, scopes }`. The token works with no Origin from your program, so `new Client(token)` is enough.
+
 ## Changes in 0.1.2
 
 - Three new App scopes in `SCOPES`: `NOTIFY_SEND` (262144), `NOTIFY_READ` (524288), `BLOCKS_READ` (1048576) and `BLOCKS_MANAGE` (2097152).

@@ -6,7 +6,7 @@ from .botpayments import (BotClient, BuyerError, InvalidBotToken, InvalidPayment
                           OrderConflict, PaymentError, PaymentInProgress, PaymentNotFound, PaymentRateLimited,
                           PaymentTimeout, is_paid)
 from .botprogram import BotProgram
-from .client import APIError, Client, ScopeError, TransportError, login, login_app
+from .client import APIError, AppLinkLogin, Client, ScopeError, TransportError, login, login_app, start_app_link_login
 from .e2ee import EncryptedDMs, KeyChanged
 from .instance import Instance, execute_webhook, make_alias
 from .instance_gateway import BotGateway, InstanceGateway
@@ -16,7 +16,7 @@ from .scopes import (EMBER_APP_MASK, DEFAULT_OFF, INSTANCE_SCOPES, SCOPE_LABELS,
 from .signing import Signer, verify_message
 
 __all__ = ["EncryptedDMs", "KeyChanged", "APIError", "ScopeError", "Client", "TransportError", "RealtimeClient", "GAME_EVENT_TYPES", "NOTIFICATION_EVENT_TYPES",
-           "login", "login_app",
+           "login", "login_app", "start_app_link_login", "AppLinkLogin",
            "BotClient", "PaymentError", "InvalidBotToken", "MerchantUnavailable", "InvalidPaymentRequest", "BuyerError",
            "OrderConflict", "PaymentInProgress", "NotCancellable", "PaymentNotFound", "PaymentRateLimited", "PaymentTimeout",
            "is_paid", "Instance", "InstanceGateway", "BotGateway", "Ember", "BotProgram", "Signer", "verify_message",

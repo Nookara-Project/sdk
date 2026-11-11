@@ -2,9 +2,12 @@ import test, { before, after } from 'node:test';
 import assert from 'node:assert';
 import http from 'node:http';
 import { createRequire } from 'node:module';
-import { Client, APIError, ScopeError, TransportError, ROUTES, SCOPES, scope_mask, scope_names, has_scope, VERSION } from '../dist/index.mjs';
+import { createHash } from 'node:crypto';
+import { startAppLinkLogin, Client, APIError, ScopeError, TransportError, ROUTES, SCOPES, scope_mask, scope_names, has_scope, VERSION } from '../dist/index.mjs';
 
 let server, base, last;
+const pkce = {};
+const require_hash = v => createHash('sha256').update(String(v)).digest('base64url');
 before(async () => {
   server = http.createServer((req, res) => {
     const chunks = [];
@@ -18,6 +21,9 @@ before(async () => {
       if (req.url.startsWith('/limited')) return send(429, { error: 'rate_limited' }, { 'retry-after': '7' });
       if (req.url.startsWith('/text')) { res.writeHead(200, { 'content-type': 'text/plain' }); return res.end('hi'); }
       if (req.url.startsWith('/empty')) { res.writeHead(204); return res.end(); }
+      if (req.url === '/auth/ext-code') return send(200, { code: 'c0de' });
+      let xb = {}; try { xb = JSON.parse(last.body); } catch {}
+      if (req.url === '/auth/ext-code/exchange' && xb.code === 'c0de') { const b = xb; const ok = b.code === 'c0de' && b.grant === 'g'.repeat(32) && require_hash(b.code_verifier) === pkce.challenge; return ok ? send(200, { token: 'apptok', scopes: 5 }) : send(403, { error: 'bad_code_verifier' }); }
       send(200, { ok: true, product: { id: 'p' }, products: [1] });
     });
   });
@@ -123,4 +129,23 @@ test('the CommonJS build works too', () => {
   const { Client: C, ROUTES: R } = createRequire(import.meta.url)('../dist/index.cjs');
   assert.equal(Object.keys(R).length, Object.keys(ROUTES).length);
   assert.equal(typeof new C('t').post_checkout_direct, 'function');
+});
+
+test('startAppLinkLogin: PKCE, state, and only the matching link finishes', async () => {
+  const p = await startAppLinkLogin('app_' + 'a'.repeat(20), 'myapp://signed-in', { baseUrl: base, allowInsecure: true });
+  const start = JSON.parse(last.body);
+  pkce.challenge = start.code_challenge;
+  assert.equal(start.redirect_uri, 'myapp://signed-in');
+  assert.equal(start.code_challenge_method, 'S256');
+  assert.match(start.code_challenge, /^[A-Za-z0-9_-]{43}$/);
+  assert.equal(start.state, p.state);
+  assert.ok(p.url.endsWith('/login?code=c0de'));
+  const link = 'myapp://signed-in?nookara_code=c0de&nookara_grant=' + 'g'.repeat(32) + '&state=' + encodeURIComponent(p.state);
+  assert.ok(p.matches(link));
+  await assert.rejects(p.finish('myapp://signed-in?nookara_code=c0de&nookara_grant=' + 'g'.repeat(32) + '&state=other'), /different sign-in/);
+  assert.deepEqual(await p.finish(link), { token: 'apptok', scopes: 5 });
+  assert.equal(last.headers.authorization, undefined);
+  assert.deepEqual(await p.finish(null, { grant: 'g'.repeat(32) }), { token: 'apptok', scopes: 5 });
+  await assert.rejects(p.finish(null, { grant: 'x' }), TypeError);
+  await assert.rejects(startAppLinkLogin('nope', 'myapp://x'), TypeError);
 });

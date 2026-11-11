@@ -13,8 +13,8 @@ const core = fs.readFileSync(path.join(root, 'src/core.mjs'), 'utf8').replace('_
 
 fs.mkdirSync(path.join(root, 'dist'), { recursive: true });
 fs.writeFileSync(path.join(root, 'dist/index.mjs'), head + core);
-const names = ['APIError', 'ScopeError', 'TransportError', 'Client', 'scope_mask', 'scope_names', 'has_scope', 'SCOPES', 'ROUTES', 'VERSION'];
-const cjs = (head + core).replace(/^export \{[^\n]*\n/m, '').replace(/^export (class|const) /gm, '$1 ') + `module.exports = { ${names.join(', ')} };\n`;
+const names = ['APIError', 'ScopeError', 'TransportError', 'Client', 'startAppLinkLogin', 'scope_mask', 'scope_names', 'has_scope', 'SCOPES', 'ROUTES', 'VERSION'];
+const cjs = (head + core).replace(/^export \{[^\n]*\n/m, '').replace(/^export (class|const|async function) /gm, '$1 ') + `module.exports = { ${names.join(', ')} };\n`;
 fs.writeFileSync(path.join(root, 'dist/index.cjs'), cjs);
 
 const esc = s => String(s || '').replace(/\*\//g, '* /').replace(/\s+/g, ' ').trim();
@@ -41,6 +41,9 @@ export class TransportError extends Error {}
 export const SCOPES: Record<string, number>;
 export const ROUTES: Record<string, [string, string, string, [string, boolean][]]>;
 export const VERSION: string;
+export interface AppLinkLogin { appId: string; link: string; code: string; state: string; url: string; matches(link: string): boolean; finish(link: string | null, opts?: { grant?: string }): Promise<{ token: string; scopes: number }> }
+/** Start a desktop App's sign-in through its app link (PKCE). Open .url, then .finish(the link your app was opened with). */
+export function startAppLinkLogin(appId: string, link: string, opts?: { baseUrl?: string; allowInsecure?: boolean; fetch?: typeof fetch }): Promise<AppLinkLogin>;
 export function scope_mask(...names: string[]): number;
 export function scope_names(mask: number): string[];
 export function has_scope(mask: number, name: string): boolean;
