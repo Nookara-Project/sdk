@@ -3,7 +3,7 @@ import assert from 'node:assert';
 import http from 'node:http';
 import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
-import { startAppLinkLogin, Client, APIError, ScopeError, TransportError, ROUTES, SCOPES, scope_mask, scope_names, has_scope, VERSION } from '../dist/index.mjs';
+import { startAppLinkLogin, shown_name, Client, APIError, ScopeError, TransportError, ROUTES, SCOPES, scope_mask, scope_names, has_scope, VERSION } from '../dist/index.mjs';
 
 let server, base, last;
 const pkce = {};
@@ -22,6 +22,8 @@ before(async () => {
       if (req.url.startsWith('/text')) { res.writeHead(200, { 'content-type': 'text/plain' }); return res.end('hi'); }
       if (req.url.startsWith('/empty')) { res.writeHead(204); return res.end(); }
       if (req.url === '/auth/ext-code') return send(200, { code: 'c0de' });
+      if (req.url === '/account/me') return send(200, { account: { username: 'nat', display_name: 'Nat' } });
+      if (req.url === '/account/update') { let b = {}; try { b = JSON.parse(last.body); } catch {} return b.display_name === 'Nookara' ? send(400, { error: 'display_name_reserved' }) : send(200, { success: true, display_name: b.display_name }); }
       let xb = {}; try { xb = JSON.parse(last.body); } catch {}
       if (req.url === '/auth/ext-code/exchange' && xb.code === 'c0de') { const b = xb; const ok = b.code === 'c0de' && b.grant === 'g'.repeat(32) && require_hash(b.code_verifier) === pkce.challenge; return ok ? send(200, { token: 'apptok', scopes: 5 }) : send(403, { error: 'bad_code_verifier' }); }
       send(200, { ok: true, product: { id: 'p' }, products: [1] });
@@ -148,4 +150,20 @@ test('startAppLinkLogin: PKCE, state, and only the matching link finishes', asyn
   assert.deepEqual(await p.finish(null, { grant: 'g'.repeat(32) }), { token: 'apptok', scopes: 5 });
   await assert.rejects(p.finish(null, { grant: 'x' }), TypeError);
   await assert.rejects(startAppLinkLogin('nope', 'myapp://x'), TypeError);
+});
+
+test('display names: set, clear, read, refusals, shown_name', async () => {
+  const c = new Client('tok', { baseUrl: base, allowInsecure: true });
+  assert.deepStrictEqual(await c.set_display_name('Nat'), { success: true, display_name: 'Nat' });
+  assert.strictEqual(last.method, 'PATCH');
+  assert.deepStrictEqual(JSON.parse(last.body), { display_name: 'Nat' });
+  await c.clear_display_name();
+  assert.deepStrictEqual(JSON.parse(last.body), { display_name: null });
+  await c.set_display_name('');
+  assert.deepStrictEqual(JSON.parse(last.body), { display_name: null });
+  assert.strictEqual(await c.display_name(), 'Nat');
+  await assert.rejects(c.set_display_name('Nookara'), e => e instanceof APIError && e.error === 'display_name_reserved');
+  assert.strictEqual(shown_name({ username: 'nat', display_name: 'Nat' }), 'Nat');
+  assert.strictEqual(shown_name({ username: 'nat', display_name: null }), 'nat');
+  assert.strictEqual(shown_name(null), '');
 });

@@ -57,6 +57,19 @@ The Python SDK also has sign-in helpers, websockets and the bot gateway, message
 
 Guide: https://nookara.cc/guides/node-sdk. Every route: https://nookara.cc/guides/velora-api
 
+## Changes in 0.1.4
+
+Display names: people can pick a name shown instead of their username (mentions and links keep the username). Profiles, `/account/me`'s `account` and Ember members carry `display_name` (null on Nookara when unset).
+
+```js
+import { Client, shown_name } from 'nookara';
+const me = new Client(token);
+await me.set_display_name('Nat');   // null or '' clears it; refusals: APIError .error display_name_too_long, _bad_characters, _at, _reserved, _impersonation
+console.log(await me.display_name()); // 'Nat'
+console.log(shown_name(await me.get_account_lookup_by_username({ username: 'someone' })));
+await me.clear_display_name();
+```
+
 ## Changes in 0.1.3
 
 - `startAppLinkLogin(appId, link)` signs in a desktop App through its app link (My Account > Apps > Desktop app links), with PKCE. Open `.url` in the browser; when the system opens your app with `myapp://signed-in?nookara_code=...&nookara_grant=...&state=...`, call `.finish(thatLink)` (or `.finish(null, { grant })` with the sign-in code the person pasted) for `{ token, scopes }`. The token works with no Origin from your program, so `new Client(token)` is enough.
