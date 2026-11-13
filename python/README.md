@@ -473,6 +473,22 @@ input has a strict JSON Schema and not every privileged operation is tested live
 server remains authoritative. Internal bridge/payment integration credentials and
 deployment callbacks are not public client APIs.
 
+## Changes in 0.9.7
+
+Display names (Nookara 2026-11): people can pick a name that shows instead of their username. The username stays their handle (mentions, links, sign-in). Profiles (`lookup`, `lookup_many`), `/account/me`'s `account`, live `user_update` events and Ember server members / authors carry `display_name` (None on Nookara when they have none; Ember servers repeat the username then).
+
+```python
+import nookara
+
+me = nookara.Client(token)
+me.set_display_name("Nat ✿")       # 1-32 characters; None / "" clears it
+print(me.display_name())            # "Nat ✿"
+p = me.lookup("ikelene")
+print(nookara.shown_name(p))        # display name, else the username
+me.clear_display_name()
+```
+
+Refusals come back as `APIError` with `display_name_too_long`, `display_name_bad_characters`, `display_name_at`, `display_name_reserved` (reads as Nookara, the system or staff) or `display_name_impersonation` (a staff member's name).
 ## Changes in 0.9.6
 
 Desktop and phone apps can sign in through their own app link (Nookara 2026-11): add a link like `myapp://signed-in` under My Account > Apps > Desktop app links, register that scheme with the system, then:

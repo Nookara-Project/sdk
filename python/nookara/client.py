@@ -278,8 +278,30 @@ class Client(Endpoints):
         raise RuntimeError("Direct messages are end-to-end encrypted now, so plain text is refused. Use nookara.EncryptedDMs: it makes this client's keys and asks the person to approve it.")
 
     def lookup(self, username):
-        """One public profile (GET /account/lookup/:username). Friends-only profiles are limited for non-friends."""
+        """One public profile (GET /account/lookup/:username). Friends-only profiles are limited for non-friends.
+
+        ``display_name`` is the name to show (None = they have none: show ``username``); see ``shown_name``.
+        """
         return self.get_account_lookup_by_username(username=username)
+
+    def set_display_name(self, name):
+        """Set your display name, shown instead of your username in Ember and on your profile (needs Modify Account Settings).
+
+        1-32 characters, trimmed; ``None`` or ``""`` clears it (your username shows again). The username stays your
+        handle: mentions and links still use it. Refusals (APIError.code): ``display_name_too_long``,
+        ``display_name_bad_characters`` (invisible / control characters), ``display_name_at`` (starts with @),
+        ``display_name_reserved`` (reads as Nookara, the system or staff), ``display_name_impersonation`` (a staff
+        member's name). Returns ``{"success": True, "display_name": <saved value>}``.
+        """
+        return self.patch_account_update(json={"display_name": name or None})
+
+    def clear_display_name(self):
+        """Remove your display name (your username shows again)."""
+        return self.set_display_name(None)
+
+    def display_name(self):
+        """Your own display name, or None (GET /account/me ``account.display_name``)."""
+        return ((self.get_account_me() or {}).get("account") or {}).get("display_name") or None
 
     def lookup_many(self, usernames):
         """Public profiles of many people at once: {lower-case username: profile}.
@@ -752,6 +774,16 @@ class Client(Endpoints):
 
     def delete_hosting_backup(self, backup_id):
         return self.delete_bonfire_hosting_backups_by_id(id=backup_id)
+
+
+def shown_name(user):
+    """The name to show for a person: their `display_name` when they have one, else their `username`.
+
+    Works on Nookara profiles (`lookup`), `/account/me`'s `account` and Ember server members / message authors (an
+    Ember server's own `display_name` already falls back to the username).
+    """
+    user = user or {}
+    return (user.get("display_name") or "").strip() or user.get("username") or ""
 
 
 def _pkce():
