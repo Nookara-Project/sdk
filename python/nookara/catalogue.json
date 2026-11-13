@@ -3469,18 +3469,24 @@
       "params": [],
       "query": [],
       "body": [
+        "enc",
         "message",
+        "reply_to",
         "status_reply",
         "to"
       ],
       "files": [],
       "errors": [
+        "bot_no_e2ee",
         "cannot_dm_bot",
+        "cannot_dm_persona",
         "cannot_reply_own_status",
+        "e2ee_required",
         "message_too_long",
         "missing_fields",
+        "sender_no_keys",
+        "stale_keys",
         "status_changed",
-        "too_many_recipients",
         "user_blocked",
         "user_not_found"
       ],
@@ -6341,6 +6347,30 @@
       "files": [],
       "errors": [],
       "notes": "Needs Chat. Deletes the bot account; instances remove it at their next sync.",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
+      "operationId": "get_chat_bots_by_id_by_id",
+      "group": "chat",
+      "method": "GET",
+      "path": "/chat/bots/by-id/:id",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [
+        {
+          "name": "id",
+          "optional": false
+        }
+      ],
+      "query": [],
+      "body": [],
+      "files": [],
+      "errors": [],
+      "notes": "",
       "staffOnly": false,
       "captcha": false,
       "legacy": false

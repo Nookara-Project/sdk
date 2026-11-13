@@ -274,8 +274,27 @@ class Client(Endpoints):
         warnings.warn("Nookara-hosted chat is legacy and read-only; use Instance for Ember servers", DeprecationWarning, stacklevel=2)
         return self.post_chat_channels_by_cid_messages(cid=cid, json={"message": message, "reply_to": reply_to, "attachments": attachments or []})
 
-    def send_dm(self, username, message):
-        raise RuntimeError("Direct messages are end-to-end encrypted now, so plain text is refused. Use nookara.EncryptedDMs: it makes this client's keys and asks the person to approve it.")
+    def send_dm(self, username, message, *, reply_to=None):
+        """Send a DM to a BOT as plain text, from any client, with no encrypted-DM setup (POST /im/send {to, message}).
+
+        DMs with bots are never encrypted (bots cannot hold keys). People are different: their DMs are end-to-end
+        encrypted, so plain text to a person is refused with a RuntimeError: use ``nookara.EncryptedDMs`` for them.
+        A bot DM refused by the server (blocked, ``cannot_dm_bot``...) raises ``APIError``; a person's ``dm_privacy`` also applies.
+        """
+        body = {"to": username, "message": str(message)}
+        if reply_to is not None:
+            body["reply_to"] = reply_to
+        try:
+            return self.post_im_send(json=body)
+        except APIError as error:
+            if error.error == "e2ee_required":
+                raise RuntimeError("Direct messages to people are end-to-end encrypted, so plain text is refused (only bots take plain text). Use nookara.EncryptedDMs: it makes this client's keys and asks the person to approve it.") from None
+            raise
+
+    def bot_account(self, bot_id):
+        """GET /chat/bots/by-id/:id: ``{"id", "username", "pfp", "dm"}`` for a bot account (``dm`` is false only for HYPERFOCUS).
+        Handy to turn a gallery id into the username you pass to ``send_dm``; 404 ``bot_not_found`` otherwise."""
+        return self.get_chat_bots_by_id_by_id(id=bot_id)
 
     def lookup(self, username):
         """One public profile (GET /account/lookup/:username). Friends-only profiles are limited for non-friends.

@@ -13,6 +13,7 @@ import random
 import uuid
 from contextlib import suppress
 
+from .botdms import is_dm_event
 from .client import APIError
 
 FATAL_CLOSE_CODES = {4001: 'invalid_session', 4003: 'banned', 4004: 'authentication_failed'}
@@ -29,8 +30,10 @@ class _Gateway:
     path = '/gateway'
 
     def __init__(self, instance, *, reconnect=True, min_backoff=1.0, max_backoff=30.0, timeout=30,
-                 queue_size=1024, connect=None, sleep=None, jitter=None):
+                 queue_size=1024, connect=None, sleep=None, jitter=None, path=None):
         self.instance = instance
+        if path:
+            self.path = path
         self.reconnect, self.timeout = reconnect, timeout
         self.min_backoff, self.max_backoff = min_backoff, max_backoff
         self._connect_fn, self._sleep = connect, sleep or asyncio.sleep
@@ -300,7 +303,7 @@ class InstanceGateway(_Gateway):
 
 
 class BotGateway(_Gateway):
-    """Bot gateway (section 14), Discord-style opcodes. Events arrive as ``{type, data, seq}``."""
+    """Bot gateway (section 14), Discord-style opcodes. Events arrive as ``{type, data, seq, dm}``.\n\n    ``dm`` is true for a message event in a DM (no ``guild_id``, ``bonfire.dm``). On Nookara, ``BotClient.gateway()`` connects to\n    ``wss://nookara.cc/chat/gateway`` (pass ``path="/chat/gateway"`` for a gateway built by hand).\n    """
     path = '/bot/gateway'
 
     async def _session(self, sock):
@@ -320,7 +323,7 @@ class BotGateway(_Gateway):
                         self._ready.set()
                         self._emit({'type': 'gateway_ready', 'data': frame['d']})
                     else:
-                        self._emit({'type': frame['t'], 'data': frame['d'], 'seq': frame.get('s')})
+                        self._emit({'type': frame['t'], 'data': frame['d'], 'seq': frame.get('s'), 'dm': is_dm_event({'type': frame['t'], 'data': frame['d']})})
         finally:
             beat.cancel()
             with suppress(asyncio.CancelledError):

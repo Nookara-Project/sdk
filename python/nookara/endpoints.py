@@ -974,6 +974,10 @@ class Endpoints:
         """DELETE /chat/bots/:id. See the API reference for scopes and payloads."""
         return self.call('delete_chat_bots_by_id', id=id, query=query, json=json, data=data, files=files, raw=raw)
 
+    def get_chat_bots_by_id_by_id(self, *, id, query=None, json=None, data=None, files=None, raw=False):
+        """GET /chat/bots/by-id/:id. See the API reference for scopes and payloads."""
+        return self.call('get_chat_bots_by_id_by_id', id=id, query=query, json=json, data=data, files=files, raw=raw)
+
     def post_chat_bots_by_name_by_username_add(self, *, username, query=None, json=None, data=None, files=None, raw=False):
         """POST /chat/bots/by-name/:username/add. See the API reference for scopes and payloads."""
         return self.call('post_chat_bots_by_name_by_username_add', username=username, query=query, json=json, data=data, files=files, raw=raw)

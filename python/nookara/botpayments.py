@@ -14,6 +14,7 @@ import time
 
 from urllib.parse import quote
 
+from .botdms import API_PREFIX, dm_error
 from .client import BASE_URL, APIError, Client
 
 FINAL_STATUSES = ("paid", "declined", "expired", "cancelled")
@@ -103,6 +104,13 @@ def _id(value):
     return text
 
 
+def _dm_id(value):
+    text = str(value)
+    if not re.fullmatch(r"[0-9]{1,20}", text):
+        raise ValueError("Invalid DM channel id")
+    return text
+
+
 class BotClient(Client):
     """A :class:`Client` that always authenticates as a bot (``Authorization: Bot TOKEN``) with the payment helpers."""
 
@@ -113,6 +121,69 @@ class BotClient(Client):
 
     def __repr__(self):
         return f"BotClient(base_url={self.base_url!r})"
+
+    # ---- DMs (0.9.8): Discord-shaped bot API on Nookara, /chat/api/v1 ----
+    def _dm(self, method, path, **kwargs):
+        try:
+            return self.request(method, API_PREFIX + path, **kwargs)
+        except APIError as error:
+            raise dm_error(error) from None
+
+    def open_dm(self, user_id=None, username=None):
+        """Open (or get) a DM with a person: ``{"id": "1000000000012", "type": 1, "recipients": [user], "bonfire": {"dm": True, "with": name}}``.
+
+        Give ``user_id`` or ``username``. The channel id is ``1000000000000`` + the user id (see :func:`dm_channel_id`), so
+        you can skip this call for someone who wrote to you. Raises :class:`DMRefused` (``error`` is ``bot_no_shared_server``,
+        ``dm_privacy``, ``bot_dms_off``, ``cannot_dm_bot`` or ``user_blocked``; ``detail`` is a sentence), or ``APIError`` 404
+        ``user_not_found``. A bot may start a DM only when it shares an Ember server with the person and their "who can DM me"
+        is everyone or servers; it may always answer someone who wrote to it first.
+        """
+        if (user_id is None) == (username is None):
+            raise ValueError("Give user_id or username")
+        body = {"recipient_id": str(user_id)} if user_id is not None else {"username": str(username).lstrip("@")}
+        return self._dm("POST", "/users/@me/channels", json=body)
+
+    def send_dm_message(self, channel_id, content, reply_to=None):
+        """Send a plain-text DM into a channel from :meth:`open_dm` (never encrypted, no file attachments, ``<@id>`` becomes ``@name``).
+        ``reply_to`` is a message id. Limits: 30 messages a minute, 20 new conversations an hour, 100 a day (``APIError`` 429 with ``retry_after``)."""
+        body = {"content": str(content)}
+        if reply_to is not None:
+            body["message_reference"] = {"message_id": str(reply_to)}
+        return self._dm("POST", f"/channels/{_dm_id(channel_id)}/messages", json=body)
+
+    def dm_history(self, channel_id, *, before=None, after=None, limit=50):
+        """DM messages, newest first (``limit`` 1 to 100). ``before`` / ``after`` are message ids."""
+        return self._dm("GET", f"/channels/{_dm_id(channel_id)}/messages", query={"before": before, "after": after, "limit": limit})
+
+    def dm_message(self, channel_id, message_id):
+        """One DM message."""
+        return self._dm("GET", f"/channels/{_dm_id(channel_id)}/messages/{_dm_id(message_id)}")
+
+    def edit_dm_message(self, channel_id, message_id, content):
+        """Edit one of the bot's own DM messages."""
+        return self._dm("PATCH", f"/channels/{_dm_id(channel_id)}/messages/{_dm_id(message_id)}", json={"content": str(content)})
+
+    def delete_dm_message(self, channel_id, message_id):
+        """Delete one of the bot's own DM messages."""
+        return self._dm("DELETE", f"/channels/{_dm_id(channel_id)}/messages/{_dm_id(message_id)}")
+
+    def dm_typing(self, channel_id):
+        """Show the typing indicator in a DM."""
+        return self._dm("POST", f"/channels/{_dm_id(channel_id)}/typing", json={})
+
+    def dm_channel(self, channel_id):
+        """The DM channel object."""
+        return self._dm("GET", f"/channels/{_dm_id(channel_id)}")
+
+    def gateway(self, **kwargs):
+        """The bot gateway on Nookara (``wss://nookara.cc/chat/gateway``): ``MESSAGE_CREATE`` / ``MESSAGE_UPDATE`` /
+        ``MESSAGE_DELETE`` also arrive for DMs, with no ``guild_id`` and ``bonfire.dm`` set (see :func:`is_dm_event`; the
+        events carry a ``dm`` flag too). Use ``async with bot.gateway() as gw``, ``async for event in gw`` or ``gw.on(...)`` + ``gw.run()``.
+        Takes the ``BotGateway`` options (``reconnect``, ``timeout``, ...)."""
+        from .instance import Instance
+        from .instance_gateway import BotGateway
+        return BotGateway(Instance(self.base_url, bot_token=self.token, allow_insecure=self.base_url.startswith("http://")),
+                          path="/chat/gateway", **kwargs)
 
     def _pay(self, method, path, **kwargs):
         try:

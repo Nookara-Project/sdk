@@ -128,7 +128,11 @@ class RestTests(unittest.TestCase):
 
     def test_convenience_payloads(self):
         c=self.client()
-        with self.assertRaises(RuntimeError): c.send_dm('Tester','Hello')
+        with patch.object(c,'post_im_send',side_effect=APIError(400,{'error':'e2ee_required'})):
+            with self.assertRaises(RuntimeError): c.send_dm('Tester','Hello')   # people: encrypted only
+        with patch.object(c,'post_im_send') as plain:
+            c.send_dm('SomeBot','Hello')                                         # bots: plain text (0.9.8)
+            plain.assert_called_once_with(json={'to':'SomeBot','message':'Hello'})
         with patch.object(c,'post_chat_channels_by_cid_messages') as send:
             c.send_message('cid','Hello',reply_to='12')
             send.assert_called_once_with(cid='cid',json={'message':'Hello','reply_to':'12','attachments':[]})

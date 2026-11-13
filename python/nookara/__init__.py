@@ -5,6 +5,7 @@ from .ember import Ember
 from .botpayments import (BotClient, BuyerError, InvalidBotToken, InvalidPaymentRequest, MerchantUnavailable, NotCancellable,
                           OrderConflict, PaymentError, PaymentInProgress, PaymentNotFound, PaymentRateLimited,
                           PaymentTimeout, is_paid)
+from .botdms import DM_REFUSALS, DMRefused, dm_channel_id, dm_user_id, is_dm_event
 from .botprogram import BotProgram
 from .client import APIError, AppLinkLogin, Client, ScopeError, TransportError, login, login_app, shown_name, start_app_link_login
 from .e2ee import EncryptedDMs, KeyChanged
@@ -21,4 +22,5 @@ __all__ = ["EncryptedDMs", "KeyChanged", "APIError", "ScopeError", "Client", "Tr
            "OrderConflict", "PaymentInProgress", "NotCancellable", "PaymentNotFound", "PaymentRateLimited", "PaymentTimeout",
            "is_paid", "Instance", "InstanceGateway", "BotGateway", "Ember", "BotProgram", "Signer", "verify_message",
            "execute_webhook", "make_alias", "normalize_origin", "SCOPES", "SCOPE_LABELS", "DEFAULT_OFF", "INSTANCE_SCOPES",
-           "EMBER_APP_MASK", "scope_mask", "scope_names", "scope_bit", "has_scope"]
+           "EMBER_APP_MASK", "scope_mask", "scope_names", "scope_bit", "has_scope",
+           "DMRefused", "DM_REFUSALS", "dm_channel_id", "dm_user_id", "is_dm_event"]

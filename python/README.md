@@ -473,6 +473,47 @@ input has a strict JSON Schema and not every privileged operation is tested live
 server remains authoritative. Internal bridge/payment integration credentials and
 deployment callbacks are not public client APIs.
 
+## Changes in 0.9.8
+
+Bot DMs (Nookara 2026-11): people can DM bots and bots can DM people. A DM with a bot is **never encrypted** (bots cannot hold keys): plain text, from any client, no `EncryptedDMs` setup.
+
+```python
+from nookara import BotClient, Client, DMRefused, is_dm_event
+import asyncio, os
+
+# a person's client: plain text to a bot (a person still needs EncryptedDMs)
+Client(os.environ["NOOKARA_TOKEN"]).send_dm("some_bot", "hello")
+
+# a bot: open a DM, send, read, edit, delete, typing
+bot = BotClient(os.environ["NOOKARA_BOT_TOKEN"])
+try:
+    dm = bot.open_dm(username="alice")                 # or open_dm(user_id=12)
+except DMRefused as refused:
+    print(refused.error, refused.detail)               # bot_no_shared_server, dm_privacy, bot_dms_off, cannot_dm_bot, user_blocked
+else:
+    sent = bot.send_dm_message(dm["id"], "Your order is ready.", reply_to=None)
+    bot.dm_typing(dm["id"])
+    bot.edit_dm_message(dm["id"], sent["id"], "Your order is ready!")
+    print(bot.dm_history(dm["id"], limit=10))          # newest first
+    bot.delete_dm_message(dm["id"], sent["id"])
+
+# the bot gateway on Nookara (wss://nookara.cc/chat/gateway): DMs arrive as MESSAGE_CREATE / UPDATE / DELETE with no guild_id
+async def main():
+    async with bot.gateway() as gateway:
+        async for event in gateway:
+            if event["type"] == "MESSAGE_CREATE" and is_dm_event(event):     # same as event["dm"]
+                data = event["data"]
+                if data["author"]["id"] != gateway.user["id"]:               # your own messages come back too
+                    bot.send_dm_message(data["channel_id"], "You said: " + data["content"])
+asyncio.run(main())
+```
+
+`Client.send_dm(username, message, reply_to=None)` sends plain text to a bot (sending to a person still raises `RuntimeError`: use `EncryptedDMs`). `Client.bot_account(id)` is `GET /chat/bots/by-id/:id`. The DM channel id is `1000000000000` + the person's user id (`dm_channel_id(user_id)`, `dm_user_id(channel_id)`), so you can answer someone without `open_dm`.
+
+Rules: a bot never DMs another bot, never when its owner is 13-15, may always answer someone who wrote to it first, and otherwise needs a shared Ember server plus the person's "who can DM me" set to everyone or servers. Blocks apply both ways. Limits: 30 DM messages a minute, 20 new conversations an hour, 100 a day (`APIError` 429 with `retry_after`). A refused DM is `DMRefused` (403 code 50007, `error` one of `DM_REFUSALS`, `detail` a sentence). No file attachments in bot DMs yet (`dm_attachments`). Sending an `enc` envelope to a bot is refused with `bot_no_e2ee`.
+
+`BotGateway` takes an optional `path=` and its events carry a `dm` flag.
+
 ## Changes in 0.9.7
 
 Display names (Nookara 2026-11): people can pick a name that shows instead of their username. The username stays their handle (mentions, links, sign-in). Profiles (`lookup`, `lookup_many`), `/account/me`'s `account`, live `user_update` events and Ember server members / authors carry `display_name` (None on Nookara when they have none; Ember servers repeat the username then).
@@ -641,7 +682,7 @@ aliases. Wire formats, routes and error codes don't change.
 
 ## Encrypted direct messages
 
-DMs are end-to-end encrypted, so `Client.send_dm` no longer sends plain text. A client makes its own keys and asks the person to approve it in Ember:
+DMs with people are end-to-end encrypted, so `Client.send_dm` sends plain text only to bots (DMs with bots are never encrypted). A client makes its own keys and asks the person to approve it in Ember:
 
 ```python
 from velora_api import EncryptedDMs
