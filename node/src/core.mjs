@@ -129,6 +129,11 @@ export class Client {
     return this.request(method, path, { query, json, data, files, raw, auth: authKind === 'bearer' || authKind === 'bot' });
   }
 
+  // display names (0.1.4): shown instead of the username; null / '' clears it. Refusals: APIError .error display_name_*
+  set_display_name(name) { return this.request('PATCH', '/account/update', { json: { display_name: name || null } }); }
+  clear_display_name() { return this.set_display_name(null); }
+  async display_name() { const d = await this.request('GET', '/account/me'); return d?.account?.display_name || null; }
+
   product(productId) { return this.request('GET', `/products/${encodeURIComponent(productId)}`).then(d => d.product); }
   products_of(username) { return this.request('GET', '/products', { query: { seller: username } }).then(d => d.products); }
   add_to_cart(productId, { plan, quantity } = {}) { return this.request('POST', '/cart/items', { json: { product_id: productId, ...(plan != null ? { plan } : {}), ...(quantity != null ? { quantity } : {}) } }); }
@@ -176,6 +181,8 @@ export async function startAppLinkLogin(appId, link, { baseUrl = BASE_URL, allow
   };
 }
 
+/** the name to show for a person: display_name when they have one, else username (profiles, /account/me's account, Ember members) */
+export const shown_name = user => String(user?.display_name || '').trim() || user?.username || '';
 export const scope_mask = (...names) => names.reduce((m, n) => { if (!(n in SCOPES)) throw new TypeError(`Unknown scope: ${n}`); return m | SCOPES[n]; }, 0);
 export const scope_names = mask => Object.keys(SCOPES).filter(n => (Number(mask) & SCOPES[n]) === SCOPES[n] && SCOPES[n]);
 export const has_scope = (mask, name) => (Number(mask) & SCOPES[name]) === SCOPES[name];

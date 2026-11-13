@@ -13,7 +13,7 @@ const core = fs.readFileSync(path.join(root, 'src/core.mjs'), 'utf8').replace('_
 
 fs.mkdirSync(path.join(root, 'dist'), { recursive: true });
 fs.writeFileSync(path.join(root, 'dist/index.mjs'), head + core);
-const names = ['APIError', 'ScopeError', 'TransportError', 'Client', 'startAppLinkLogin', 'scope_mask', 'scope_names', 'has_scope', 'SCOPES', 'ROUTES', 'VERSION'];
+const names = ['APIError', 'ScopeError', 'TransportError', 'Client', 'startAppLinkLogin', 'shown_name', 'scope_mask', 'scope_names', 'has_scope', 'SCOPES', 'ROUTES', 'VERSION'];
 const cjs = (head + core).replace(/^export \{[^\n]*\n/m, '').replace(/^export (class|const|async function) /gm, '$1 ') + `module.exports = { ${names.join(', ')} };\n`;
 fs.writeFileSync(path.join(root, 'dist/index.cjs'), cjs);
 
@@ -44,6 +44,8 @@ export const VERSION: string;
 export interface AppLinkLogin { appId: string; link: string; code: string; state: string; url: string; matches(link: string): boolean; finish(link: string | null, opts?: { grant?: string }): Promise<{ token: string; scopes: number }> }
 /** Start a desktop App's sign-in through its app link (PKCE). Open .url, then .finish(the link your app was opened with). */
 export function startAppLinkLogin(appId: string, link: string, opts?: { baseUrl?: string; allowInsecure?: boolean; fetch?: typeof fetch }): Promise<AppLinkLogin>;
+/** display_name when they have one, else username */
+export function shown_name(user: { username?: string; display_name?: string | null } | null | undefined): string;
 export function scope_mask(...names: string[]): number;
 export function scope_names(mask: number): string[];
 export function has_scope(mask: number, name: string): boolean;
@@ -59,6 +61,11 @@ export class Client {
   product_access(productId: string): Promise<any>;
   quote_directly(items: unknown[]): Promise<any>;
   pay_directly(items: unknown[], expectedTotal: number, options?: { idempotency_key?: string }): Promise<any>;
+  /** set your display name (1-32 characters; null or '' clears it) */
+  set_display_name(name: string | null): Promise<{ success: boolean; display_name?: string | null }>;
+  clear_display_name(): Promise<{ success: boolean; display_name?: string | null }>;
+  /** your own display name, or null */
+  display_name(): Promise<string | null>;
 ${routes.map(method).join('\n')}
 }
 `;
