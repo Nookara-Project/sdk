@@ -24,6 +24,9 @@ SCOPES = CATALOGUE["scopes"]
 MAX_MULTIPART_BYTES = 64 * 1024 * 1024
 
 
+# a personal sticker message: its picture link on Nookara (Ember's stickerLink.js uses the same pattern)
+_STICKER_LINK = re.compile(r'^https://(?:(?:cdn\.)?nookara\.cc|velora\.ikelene\.net)/uploads/stickers/(s[0-9a-f]{10})\.(png|gif)(?:#(\w{1,32}))?$')
+
 class APIError(Exception):
     """HTTP or protocol error. Inspect status, error, payload and retry_after."""
 
@@ -632,6 +635,50 @@ class Client(Endpoints):
     def delete_personal_emoji(self, eid):
         """Delete one of your personal emojis (``not_found`` if it is not yours)."""
         return self.delete_chat_personal_emojis_by_eid(eid=eid)
+
+    def personal_stickers(self):
+        """Your personal stickers (needs Chat): stickers that belong to your Nookara account and can be sent anywhere
+        (Ember servers, DMs, group chats). Returns ``{"stickers": [{sid, name, animated, url, send, created_at}], "max",
+        "pro_max"}`` (``max`` is your limit: 10, or 50 with Pro). To send one, send its ``send`` text as the whole message
+        (see ``personal_sticker_text``)."""
+        return self.get_chat_personal_stickers()
+
+    def add_personal_sticker(self, file, name=None):
+        """Add a personal sticker from a PNG, JPG, GIF or WebP file (a path or ``(name, bytes, mime)``, at most 4 MB).
+        Nookara shrinks it to fit 320 px (GIFs and animated WebP stay animated, as GIF; 1 MB after shrinking).
+        ``name`` is letters, digits and ``_`` up to 32 (the file name is used when you leave it out). Returns the new
+        sticker ``{sid, name, animated, url, send, created_at}``. Raises ``APIError`` with ``too_many_stickers`` at your
+        limit, ``file_too_large`` (413), ``invalid_sticker``, ``images_only`` or ``upload_suspended`` (403)."""
+        return self.post_chat_personal_stickers(data={'name': name} if name else None, files={'file': file})['sticker']
+
+    def rename_personal_sticker(self, sid, name):
+        """Rename one of your personal stickers (``not_found`` if it is not yours). Messages already sent keep the old name."""
+        return self.patch_chat_personal_stickers_by_sid(sid=sid, json={'name': name})
+
+    def delete_personal_sticker(self, sid):
+        """Delete one of your personal stickers (``not_found`` if it is not yours). Its picture goes too, so messages
+        that sent it show "Sticker deleted" in Ember."""
+        return self.delete_chat_personal_stickers_by_sid(sid=sid)
+
+    def personal_sticker_info(self, sid):
+        """Whose personal sticker this is (needs Chat): ``{sticker: {sid, name, animated, url, send}, owner: {username,
+        pfp}}``. ``not_found`` (404) once its owner deleted it."""
+        return self.get_chat_personal_stickers_by_sid_info(sid=sid)
+
+    @staticmethod
+    def personal_sticker_text(sticker):
+        """The message text that sends a personal sticker: its picture link with ``#name`` on the end. Send it as the
+        whole message (``send_dm_message``, a channel message, a group message ...); Ember shows it as a sticker and
+        other apps as a picture. ``sticker`` is a sticker dict from ``personal_stickers()`` / ``add_personal_sticker()``."""
+        return sticker.get('send') or f"{sticker['url']}#{sticker['name']}"
+
+    @staticmethod
+    def parse_personal_sticker(text):
+        """If a message's whole text is a personal sticker, ``{sid, name, url, animated}``; otherwise None."""
+        m = _STICKER_LINK.match(str(text or '').strip())
+        if not m:
+            return None
+        return {'sid': m.group(1), 'name': m.group(3) or 'sticker', 'url': str(text).strip().split('#')[0], 'animated': m.group(2) == 'gif'}
 
     def emoji_info(self, eid):
         """Who an emoji belongs to (needs Chat). A server emoji answers ``{emoji, server}``; a personal emoji answers

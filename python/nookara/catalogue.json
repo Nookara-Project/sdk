@@ -7024,6 +7024,136 @@
       "legacy": false
     },
     {
+      "operationId": "get_chat_personal_stickers",
+      "group": "chat",
+      "method": "GET",
+      "path": "/chat/personal-stickers",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [],
+      "query": [],
+      "body": [],
+      "files": [],
+      "errors": [],
+      "notes": "",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
+      "operationId": "post_chat_personal_stickers",
+      "group": "chat",
+      "method": "POST",
+      "path": "/chat/personal-stickers",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [],
+      "query": [],
+      "body": [
+        "name"
+      ],
+      "files": [
+        "file"
+      ],
+      "errors": [
+        "file_too_large",
+        "images_only",
+        "invalid_sticker",
+        "no_file",
+        "too_many_stickers",
+        "upload_suspended"
+      ],
+      "notes": "",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
+      "operationId": "get_chat_personal_stickers_by_sid_info",
+      "group": "chat",
+      "method": "GET",
+      "path": "/chat/personal-stickers/:sid/info",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [
+        {
+          "name": "sid",
+          "optional": false
+        }
+      ],
+      "query": [],
+      "body": [],
+      "files": [],
+      "errors": [
+        "not_found"
+      ],
+      "notes": "",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
+      "operationId": "patch_chat_personal_stickers_by_sid",
+      "group": "chat",
+      "method": "PATCH",
+      "path": "/chat/personal-stickers/:sid",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [
+        {
+          "name": "sid",
+          "optional": false
+        }
+      ],
+      "query": [],
+      "body": [
+        "name"
+      ],
+      "files": [],
+      "errors": [
+        "name_required",
+        "not_found"
+      ],
+      "notes": "",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
+      "operationId": "delete_chat_personal_stickers_by_sid",
+      "group": "chat",
+      "method": "DELETE",
+      "path": "/chat/personal-stickers/:sid",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [
+        {
+          "name": "sid",
+          "optional": false
+        }
+      ],
+      "query": [],
+      "body": [],
+      "files": [],
+      "errors": [
+        "not_found"
+      ],
+      "notes": "",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
       "operationId": "get_chat_bridge_platforms",
       "group": "chat",
       "method": "GET",

@@ -1078,6 +1078,26 @@ class Endpoints:
         """DELETE /chat/personal-emojis/:eid. See the API reference for scopes and payloads."""
         return self.call('delete_chat_personal_emojis_by_eid', eid=eid, query=query, json=json, data=data, files=files, raw=raw)
 
+    def get_chat_personal_stickers(self, *, query=None, json=None, data=None, files=None, raw=False):
+        """GET /chat/personal-stickers. See the API reference for scopes and payloads."""
+        return self.call('get_chat_personal_stickers', query=query, json=json, data=data, files=files, raw=raw)
+
+    def post_chat_personal_stickers(self, *, query=None, json=None, data=None, files=None, raw=False):
+        """POST /chat/personal-stickers. See the API reference for scopes and payloads."""
+        return self.call('post_chat_personal_stickers', query=query, json=json, data=data, files=files, raw=raw)
+
+    def get_chat_personal_stickers_by_sid_info(self, *, sid, query=None, json=None, data=None, files=None, raw=False):
+        """GET /chat/personal-stickers/:sid/info. See the API reference for scopes and payloads."""
+        return self.call('get_chat_personal_stickers_by_sid_info', sid=sid, query=query, json=json, data=data, files=files, raw=raw)
+
+    def patch_chat_personal_stickers_by_sid(self, *, sid, query=None, json=None, data=None, files=None, raw=False):
+        """PATCH /chat/personal-stickers/:sid. See the API reference for scopes and payloads."""
+        return self.call('patch_chat_personal_stickers_by_sid', sid=sid, query=query, json=json, data=data, files=files, raw=raw)
+
+    def delete_chat_personal_stickers_by_sid(self, *, sid, query=None, json=None, data=None, files=None, raw=False):
+        """DELETE /chat/personal-stickers/:sid. See the API reference for scopes and payloads."""
+        return self.call('delete_chat_personal_stickers_by_sid', sid=sid, query=query, json=json, data=data, files=files, raw=raw)
+
     def get_chat_bridge_platforms(self, *, query=None, json=None, data=None, files=None, raw=False):
         """GET /chat/bridge/platforms. See the API reference for scopes and payloads."""
         return self.call('get_chat_bridge_platforms', query=query, json=json, data=data, files=files, raw=raw)
