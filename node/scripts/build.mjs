@@ -13,7 +13,7 @@ const core = fs.readFileSync(path.join(root, 'src/core.mjs'), 'utf8').replace('_
 
 fs.mkdirSync(path.join(root, 'dist'), { recursive: true });
 fs.writeFileSync(path.join(root, 'dist/index.mjs'), head + core);
-const names = ['APIError', 'ScopeError', 'TransportError', 'Client', 'startAppLinkLogin', 'shown_name', 'scope_mask', 'scope_names', 'has_scope', 'SCOPES', 'ROUTES', 'VERSION'];
+const names = ['APIError', 'ScopeError', 'TransportError', 'Client', 'startAppLinkLogin', 'shown_name', 'personal_sticker_text', 'parse_personal_sticker', 'scope_mask', 'scope_names', 'has_scope', 'SCOPES', 'ROUTES', 'VERSION'];
 const cjs = (head + core).replace(/^export \{[^\n]*\n/m, '').replace(/^export (class|const|async function) /gm, '$1 ') + `module.exports = { ${names.join(', ')} };\n`;
 fs.writeFileSync(path.join(root, 'dist/index.cjs'), cjs);
 
@@ -45,6 +45,11 @@ export interface AppLinkLogin { appId: string; link: string; code: string; state
 /** Start a desktop App's sign-in through its app link (PKCE). Open .url, then .finish(the link your app was opened with). */
 export function startAppLinkLogin(appId: string, link: string, opts?: { baseUrl?: string; allowInsecure?: boolean; fetch?: typeof fetch }): Promise<AppLinkLogin>;
 /** display_name when they have one, else username */
+export interface PersonalSticker { sid: string; name: string; animated: boolean; url: string; send: string; created_at: number | null }
+/** the message text that sends a personal sticker (its picture link + #name); send it as the whole message */
+export function personal_sticker_text(sticker: { url: string; name: string; send?: string }): string;
+/** { sid, name, url, animated } when a message's whole text is a personal sticker, else null */
+export function parse_personal_sticker(text: string | null | undefined): { sid: string; name: string; url: string; animated: boolean } | null;
 export function shown_name(user: { username?: string; display_name?: string | null } | null | undefined): string;
 export function scope_mask(...names: string[]): number;
 export function scope_names(mask: number): string[];
@@ -66,6 +71,14 @@ export class Client {
   clear_display_name(): Promise<{ success: boolean; display_name?: string | null }>;
   /** your own display name, or null */
   display_name(): Promise<string | null>;
+  /** your personal stickers (10, or 50 with Pro) */
+  personal_stickers(): Promise<{ stickers: PersonalSticker[]; max: number; pro_max: number }>;
+  /** add one: a Blob/File or [filename, bytes, mime] (PNG, JPG, GIF or WebP, 4 MB; shrunk to 320 px) */
+  add_personal_sticker(file: Blob | [string, Uint8Array | ArrayBuffer | string, string?], name?: string): Promise<PersonalSticker>;
+  rename_personal_sticker(sid: string, name: string): Promise<{ ok: true }>;
+  delete_personal_sticker(sid: string): Promise<{ ok: true }>;
+  /** whose sticker it is */
+  personal_sticker_info(sid: string): Promise<{ sticker: PersonalSticker; owner: { username: string; pfp: string | null } }>;
 ${routes.map(method).join('\n')}
 }
 `;

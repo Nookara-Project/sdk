@@ -134,6 +134,13 @@ export class Client {
   clear_display_name() { return this.set_display_name(null); }
   async display_name() { const d = await this.request('GET', '/account/me'); return d?.account?.display_name || null; }
 
+  // personal stickers (0.1.5): yours, sent anywhere as a message whose whole text is the sticker's `send` link
+  personal_stickers() { return this.request('GET', '/chat/personal-stickers'); }
+  add_personal_sticker(file, name) { return this.request('POST', '/chat/personal-stickers', { data: name ? { name } : {}, files: { file } }).then(d => d.sticker); }
+  rename_personal_sticker(sid, name) { return this.request('PATCH', `/chat/personal-stickers/${encodeURIComponent(sid)}`, { json: { name } }); }
+  delete_personal_sticker(sid) { return this.request('DELETE', `/chat/personal-stickers/${encodeURIComponent(sid)}`); }
+  personal_sticker_info(sid) { return this.request('GET', `/chat/personal-stickers/${encodeURIComponent(sid)}/info`); }
+
   product(productId) { return this.request('GET', `/products/${encodeURIComponent(productId)}`).then(d => d.product); }
   products_of(username) { return this.request('GET', '/products', { query: { seller: username } }).then(d => d.products); }
   add_to_cart(productId, { plan, quantity } = {}) { return this.request('POST', '/cart/items', { json: { product_id: productId, ...(plan != null ? { plan } : {}), ...(quantity != null ? { quantity } : {}) } }); }
@@ -183,6 +190,16 @@ export async function startAppLinkLogin(appId, link, { baseUrl = BASE_URL, allow
 
 /** the name to show for a person: display_name when they have one, else username (profiles, /account/me's account, Ember members) */
 export const shown_name = user => String(user?.display_name || '').trim() || user?.username || '';
+// a personal sticker message: its picture link on Nookara (Ember's stickerLink.js and Python's parse_personal_sticker use the same pattern)
+const STICKER_LINK = /^https:\/\/(?:(?:cdn\.)?nookara\.cc|velora\.ikelene\.net)\/uploads\/stickers\/(s[0-9a-f]{10})\.(png|gif)(?:#(\w{1,32}))?$/;
+/** the message text that sends a personal sticker (send it as the whole message) */
+export const personal_sticker_text = sticker => sticker?.send || `${sticker.url}#${sticker.name}`;
+/** { sid, name, url, animated } when a message's whole text is a personal sticker, else null */
+export const parse_personal_sticker = text => {
+  const t = String(text ?? '').trim();
+  const m = STICKER_LINK.exec(t);
+  return m ? { sid: m[1], name: m[3] || 'sticker', url: t.split('#')[0], animated: m[2] === 'gif' } : null;
+};
 export const scope_mask = (...names) => names.reduce((m, n) => { if (!(n in SCOPES)) throw new TypeError(`Unknown scope: ${n}`); return m | SCOPES[n]; }, 0);
 export const scope_names = mask => Object.keys(SCOPES).filter(n => (Number(mask) & SCOPES[n]) === SCOPES[n] && SCOPES[n]);
 export const has_scope = (mask, name) => (Number(mask) & SCOPES[name]) === SCOPES[name];

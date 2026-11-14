@@ -57,6 +57,25 @@ The Python SDK also has sign-in helpers, websockets and the bot gateway, message
 
 Guide: https://nookara.cc/guides/node-sdk. Every route: https://nookara.cc/guides/velora-api
 
+## Changes in 0.1.5
+
+Personal stickers: stickers that belong to your Nookara account and can be sent anywhere (Ember servers, DMs, group chats). 10 for free accounts, 50 with Pro. A sticker is sent as a normal message whose whole text is its `send` link; Ember shows it as a sticker, other apps as a picture.
+
+```js
+import fs from 'node:fs';
+import { Client, personal_sticker_text, parse_personal_sticker } from 'nookara';
+const me = new Client(token);
+const s = await me.add_personal_sticker(['wave.png', fs.readFileSync('wave.png'), 'image/png'], 'wave'); // too_many_stickers, file_too_large, invalid_sticker ...
+const { stickers, max } = await me.personal_stickers();
+const text = personal_sticker_text(s);   // https://nookara.cc/uploads/stickers/s....png#wave: send this as the whole message
+console.log(parse_personal_sticker(text)); // { sid, name: 'wave', url, animated: false }
+console.log(await me.personal_sticker_info(s.sid)); // { sticker, owner: { username, pfp } }
+await me.rename_personal_sticker(s.sid, 'hi');
+await me.delete_personal_sticker(s.sid);
+```
+
+The route list also caught up with the Python SDK 0.9.8 + 0.9.9 (bot DM routes and the personal sticker routes), so those are callable as route methods too.
+
 ## Changes in 0.1.4
 
 Display names: people can pick a name shown instead of their username (mentions and links keep the username). Profiles, `/account/me`'s `account` and Ember members carry `display_name` (null on Nookara when unset).

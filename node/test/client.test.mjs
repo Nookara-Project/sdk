@@ -3,9 +3,10 @@ import assert from 'node:assert';
 import http from 'node:http';
 import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
-import { startAppLinkLogin, shown_name, Client, APIError, ScopeError, TransportError, ROUTES, SCOPES, scope_mask, scope_names, has_scope, VERSION } from '../dist/index.mjs';
+import { startAppLinkLogin, shown_name, personal_sticker_text, parse_personal_sticker, Client, APIError, ScopeError, TransportError, ROUTES, SCOPES, scope_mask, scope_names, has_scope, VERSION } from '../dist/index.mjs';
 
 let server, base, last;
+const STK = { sid: 's0123456789', name: 'wave', animated: false, url: 'https://nookara.cc/uploads/stickers/s0123456789.png', send: 'https://nookara.cc/uploads/stickers/s0123456789.png#wave', created_at: 1 };
 const pkce = {};
 const require_hash = v => createHash('sha256').update(String(v)).digest('base64url');
 before(async () => {
@@ -22,6 +23,9 @@ before(async () => {
       if (req.url.startsWith('/text')) { res.writeHead(200, { 'content-type': 'text/plain' }); return res.end('hi'); }
       if (req.url.startsWith('/empty')) { res.writeHead(204); return res.end(); }
       if (req.url === '/auth/ext-code') return send(200, { code: 'c0de' });
+      if (req.url === '/chat/personal-stickers') return send(200, req.method === 'GET' ? { stickers: [STK], max: 10, pro_max: 50 } : { sticker: STK });
+      if (req.url === `/chat/personal-stickers/${STK.sid}/info`) return send(200, { sticker: STK, owner: { username: 'nat', pfp: null } });
+      if (req.url === `/chat/personal-stickers/${STK.sid}`) return send(200, { ok: true });
       if (req.url === '/account/me') return send(200, { account: { username: 'nat', display_name: 'Nat' } });
       if (req.url === '/account/update') { let b = {}; try { b = JSON.parse(last.body); } catch {} return b.display_name === 'Nookara' ? send(400, { error: 'display_name_reserved' }) : send(200, { success: true, display_name: b.display_name }); }
       let xb = {}; try { xb = JSON.parse(last.body); } catch {}
@@ -166,4 +170,31 @@ test('display names: set, clear, read, refusals, shown_name', async () => {
   assert.strictEqual(shown_name({ username: 'nat', display_name: 'Nat' }), 'Nat');
   assert.strictEqual(shown_name({ username: 'nat', display_name: null }), 'nat');
   assert.strictEqual(shown_name(null), '');
+});
+
+test('personal stickers: list, add (multipart), rename, delete, info', async () => {
+  const c = new Client('tok', { baseUrl: base, allowInsecure: true });
+  const list = await c.personal_stickers();
+  assert.strictEqual(last.method, 'GET');
+  assert.deepStrictEqual([list.max, list.pro_max], [10, 50]);
+  const s = await c.add_personal_sticker(['wave.png', new Uint8Array([137, 80, 78, 71]), 'image/png'], 'wave');
+  assert.strictEqual(last.method, 'POST');
+  assert.match(last.headers['content-type'], /multipart\/form-data/);
+  assert.match(String(last.body), /name="file"; filename="wave.png"/);
+  assert.match(String(last.body), /name="name"/);
+  assert.strictEqual(s.sid, STK.sid);
+  await c.rename_personal_sticker(STK.sid, 'hi');
+  assert.deepStrictEqual([last.method, last.url, JSON.parse(last.body)], ['PATCH', '/chat/personal-stickers/s0123456789', { name: 'hi' }]);
+  await c.delete_personal_sticker(STK.sid);
+  assert.deepStrictEqual([last.method, last.url], ['DELETE', '/chat/personal-stickers/s0123456789']);
+  assert.strictEqual((await c.personal_sticker_info(STK.sid)).owner.username, 'nat');
+  assert.ok('get_chat_personal_stickers' in ROUTES);
+});
+
+test('personal sticker text both ways', () => {
+  assert.strictEqual(personal_sticker_text(STK), STK.send);
+  assert.strictEqual(personal_sticker_text({ url: STK.url, name: 'wave' }), STK.send);
+  assert.deepStrictEqual(parse_personal_sticker(STK.send), { sid: STK.sid, name: 'wave', url: STK.url, animated: false });
+  assert.strictEqual(parse_personal_sticker('https://cdn.nookara.cc/uploads/stickers/sabcdefabcd.gif').animated, true);
+  for (const t of ['hi ' + STK.send, 'https://evil.example/uploads/stickers/s0123456789.png', 'https://nookara.cc/uploads/emojis/e0123456789.png', '', null]) assert.strictEqual(parse_personal_sticker(t), null);
 });
