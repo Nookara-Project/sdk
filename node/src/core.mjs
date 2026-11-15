@@ -136,10 +136,21 @@ export class Client {
 
   // personal stickers (0.1.5): yours, sent anywhere as a message whose whole text is the sticker's `send` link
   personal_stickers() { return this.request('GET', '/chat/personal-stickers'); }
-  add_personal_sticker(file, name) { return this.request('POST', '/chat/personal-stickers', { data: name ? { name } : {}, files: { file } }).then(d => d.sticker); }
+  add_personal_sticker(file, name, { source } = {}) { return this.request('POST', '/chat/personal-stickers', { data: uploadFields(name, source), files: { file } }).then(d => d.sticker); }
   rename_personal_sticker(sid, name) { return this.request('PATCH', `/chat/personal-stickers/${encodeURIComponent(sid)}`, { json: { name } }); }
   delete_personal_sticker(sid) { return this.request('DELETE', `/chat/personal-stickers/${encodeURIComponent(sid)}`); }
   personal_sticker_info(sid) { return this.request('GET', `/chat/personal-stickers/${encodeURIComponent(sid)}/info`); }
+  // personal emojis (0.1.6, same as Python): yours, usable anywhere as <:name:eid>
+  personal_emojis() { return this.request('GET', '/chat/personal-emojis'); }
+  add_personal_emoji(file, name, { source } = {}) { return this.request('POST', '/chat/personal-emojis', { data: uploadFields(name, source), files: { file } }).then(d => d.emoji); }
+  rename_personal_emoji(eid, name) { return this.request('PATCH', `/chat/personal-emojis/${encodeURIComponent(eid)}`, { json: { name } }); }
+  delete_personal_emoji(eid) { return this.request('DELETE', `/chat/personal-emojis/${encodeURIComponent(eid)}`); }
+  // clone locks (0.1.6): Lock my emojis and stickers, and may a picture be copied?
+  lock_my_emojis(on = true) { return this.request('PATCH', '/chat/settings', { json: { lock_emojis: !!on } }); }
+  async clone_check(picture, velora_id) {
+    const sha256 = typeof picture === 'string' ? picture : await sha256Hex(picture);
+    return this.request('GET', '/chat/clone-check', { auth: false, query: { sha256, ...(velora_id != null ? { velora_id: String(velora_id) } : {}) } });
+  }
 
   product(productId) { return this.request('GET', `/products/${encodeURIComponent(productId)}`).then(d => d.product); }
   products_of(username) { return this.request('GET', '/products', { query: { seller: username } }).then(d => d.products); }
@@ -190,6 +201,14 @@ export async function startAppLinkLogin(appId, link, { baseUrl = BASE_URL, allow
 
 /** the name to show for a person: display_name when they have one, else username (profiles, /account/me's account, Ember members) */
 export const shown_name = user => String(user?.display_name || '').trim() || user?.username || '';
+// multipart fields for an emoji/sticker upload: name, and from (where a copied picture came from: its clone lock is checked)
+const uploadFields = (name, source) => ({ ...(name ? { name } : {}), ...(source ? { from: source } : {}) });
+// SHA-256 (hex) of bytes: a Uint8Array / ArrayBuffer / Buffer / Blob
+async function sha256Hex(data) {
+  const buf = typeof Blob !== 'undefined' && data instanceof Blob ? await data.arrayBuffer() : data;
+  const d = await globalThis.crypto.subtle.digest('SHA-256', buf);
+  return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
 // a personal sticker message: its picture link on Nookara (Ember's stickerLink.js and Python's parse_personal_sticker use the same pattern)
 const STICKER_LINK = /^https:\/\/(?:(?:cdn\.)?nookara\.cc|velora\.ikelene\.net)\/uploads\/stickers\/(s[0-9a-f]{10})\.(png|gif)(?:#(\w{1,32}))?$/;
 /** the message text that sends a personal sticker (send it as the whole message) */

@@ -6154,13 +6154,15 @@
         "daily_notice",
         "developer_mode",
         "allow_vc_calls",
-        "yt_mode"
+        "yt_mode",
+        "lock_emojis"
       ],
       "files": [],
       "errors": [],
       "notes": "",
       "staffOnly": false,
       "captcha": false,
+      "source": "routes/chat.js:205",
       "legacy": false
     },
     {
@@ -6774,6 +6776,29 @@
       "legacy": true
     },
     {
+      "operationId": "get_chat_clone_check",
+      "group": "chat",
+      "method": "GET",
+      "path": "/chat/clone-check",
+      "auth": "none",
+      "scopes": [],
+      "params": [],
+      "query": [
+        "sha256",
+        "velora_id"
+      ],
+      "body": [],
+      "files": [],
+      "errors": [
+        "invalid_sha256"
+      ],
+      "notes": "Clone locks: may a picture with these exact bytes be copied? Query sha256 (the SHA-256 of the file, 64 hex) and optionally velora_id (the Nookara account id of whoever is copying it: its owner is never locked out). Returns {locked: true, reason: \"clone_locked\"} when it is someone's personal emoji or sticker and they turned on Lock my emojis and stickers (the chat setting lock_emojis), else {locked: false}. Nothing about whose it is. Ember servers ask this before saving an emoji or sticker upload; they answer the same question for their own pictures at GET /api/v1/clone-check (their server setting emojis.allow_cloning).",
+      "staffOnly": false,
+      "captcha": false,
+      "source": "routes/chat.js:47",
+      "legacy": false
+    },
+    {
       "operationId": "get_chat_emojis_by_eid_info",
       "group": "chat",
       "method": "GET",
@@ -6795,9 +6820,10 @@
         "not_found",
         "server_not_found"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
+      "notes": "Who an emoji belongs to (the pop-up when you click one). Returns {emoji: {eid, name, animated}, server} for a server emoji (server is {sid, name, icon, discoverable, joined, member_count} when you could see or join that server, else null), or {emoji, server: null, personal: {owner: {username, pfp}}} for a personal emoji. 404 not_found when no emoji has that id. personal.locked is true when its owner turned on Lock my emojis and stickers.",
       "staffOnly": false,
       "captcha": false,
+      "source": "routes/chat.js:507",
       "legacy": false
     },
     {
@@ -6845,6 +6871,7 @@
       ],
       "query": [],
       "body": [
+        "from",
         "name"
       ],
       "files": [
@@ -6858,9 +6885,10 @@
         "server_read_only",
         "too_many_emojis"
       ],
-      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Ember instance instead.",
+      "notes": "Legacy: Nookara-hosted servers are read-only now (writes answer server_read_only with moved_to). Use a Bonfire instance instead.",
       "staffOnly": false,
       "captcha": false,
+      "source": "routes/chat.js:526",
       "legacy": true
     },
     {
@@ -6962,15 +6990,26 @@
       "params": [],
       "query": [],
       "body": [
+        "from",
         "name"
       ],
       "files": [
         "file"
       ],
-      "errors": [],
-      "notes": "",
+      "errors": [
+        "no_file",
+        "file_too_large",
+        "invalid_emoji",
+        "too_many_emojis",
+        "upload_suspended",
+        "clone_locked",
+        "cloning_disabled",
+        "insufficient_scope"
+      ],
+      "notes": "Adds a personal emoji. Multipart: file (PNG, JPG, GIF or WebP, at most 2 MB) and name (letters, digits and _, up to 32; the file name is used when it is missing). Returns {emoji: {eid, name, animated, url, created_at}}. too_many_emojis (400, with max) when you are at your limit, file_too_large (413), invalid_emoji when the picture cannot be read, upload_suspended (403) while uploads are suspended on the account. Optional from: the address of the picture you copied it from (Ember sends it when you clone or add someone else's). clone_locked (403) when the file is exactly someone's personal emoji or sticker and they turned on Lock my emojis and stickers; cloning_disabled (403) when from is on an Ember server that doesn't allow copying its emojis and stickers.",
       "staffOnly": false,
       "captcha": false,
+      "source": "routes/chat.js:566",
       "legacy": false
     },
     {
@@ -7054,22 +7093,27 @@
       "params": [],
       "query": [],
       "body": [
+        "from",
         "name"
       ],
       "files": [
         "file"
       ],
       "errors": [
+        "no_file",
         "file_too_large",
         "images_only",
         "invalid_sticker",
-        "no_file",
         "too_many_stickers",
-        "upload_suspended"
+        "upload_suspended",
+        "clone_locked",
+        "cloning_disabled",
+        "insufficient_scope"
       ],
-      "notes": "",
+      "notes": "Adds a personal sticker. Multipart: file (PNG, JPG, GIF or WebP, at most 4 MB; shrunk to fit 320 px, GIFs and animated WebP stay animated as GIF, at most 1 MB after shrinking) and name (letters, digits and _, up to 32; the file name is used when it is missing). Returns {sticker: {sid, name, animated, url, send, created_at}}. too_many_stickers (400, with max) when you are at your limit, file_too_large (413), invalid_sticker when the picture cannot be read, images_only for other formats, upload_suspended (403) while uploads are suspended on the account. Optional from: the address of the picture you copied it from (Ember sends it when you clone or add someone else's). clone_locked (403) when the file is exactly someone's personal emoji or sticker and they turned on Lock my emojis and stickers; cloning_disabled (403) when from is on an Ember server that doesn't allow copying its emojis and stickers.",
       "staffOnly": false,
       "captcha": false,
+      "source": "routes/chat.js:573",
       "legacy": false
     },
     {
@@ -7091,11 +7135,13 @@
       "body": [],
       "files": [],
       "errors": [
-        "not_found"
+        "not_found",
+        "insufficient_scope"
       ],
-      "notes": "",
+      "notes": "Whose personal sticker this is (the pop-up when you click one). Returns {sticker: {sid, name, animated, url, send, created_at}, owner: {username, pfp}, locked}. locked is true when its owner turned on Lock my emojis and stickers (Ember then hides Clone and Add to personal). 404 not_found when no personal sticker has that id (its owner deleted it).",
       "staffOnly": false,
       "captcha": false,
+      "source": "routes/chat.js:574",
       "legacy": false
     },
     {

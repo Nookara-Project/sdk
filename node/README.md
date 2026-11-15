@@ -57,6 +57,17 @@ The Python SDK also has sign-in helpers, websockets and the bot gateway, message
 
 Guide: https://nookara.cc/guides/node-sdk. Every route: https://nookara.cc/guides/velora-api
 
+## Changes in 0.1.6
+
+Clone locks. `lock_my_emojis(true)` turns on Lock my emojis and stickers (the chat setting `lock_emojis`): nobody else can clone your personal emojis and stickers to a server or add them to their own. Ember servers have the matching setting `emojis.allow_cloning`. An exact copy of a locked one is refused with `clone_locked` or `cloning_disabled` (403). Pass where a copied picture came from with `{ source }`, and ask first with `clone_check` (bytes or a SHA-256, no sign-in needed). Personal emojis are here too now, the same as Python.
+
+```js
+await me.lock_my_emojis(true);
+console.log(await me.clone_check(fs.readFileSync('wave.png'))); // { locked: false }
+await me.add_personal_emoji(['wave.png', bytes, 'image/png'], 'wave', { source: 'https://camp.example/uploads/emojis/e1.png' });
+const { emojis } = await me.personal_emojis();
+```
+
 ## Changes in 0.1.5
 
 Personal stickers: stickers that belong to your Nookara account and can be sent anywhere (Ember servers, DMs, group chats). 10 for free accounts, 50 with Pro. A sticker is sent as a normal message whose whole text is its `send` link; Ember shows it as a sticker, other apps as a picture.

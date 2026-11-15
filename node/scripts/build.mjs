@@ -74,7 +74,17 @@ export class Client {
   /** your personal stickers (10, or 50 with Pro) */
   personal_stickers(): Promise<{ stickers: PersonalSticker[]; max: number; pro_max: number }>;
   /** add one: a Blob/File or [filename, bytes, mime] (PNG, JPG, GIF or WebP, 4 MB; shrunk to 320 px) */
-  add_personal_sticker(file: Blob | [string, Uint8Array | ArrayBuffer | string, string?], name?: string): Promise<PersonalSticker>;
+  add_personal_sticker(file: Blob | [string, Uint8Array | ArrayBuffer | string, string?], name?: string, opts?: { source?: string }): Promise<PersonalSticker>;
+  /** your personal emojis (25, or 100 with Pro) */
+  personal_emojis(): Promise<{ emojis: { eid: string; name: string; animated: boolean; url: string; created_at: number | null }[]; max: number; pro_max: number }>;
+  /** add one (PNG, JPG, GIF or WebP, 2 MB). opts.source: the picture's address when you copied someone else's */
+  add_personal_emoji(file: Blob | [string, Uint8Array | ArrayBuffer | string, string?], name?: string, opts?: { source?: string }): Promise<{ eid: string; name: string; animated: boolean; url: string; created_at: number | null }>;
+  rename_personal_emoji(eid: string, name: string): Promise<{ ok: true }>;
+  delete_personal_emoji(eid: string): Promise<{ ok: true }>;
+  /** Lock my emojis and stickers: nobody else can clone yours (chat setting lock_emojis) */
+  lock_my_emojis(on?: boolean): Promise<{ success?: boolean; settings: Record<string, unknown> }>;
+  /** may this exact picture be copied? bytes or its SHA-256 (hex). No sign-in needed */
+  clone_check(picture: string | Uint8Array | ArrayBuffer | Blob, velora_id?: string | number): Promise<{ locked: boolean; reason?: 'clone_locked' }>;
   rename_personal_sticker(sid: string, name: string): Promise<{ ok: true }>;
   delete_personal_sticker(sid: string): Promise<{ ok: true }>;
   /** whose sticker it is */

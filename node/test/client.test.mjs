@@ -23,6 +23,8 @@ before(async () => {
       if (req.url.startsWith('/text')) { res.writeHead(200, { 'content-type': 'text/plain' }); return res.end('hi'); }
       if (req.url.startsWith('/empty')) { res.writeHead(204); return res.end(); }
       if (req.url === '/auth/ext-code') return send(200, { code: 'c0de' });
+      if (req.url.startsWith('/chat/clone-check')) return send(200, { locked: req.url.includes(createHash('sha256').update('locked').digest('hex')), auth: req.headers.authorization || null });
+      if (req.url === '/chat/personal-emojis') return send(200, req.method === 'GET' ? { emojis: [], max: 25, pro_max: 100 } : { emoji: { eid: 'e0123456789', name: 'wave' } });
       if (req.url === '/chat/personal-stickers') return send(200, req.method === 'GET' ? { stickers: [STK], max: 10, pro_max: 50 } : { sticker: STK });
       if (req.url === `/chat/personal-stickers/${STK.sid}/info`) return send(200, { sticker: STK, owner: { username: 'nat', pfp: null } });
       if (req.url === `/chat/personal-stickers/${STK.sid}`) return send(200, { ok: true });
@@ -197,4 +199,24 @@ test('personal sticker text both ways', () => {
   assert.deepStrictEqual(parse_personal_sticker(STK.send), { sid: STK.sid, name: 'wave', url: STK.url, animated: false });
   assert.strictEqual(parse_personal_sticker('https://cdn.nookara.cc/uploads/stickers/sabcdefabcd.gif').animated, true);
   for (const t of ['hi ' + STK.send, 'https://evil.example/uploads/stickers/s0123456789.png', 'https://nookara.cc/uploads/emojis/e0123456789.png', '', null]) assert.strictEqual(parse_personal_sticker(t), null);
+});
+
+test('clone locks: lock_my_emojis, clone_check (bytes or hash, no token), uploads send from', async () => {
+  const c = new Client('tok', { baseUrl: base, allowInsecure: true });
+  await c.lock_my_emojis(true);
+  assert.deepStrictEqual([last.method, last.url, JSON.parse(String(last.body))], ['PATCH', '/chat/settings', { lock_emojis: true }]);
+  const hit = await c.clone_check(new TextEncoder().encode('locked'));
+  assert.strictEqual(hit.locked, true);
+  assert.strictEqual(hit.auth, null);
+  assert.match(last.url, /^\/chat\/clone-check\?sha256=[0-9a-f]{64}$/);
+  assert.strictEqual((await c.clone_check(createHash('sha256').update('other').digest('hex'), 42)).locked, false);
+  assert.match(last.url, /velora_id=42/);
+  const e = await c.add_personal_emoji(['wave.png', new Uint8Array([137, 80]), 'image/png'], 'wave', { source: 'https://camp.example/uploads/emojis/e1.png' });
+  assert.strictEqual(e.eid, 'e0123456789');
+  assert.match(String(last.body), /name="from"/);
+  assert.match(String(last.body), /camp\.example/);
+  await c.add_personal_sticker(['wave.png', new Uint8Array([137, 80]), 'image/png'], 'wave');
+  assert.doesNotMatch(String(last.body), /name="from"/);
+  assert.strictEqual((await c.personal_emojis()).max, 25);
+  assert.ok('get_chat_clone_check' in ROUTES);
 });

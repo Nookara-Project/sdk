@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json as _json
 import mimetypes
 import re
@@ -26,6 +27,16 @@ MAX_MULTIPART_BYTES = 64 * 1024 * 1024
 
 # a personal sticker message: its picture link on Nookara (Ember's stickerLink.js uses the same pattern)
 _STICKER_LINK = re.compile(r'^https://(?:(?:cdn\.)?nookara\.cc|velora\.ikelene\.net)/uploads/stickers/(s[0-9a-f]{10})\.(png|gif)(?:#(\w{1,32}))?$')
+
+
+def _upload_fields(name, source):
+    """multipart fields for an emoji/sticker upload: name, and from (where a copied picture came from)"""
+    out = {}
+    if name:
+        out['name'] = name
+    if source:
+        out['from'] = source
+    return out or None
 
 class APIError(Exception):
     """HTTP or protocol error. Inspect status, error, payload and retry_after."""
@@ -621,12 +632,14 @@ class Client(Endpoints):
         (``max`` is your limit: 25, or 100 with Pro). In a message use ``<:name:eid>``, or ``<a:name:eid>`` when animated."""
         return self.get_chat_personal_emojis()
 
-    def add_personal_emoji(self, file, name=None):
+    def add_personal_emoji(self, file, name=None, source=None):
         """Add a personal emoji from a PNG, JPG, GIF or WebP file (a path or ``(name, bytes, mime)``, at most 2 MB).
-        ``name`` is letters, digits and ``_`` up to 32 (the file name is used when you leave it out). Returns the new emoji
-        ``{eid, name, animated, url, created_at}``. Raises ``APIError`` with ``too_many_emojis`` at your limit,
-        ``file_too_large`` (413), ``invalid_emoji`` or ``upload_suspended`` (403)."""
-        return self.post_chat_personal_emojis(data={'name': name} if name else None, files={'file': file})['emoji']
+        ``name`` is letters, digits and ``_`` up to 32 (the file name is used when you leave it out). ``source``: the
+        address of the picture when you copied someone else's (the Ember server it is from gets asked about its clone
+        lock). Returns the new emoji ``{eid, name, animated, url, created_at}``. Raises ``APIError`` with
+        ``too_many_emojis`` at your limit, ``file_too_large`` (413), ``invalid_emoji``, ``upload_suspended`` (403),
+        ``clone_locked`` (403: someone's locked personal emoji/sticker) or ``cloning_disabled`` (403)."""
+        return self.post_chat_personal_emojis(data=_upload_fields(name, source), files={'file': file})['emoji']
 
     def rename_personal_emoji(self, eid, name):
         """Rename one of your personal emojis (``not_found`` if it is not yours)."""
@@ -643,13 +656,30 @@ class Client(Endpoints):
         (see ``personal_sticker_text``)."""
         return self.get_chat_personal_stickers()
 
-    def add_personal_sticker(self, file, name=None):
+    def add_personal_sticker(self, file, name=None, source=None):
         """Add a personal sticker from a PNG, JPG, GIF or WebP file (a path or ``(name, bytes, mime)``, at most 4 MB).
         Nookara shrinks it to fit 320 px (GIFs and animated WebP stay animated, as GIF; 1 MB after shrinking).
         ``name`` is letters, digits and ``_`` up to 32 (the file name is used when you leave it out). Returns the new
         sticker ``{sid, name, animated, url, send, created_at}``. Raises ``APIError`` with ``too_many_stickers`` at your
-        limit, ``file_too_large`` (413), ``invalid_sticker``, ``images_only`` or ``upload_suspended`` (403)."""
-        return self.post_chat_personal_stickers(data={'name': name} if name else None, files={'file': file})['sticker']
+        limit, ``file_too_large`` (413), ``invalid_sticker``, ``images_only``, ``upload_suspended`` (403),
+        ``clone_locked`` or ``cloning_disabled`` (403, see ``add_personal_emoji``; ``source`` works the same)."""
+        return self.post_chat_personal_stickers(data=_upload_fields(name, source), files={'file': file})['sticker']
+
+    # clone locks (0.9.10)
+    def lock_my_emojis(self, on=True):
+        """Lock (or unlock) your personal emojis and stickers: nobody else can clone them to a server or add them to their
+        own (the chat setting ``lock_emojis``, Ember's Privacy > Lock my emojis and stickers). Returns your settings."""
+        return self.patch_chat_settings(json={'lock_emojis': bool(on)})
+
+    def clone_check(self, picture, velora_id=None):
+        """May this exact picture be copied? ``picture`` is the file's bytes or its SHA-256 (64 hex). ``velora_id``: whose
+        copy it would be (its owner is never locked out). Returns ``{"locked": bool, "reason"?: "clone_locked"}``.
+        No sign-in needed. (An Ember server answers the same for its own pictures at ``GET /api/v1/clone-check``.)"""
+        digest = picture if isinstance(picture, str) else hashlib.sha256(bytes(picture)).hexdigest()
+        query = {'sha256': digest}
+        if velora_id is not None:
+            query['velora_id'] = str(velora_id)
+        return self.get_chat_clone_check(query=query)
 
     def rename_personal_sticker(self, sid, name):
         """Rename one of your personal stickers (``not_found`` if it is not yours). Messages already sent keep the old name."""
