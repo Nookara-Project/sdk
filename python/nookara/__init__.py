@@ -17,6 +17,8 @@ from .scopes import (EMBER_APP_MASK, DEFAULT_OFF, INSTANCE_SCOPES, SCOPE_LABELS,
 from .ember_permissions import (EMBER_ALL_PERMISSIONS, EMBER_CHANNEL_PERMISSIONS, EMBER_EVERYONE_DEFAULT, EMBER_PERMISSION_LABELS,
                                 EMBER_PERMISSIONS, ember_permission_bit, ember_permission_mask, ember_permission_names,
                                 has_ember_permission)
+from .mentions import (channel_mention, mention, mentions_user, message_link, parse_mentions, parse_message_link,
+                       plain_text, role_mention)
 from .signing import Signer, verify_message
 
 __all__ = ["EncryptedDMs", "KeyChanged", "APIError", "ScopeError", "Client", "TransportError", "RealtimeClient", "GAME_EVENT_TYPES", "NOTIFICATION_EVENT_TYPES",
@@ -28,4 +30,6 @@ __all__ = ["EncryptedDMs", "KeyChanged", "APIError", "ScopeError", "Client", "Tr
            "EMBER_APP_MASK", "scope_mask", "scope_names", "scope_bit", "has_scope",
            "DMRefused", "DM_REFUSALS", "dm_channel_id", "dm_user_id", "is_dm_event",
            "EMBER_PERMISSIONS", "EMBER_PERMISSION_LABELS", "EMBER_ALL_PERMISSIONS", "EMBER_CHANNEL_PERMISSIONS", "EMBER_EVERYONE_DEFAULT",
-           "ember_permission_bit", "ember_permission_mask", "ember_permission_names", "has_ember_permission"]
+           "ember_permission_bit", "ember_permission_mask", "ember_permission_names", "has_ember_permission",
+           "mention", "channel_mention", "role_mention", "parse_mentions", "mentions_user", "plain_text",
+           "message_link", "parse_message_link"]

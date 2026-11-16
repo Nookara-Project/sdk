@@ -712,8 +712,16 @@ class Client(Endpoints):
 
     def emoji_info(self, eid):
         """Who an emoji belongs to (needs Chat). A server emoji answers ``{emoji, server}``; a personal emoji answers
-        ``{emoji, server: None, personal: {owner: {username, pfp}}}``."""
+        ``{emoji, server: None, personal: {owner: {username, pfp}}}``. One a Discord / Fluxer bridge brought in (the Ember
+        server didn't have it, so a copy is kept to show it) answers ``{emoji, server: None, external: {platform, server}}``."""
         return self.get_chat_emojis_by_eid_info(eid=eid)
+
+    def link_info(self, sid, cid):
+        """What a link to a channel or message on a Nookara server is called (needs Chat), for showing it like Ember's
+        "server > #channel" pill. ``{server: {sid, name, icon}, channel: {cid, name} | None, joined}``. Members get the
+        channel when they can see it; anyone else only for a discoverable server and a channel @everyone can see
+        (otherwise 404 ``not_found``). ``parse_message_link(url)`` gives you the sid and cid of a link."""
+        return self.get_chat_link_info_by_sid_by_cid(sid=sid, cid=cid)
 
     def ember_jwks(self):
         """Nookara's identity keys (JWKS), used to verify instance tokens, receipts and bot-add tickets."""

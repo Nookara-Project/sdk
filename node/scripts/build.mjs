@@ -13,7 +13,7 @@ const core = fs.readFileSync(path.join(root, 'src/core.mjs'), 'utf8').replace('_
 
 fs.mkdirSync(path.join(root, 'dist'), { recursive: true });
 fs.writeFileSync(path.join(root, 'dist/index.mjs'), head + core);
-const names = ['APIError', 'ScopeError', 'TransportError', 'Client', 'startAppLinkLogin', 'shown_name', 'personal_sticker_text', 'parse_personal_sticker', 'scope_mask', 'scope_names', 'has_scope', 'SCOPES', 'ROUTES', 'VERSION', 'ember_permission_mask', 'ember_permission_names', 'has_ember_permission', 'EMBER_PERMISSIONS', 'EMBER_PERMISSION_LABELS', 'EMBER_ALL_PERMISSIONS', 'EMBER_CHANNEL_PERMISSIONS', 'EMBER_EVERYONE_DEFAULT'];
+const names = ['APIError', 'ScopeError', 'TransportError', 'Client', 'startAppLinkLogin', 'shown_name', 'personal_sticker_text', 'parse_personal_sticker', 'scope_mask', 'scope_names', 'has_scope', 'SCOPES', 'ROUTES', 'VERSION', 'ember_permission_mask', 'ember_permission_names', 'has_ember_permission', 'EMBER_PERMISSIONS', 'EMBER_PERMISSION_LABELS', 'EMBER_ALL_PERMISSIONS', 'EMBER_CHANNEL_PERMISSIONS', 'EMBER_EVERYONE_DEFAULT', 'mention', 'channel_mention', 'role_mention', 'parse_mentions', 'mentions_user', 'plain_text', 'message_link', 'parse_message_link'];
 const cjs = (head + core).replace(/^export \{[^\n]*\n/m, '').replace(/^export (class|const|async function) /gm, '$1 ') + `module.exports = { ${names.join(', ')} };\n`;
 fs.writeFileSync(path.join(root, 'dist/index.cjs'), cjs);
 
@@ -66,8 +66,25 @@ export function ember_permission_mask(...permissions: Array<string | number | bi
 export function ember_permission_names(value: number | bigint | string): string[];
 /** ADMIN counts as every permission, like the server does */
 export function has_ember_permission(value: number | bigint | string, permission: string | number | bigint): boolean;
+type IdLookup = Record<string, string | { display_name?: string | null; username?: string; name?: string }> | Map<string, unknown> | ((id: string) => unknown);
+/** <@id>: pings someone (a Nookara account number, or v:/l:/b: and a number on an Ember server) */
+export function mention(user: string | number | { id: string | number }): string;
+/** <#cid> */
+export function channel_mention(channel: string | { cid: string }): string;
+/** <@&rid> */
+export function role_mention(role: string | { rid: string }): string;
+/** what a message's text points at; only tokens count (a plain "@name" pings nobody) */
+export function parse_mentions(text: string | null | undefined): { users: string[]; channels: string[]; roles: string[]; emojis: { name: string; eid: string; animated: boolean }[]; everyone: boolean; here: boolean };
+export function mentions_user(text: string | null | undefined, user: string | number | { id: string | number }): boolean;
+/** tokens -> names: <@42> -> @name, <#cid> -> #channel, <@&rid> -> @role, <:name:eid> -> :name: */
+export function plain_text(text: string | null | undefined, lookups?: { users?: IdLookup; channels?: IdLookup; roles?: IdLookup }): string;
+/** a link to a channel or one message that Ember opens in place */
+export function message_link(sid: string, cid: string, messageId?: string | number | bigint | null, options?: { instance?: string | null; base?: string }): string;
+export function parse_message_link(url: string): { instance: string | null; sid: string; cid: string; message_id: string | null } | null;
 export class Client {
   constructor(token?: string | null, options?: ClientOptions);
+  /** what a link to a channel / message on a Nookara server is called (GET /chat/link-info/:sid/:cid) */
+  link_info(sid: string, cid: string): Promise<{ server: { sid: string; name: string; icon: string | null }; channel: { cid: string; name: string } | null; joined: boolean }>;
   baseUrl: string;
   request(method: string, path: string, options?: CallArgs & { auth?: boolean }): Promise<any>;
   call(operationId: string, args?: CallArgs & Record<string, unknown>): Promise<any>;

@@ -1093,6 +1093,23 @@
     "group": "Emoji, sounds, previews and YouTube"
   },
   {
+    "operationId": "get_api_v1_link_info_by_sid_by_cid",
+    "method": "GET",
+    "path": "/api/v1/link-info/:sid/:cid",
+    "auth": "bearer",
+    "params": [
+      {
+        "name": "sid",
+        "optional": false
+      },
+      {
+        "name": "cid",
+        "optional": false
+      }
+    ],
+    "group": "Messages"
+  },
+  {
     "operationId": "get_api_v1_channels_by_cid_shop",
     "method": "GET",
     "path": "/api/v1/channels/:cid/shop",

@@ -3,7 +3,7 @@ import assert from 'node:assert';
 import http from 'node:http';
 import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
-import { startAppLinkLogin, shown_name, personal_sticker_text, parse_personal_sticker, Client, APIError, ScopeError, TransportError, ROUTES, SCOPES, scope_mask, scope_names, has_scope, VERSION, ember_permission_mask, ember_permission_names, has_ember_permission, EMBER_PERMISSIONS, EMBER_ALL_PERMISSIONS } from '../dist/index.mjs';
+import { startAppLinkLogin, shown_name, personal_sticker_text, parse_personal_sticker, Client, APIError, ScopeError, TransportError, ROUTES, SCOPES, scope_mask, scope_names, has_scope, VERSION, ember_permission_mask, ember_permission_names, has_ember_permission, EMBER_PERMISSIONS, EMBER_ALL_PERMISSIONS, mention, channel_mention, role_mention, parse_mentions, mentions_user, plain_text, message_link, parse_message_link } from '../dist/index.mjs';
 
 let server, base, last;
 const STK = { sid: 's0123456789', name: 'wave', animated: false, url: 'https://nookara.cc/uploads/stickers/s0123456789.png', send: 'https://nookara.cc/uploads/stickers/s0123456789.png#wave', created_at: 1 };
@@ -242,4 +242,30 @@ test('ember permissions: names and back', () => {
   assert.equal(has_ember_permission(257, 'KICK'), false);
   assert.equal(has_ember_permission(512, 'KICK'), true);
   assert.equal(has_ember_permission(512, 'BIT_40'), false);
+});
+
+test('mentions: tokens, plain text and message links', async () => {
+  const SID = 's0123456789', CID = 'c0123456789';
+  assert.equal(mention(42), '<@42>');
+  assert.equal(mention({ id: 'v:42' }), '<@v:42>');
+  assert.equal(channel_mention({ cid: `https://chat.example.com|${CID}` }), `<#${CID}>`);
+  assert.equal(role_mention('rabcdef0123'), '<@&rabcdef0123>');
+  assert.throws(() => mention('nat'));
+  const p = parse_mentions(`hi <@42> <@v:7> <@42> <#${CID}> <@&rabcdef0123> <a:wave:e0123456789> @here`);
+  assert.deepEqual([p.users, p.channels, p.roles, p.emojis, p.everyone, p.here], [['42', 'v:7'], [CID], ['rabcdef0123'], [{ name: 'wave', eid: 'e0123456789', animated: true }], false, true]);
+  assert.deepEqual(parse_mentions('@yell at me for your projects').users, []);
+  assert.equal(mentions_user('<@42> hi', { id: 42 }), true);
+  assert.equal(mentions_user('@nat hi', 42), false);
+  assert.equal(plain_text(`<@42> <@9> <#${CID}> <@&rabcdef0123> <:sob:e0123456789>`, { users: { 42: { username: 'nat', display_name: 'Nat' } }, channels: () => 'general', roles: new Map([['rabcdef0123', 'Crew']]) }), '@Nat @unknown-user #general @Crew :sob:');
+  const link = message_link(SID, CID, 123);
+  assert.equal(link, `https://ember.nookara.cc/#/s/${SID}/${CID}/123`);
+  assert.deepEqual(parse_message_link(link), { instance: null, sid: SID, cid: CID, message_id: '123' });
+  const inst = message_link(SID, CID, null, { instance: 'https://chat.example.com' });
+  assert.deepEqual(parse_message_link(inst), { instance: 'https://chat.example.com', sid: SID, cid: CID, message_id: null });
+  assert.equal(parse_message_link(`https://example.com/#/s/${SID}/${CID}`), null);
+  assert.equal(parse_message_link('https://ember.nookara.cc/#/dm/nat'), null);
+  const c = new Client('tok', { baseUrl: base, allowInsecure: true });
+  await c.link_info(SID, CID).catch(() => null);
+  assert.equal(last.url, `/chat/link-info/${SID}/${CID}`);
+  assert.ok('get_chat_link_info_by_sid_by_cid' in ROUTES);
 });

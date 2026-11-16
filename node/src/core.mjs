@@ -145,6 +145,8 @@ export class Client {
   add_personal_emoji(file, name, { source } = {}) { return this.request('POST', '/chat/personal-emojis', { data: uploadFields(name, source), files: { file } }).then(d => d.emoji); }
   rename_personal_emoji(eid, name) { return this.request('PATCH', `/chat/personal-emojis/${encodeURIComponent(eid)}`, { json: { name } }); }
   delete_personal_emoji(eid) { return this.request('DELETE', `/chat/personal-emojis/${encodeURIComponent(eid)}`); }
+  // link pills (0.1.8): what a link to a channel / message on a Nookara server is called ({ server, channel | null, joined })
+  link_info(sid, cid) { return this.request('GET', `/chat/link-info/${encodeURIComponent(sid)}/${encodeURIComponent(String(cid).split('|').pop())}`); }
   // clone locks (0.1.6): Lock my emojis and stickers, and may a picture be copied?
   lock_my_emojis(on = true) { return this.request('PATCH', '/chat/settings', { json: { lock_emojis: !!on } }); }
   async clone_check(picture, velora_id) {
@@ -270,6 +272,74 @@ export const has_ember_permission = (value, permission) => {
   const n = emberBig(value), b = emberBit(permission);
   if ((n & BigInt(EMBER_PERMISSIONS.ADMIN)) && (b & EMBER_KNOWN)) return true;
   return (n & b) === b;
+};
+// Mentions, channels and message links in Ember text (0.1.8, same as Python 0.9.12). Discord's format: <@id> pings a
+// person, <#cid> is a channel, <@&rid> a role, <:name:eid> a custom emoji; a plain "@name" is only text and pings nobody.
+// Ids: a Nookara account number (<@42>), or on an Ember server the member's id there (<@v:42>, <@l:3>, <@b:7>).
+const USER_TOKEN = /<@!?((?:[vlb]:)?\d{1,20})>/g, CHANNEL_TOKEN = /<#(c[0-9a-f]{10})>/g, ROLE_TOKEN = /<@&(r[0-9a-f]{10})>/g;
+const EMOJI_TOKEN = /<(a?):([A-Za-z0-9_]{1,32}):(e[0-9a-f]{10})>/g;
+const EMBER_HOME_HOSTS = ['ember.nookara.cc', 'nookara.cc', 'www.nookara.cc', 'velora.ikelene.net'];
+const userIdOf = user => {
+  const id = String((user && typeof user === 'object' ? user.id : user) ?? '').trim();
+  if (!/^(?:[vlb]:)?\d{1,20}$/.test(id)) throw new TypeError(`Not a user id (a number, or v:/l:/b: and a number on an Ember server): ${user}`);
+  return id;
+};
+const bareId = x => String((x && typeof x === 'object' ? x.cid : x) ?? '').split('|').pop().trim();
+const uniq = a => [...new Set(a)];
+/** the text that pings someone: mention(42) === '<@42>', mention({ id: 'v:42' }) === '<@v:42>' */
+export const mention = user => `<@${userIdOf(user)}>`;
+/** the text that links a channel: channel_mention('c0123456789') === '<#c0123456789>' (a channel object works too) */
+export const channel_mention = channel => { const cid = bareId(channel); if (!/^c[0-9a-f]{10}$/.test(cid)) throw new TypeError(`Not a channel id: ${channel}`); return `<#${cid}>`; };
+/** the text that pings a role: <@&rid> */
+export const role_mention = role => { const rid = String((role && typeof role === 'object' ? role.rid : role) ?? '').trim(); if (!/^r[0-9a-f]{10}$/.test(rid)) throw new TypeError(`Not a role id: ${role}`); return `<@&${rid}>`; };
+/** what a message's text points at: { users, channels, roles, emojis: [{ name, eid, animated }], everyone, here }. Only tokens count. */
+export const parse_mentions = text => {
+  const t = String(text ?? '');
+  const seen = new Set(), emojis = [];
+  for (const m of t.matchAll(EMOJI_TOKEN)) if (!seen.has(m[3])) { seen.add(m[3]); emojis.push({ name: m[2], eid: m[3], animated: m[1] === 'a' }); }
+  return {
+    users: uniq([...t.matchAll(USER_TOKEN)].map(m => m[1])), channels: uniq([...t.matchAll(CHANNEL_TOKEN)].map(m => m[1])),
+    roles: uniq([...t.matchAll(ROLE_TOKEN)].map(m => m[1])), emojis, everyone: /(^|\s)@everyone\b/.test(t), here: /(^|\s)@here\b/.test(t),
+  };
+};
+/** does this text ping that person (a <@id> token)? */
+export const mentions_user = (text, user) => parse_mentions(text).users.includes(userIdOf(user));
+const lookupName = (table, key, field) => {
+  const v = typeof table === 'function' ? table(key) : table instanceof Map ? table.get(key) : table?.[key];
+  return v && typeof v === 'object' ? (v.display_name || v[field]) : v;
+};
+/** tokens -> names for showing / logging: <@42> -> @name, <#cid> -> #channel, <@&rid> -> @role, <:name:eid> -> :name:.
+ *  users / channels / roles: an object or Map of id -> name (or { display_name, username, name }), or a function. */
+export const plain_text = (text, { users, channels, roles } = {}) => String(text ?? '')
+  .replace(USER_TOKEN, (_, id) => `@${lookupName(users, id, 'username') || 'unknown-user'}`)
+  .replace(CHANNEL_TOKEN, (_, cid) => `#${lookupName(channels, cid, 'name') || 'unknown'}`)
+  .replace(ROLE_TOKEN, (_, rid) => `@${lookupName(roles, rid, 'name') || 'role'}`)
+  .replace(EMOJI_TOKEN, (_, a, name) => `:${name}:`);
+/** a link to a channel or one message that Ember opens in place (and shows as a pill when pasted). instance = an Ember server's address. */
+export const message_link = (sid, cid, messageId = null, { instance = null, base = 'https://ember.nookara.cc' } = {}) => {
+  const s = bareId(sid), c = bareId(cid);
+  if (!/^s[0-9a-f]{10}$/.test(s) || !/^c[0-9a-f]{10}$/.test(c)) throw new TypeError('sid is s and 10 hex, cid is c and 10 hex');
+  const at = instance ? `#/i/${encodeURIComponent(String(instance).replace(/\/$/, ''))}` : '#';
+  return `${base.replace(/\/$/, '')}/${at}/s/${s}/${c}${messageId != null ? `/${BigInt(messageId)}` : ''}`;
+};
+/** { instance, sid, cid, message_id } for a link to an Ember channel / message (instance null on Nookara), else null */
+export const parse_message_link = url => {
+  let u;
+  try { u = new URL(String(url ?? '').trim()); } catch { return null; }
+  if (!/^https?:$/.test(u.protocol) || !EMBER_HOME_HOSTS.includes(u.hostname.toLowerCase()) || !['/', '/chat', '/chat/'].includes(u.pathname)) return null;
+  let parts = u.hash.split('/');
+  if (parts[0] !== '#') return null;
+  parts = parts.slice(1);
+  let instance = null;
+  if (parts[0] === 'i') {
+    try { instance = decodeURIComponent(parts[1] || ''); } catch { return null; }
+    if (!/^https?:\/\/[^/|]+$/.test(instance)) return null;
+    parts = parts.slice(2);
+  }
+  const [a, sid, cid, mid] = parts;
+  if (a !== 's' || !/^s[0-9a-f]{10}$/.test(sid || '') || !/^c[0-9a-f]{10}$/.test(cid || '')) return null;
+  if (mid && !/^\d{1,20}$/.test(mid)) return null;
+  return { instance, sid, cid, message_id: mid || null };
 };
 export const scope_mask = (...names) => names.reduce((m, n) => { if (!(n in SCOPES)) throw new TypeError(`Unknown scope: ${n}`); return m | SCOPES[n]; }, 0);
 export const scope_names = mask => Object.keys(SCOPES).filter(n => (Number(mask) & SCOPES[n]) === SCOPES[n] && SCOPES[n]);

@@ -427,6 +427,12 @@ class Instance(InstanceEndpoints):
     def emojis(self, sid=None):
         return self.get_api_v1_servers_by_sid_emojis(sid=sid or self.community_id())
 
+    def link_info(self, cid, sid=None):
+        """What a link to one of this server's channels (or a message in it) is called: ``{server: {sid, name, icon},
+        channel: {cid, name} | None, joined}``. Members get the channel when they can see it; anyone else only when the
+        server is listed and @everyone can see the channel (otherwise 404 ``not_found``)."""
+        return self.get_api_v1_link_info_by_sid_by_cid(sid=sid or self.community_id(), cid=str(cid).split('|')[-1])
+
     def stickers(self, sid=None):
         """The server's stickers: ``{"stickers": [{tid, name, animated, url}], "max": 30}`` (members can read them)."""
         return self.get_api_v1_servers_by_sid_stickers(sid=sid or self.community_id())

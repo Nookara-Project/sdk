@@ -325,6 +325,10 @@ class InstanceEndpoints:
         """GET /api/v1/emojis/:eid/info."""
         return self.call('get_api_v1_emojis_by_eid_info', eid=eid, query=query, json=json, data=data, files=files, raw=raw)
 
+    def get_api_v1_link_info_by_sid_by_cid(self, *, sid, cid, query=None, json=None, data=None, files=None, raw=False):
+        """GET /api/v1/link-info/:sid/:cid."""
+        return self.call('get_api_v1_link_info_by_sid_by_cid', sid=sid, cid=cid, query=query, json=json, data=data, files=files, raw=raw)
+
     def get_api_v1_channels_by_cid_shop(self, *, cid, query=None, json=None, data=None, files=None, raw=False):
         """GET /api/v1/channels/:cid/shop."""
         return self.call('get_api_v1_channels_by_cid_shop', cid=cid, query=query, json=json, data=data, files=files, raw=raw)

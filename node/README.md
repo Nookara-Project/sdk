@@ -57,6 +57,20 @@ The Python SDK also has sign-in helpers, websockets and the bot gateway, message
 
 Guide: https://nookara.cc/guides/node-sdk. Every route: https://nookara.cc/guides/velora-api
 
+## Changes in 0.1.8
+
+Mentions are Discord's format now, same as Python 0.9.12: `<@id>` pings a person, `<#cid>` is a channel, `<@&rid>` a role, `<:name:eid>` a custom emoji. A plain `@name` is only text and pings nobody. Ids: a Nookara account number (`<@42>`), or on an Ember server the member's id there (`<@v:42>`, `<@l:3>`, `<@b:7>`).
+
+```js
+import { mention, channel_mention, parse_mentions, plain_text, message_link, parse_message_link } from 'nookara';
+
+`hi ${mention(member)} see ${channel_mention(rules)}`;     // '<@v:42> ... <#c0123456789>'
+parse_mentions(body).users;                                 // who it pings
+plain_text(body, { users: { 'v:42': 'nat' } });             // '@nat' instead of '<@v:42>'
+message_link(sid, cid, messageId);                          // https://ember.nookara.cc/#/s/<sid>/<cid>/<id>, shown as a pill in Ember
+await nookara.link_info(sid, cid);                          // { server, channel | null, joined }
+```
+
 ## Changes in 0.1.7
 
 Ember server permission numbers to names and back, same as Python 0.9.11. Unknown bits come out as `BIT_<n>`; a number past 2^53 comes back as a BigInt. Calculator and the full list: https://nookara.cc/docs/ember-permissions

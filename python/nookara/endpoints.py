@@ -1050,6 +1050,10 @@ class Endpoints:
         """GET /chat/emojis/:eid/info. See the API reference for scopes and payloads."""
         return self.call('get_chat_emojis_by_eid_info', eid=eid, query=query, json=json, data=data, files=files, raw=raw)
 
+    def get_chat_link_info_by_sid_by_cid(self, *, sid, cid, query=None, json=None, data=None, files=None, raw=False):
+        """GET /chat/link-info/:sid/:cid. See the API reference for scopes and payloads."""
+        return self.call('get_chat_link_info_by_sid_by_cid', sid=sid, cid=cid, query=query, json=json, data=data, files=files, raw=raw)
+
     def get_chat_servers_by_sid_emojis(self, *, sid, query=None, json=None, data=None, files=None, raw=False):
         """GET /chat/servers/:sid/emojis. See the API reference for scopes and payloads."""
         return self.call('get_chat_servers_by_sid_emojis', sid=sid, query=query, json=json, data=data, files=files, raw=raw)

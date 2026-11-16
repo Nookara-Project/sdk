@@ -559,6 +559,22 @@ Three new App scopes (they sit above the old 16 bits, so only a registered App's
 
 An App token now needs these for notifications and blocks; Friends no longer reaches blocks for Apps. `SCOPES` also lists `FILES_READ` and `FILES_WRITE`.
 
+## Changes in 0.9.12
+
+Mentions are Discord's format now. In Ember message text `<@id>` pings a person, `<#cid>` is a channel, `<@&rid>` a role and `<:name:eid>` a custom emoji. A plain `@name` is only text and pings nobody (messages from before 2026-11-17 used `@name`). Ids: a Nookara account number (`<@42>`), or on an Ember server the member's id there (`<@v:42>` for a Nookara account, `<@l:3>` local, `<@b:7>` a bot). Bots on `/bot/v1` keep Discord's numeric ids; the server turns `<@id>` / `<#id>` into Ember's tokens and back.
+
+```python
+from nookara import mention, channel_mention, parse_mentions, plain_text, message_link, parse_message_link
+
+server.send_message(cid, f"hi {mention(member)} see {channel_mention(rules)}")  # server = an Instance; dicts or ids
+parse_mentions(msg["body"])["users"]                                   # ['v:42'] - who it pings
+plain_text(msg["body"], users={"v:42": "nat"})                          # '@nat' instead of '<@v:42>'
+link = message_link(sid, cid, msg["id"], instance=server.url)          # Ember shows it as a server > #channel pill
+nookara.link_info(sid, cid)    # {server: {sid, name, icon}, channel: {cid, name} | None, joined}; Instance.link_info(cid) too
+```
+
+`emoji_info(eid)` also answers `{emoji, server: None, external: {platform, server}}` for an emoji a Discord / Fluxer bridge brought in (Ember keeps a copy when the server doesn't have it).
+
 ## Changes in 0.9.11
 
 Ember server permission numbers (a role's `permissions`, your `server.perms`, a channel's allow / deny) to names and back. The table is generated from ember-server, and unknown bits come out as `BIT_<n>` so nothing is lost. Calculator and the full list: https://nookara.cc/docs/ember-permissions

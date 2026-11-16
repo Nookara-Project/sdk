@@ -6799,6 +6799,37 @@
       "legacy": false
     },
     {
+      "operationId": "get_chat_link_info_by_sid_by_cid",
+      "group": "chat",
+      "method": "GET",
+      "path": "/chat/link-info/:sid/:cid",
+      "auth": "bearer",
+      "scopes": [
+        "CHAT"
+      ],
+      "params": [
+        {
+          "name": "sid",
+          "optional": false
+        },
+        {
+          "name": "cid",
+          "optional": false
+        }
+      ],
+      "query": [],
+      "body": [],
+      "files": [],
+      "errors": [
+        "not_found",
+        "insufficient_scope"
+      ],
+      "notes": "What a link to a channel or message is called (Ember shows a pasted https://ember.nookara.cc/#/s/<sid>/<cid>/<message id> link as a server > #channel > message pill). Returns {server: {sid, name, icon}, channel: {cid, name} | null, joined}. Members get the channel when they can see it. Anyone else only gets an answer for a discoverable server, and the channel only when @everyone can see it; otherwise 404 not_found. An Ember server answers the same at GET INSTANCE/api/v1/link-info/:sid/:cid.",
+      "staffOnly": false,
+      "captcha": false,
+      "legacy": false
+    },
+    {
       "operationId": "get_chat_emojis_by_eid_info",
       "group": "chat",
       "method": "GET",
@@ -6820,7 +6851,7 @@
         "not_found",
         "server_not_found"
       ],
-      "notes": "Who an emoji belongs to (the pop-up when you click one). Returns {emoji: {eid, name, animated}, server} for a server emoji (server is {sid, name, icon, discoverable, joined, member_count} when you could see or join that server, else null), or {emoji, server: null, personal: {owner: {username, pfp}}} for a personal emoji. 404 not_found when no emoji has that id. personal.locked is true when its owner turned on Lock my emojis and stickers.",
+      "notes": "Who an emoji belongs to (the pop-up when you click one). Returns {emoji: {eid, name, animated}, server} for a server emoji (server is {sid, name, icon, discoverable, joined, member_count} when you could see or join that server, else null), or {emoji, server: null, personal: {owner: {username, pfp}}} for a personal emoji. 404 not_found when no emoji has that id. personal.locked is true when its owner turned on Lock my emojis and stickers. personal.origin, on a copy: where its picture was first seen ({type: \"user\", username, pfp} or {type: \"server\", name, host}), null for an original. An emoji a Discord / Fluxer bridge brought in (one the Ember server did not have, kept so it still shows) answers {emoji, server: null, external: {platform: \"Discord\" | \"Fluxer\", server: the guild name or null}}.",
       "staffOnly": false,
       "captcha": false,
       "source": "routes/chat.js:507",
