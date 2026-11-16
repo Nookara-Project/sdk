@@ -559,6 +559,18 @@ Three new App scopes (they sit above the old 16 bits, so only a registered App's
 
 An App token now needs these for notifications and blocks; Friends no longer reaches blocks for Apps. `SCOPES` also lists `FILES_READ` and `FILES_WRITE`.
 
+## Changes in 0.9.11
+
+Ember server permission numbers (a role's `permissions`, your `server.perms`, a channel's allow / deny) to names and back. The table is generated from ember-server, and unknown bits come out as `BIT_<n>` so nothing is lost. Calculator and the full list: https://nookara.cc/docs/ember-permissions
+
+```python
+from nookara import ember_permission_names, ember_permission_mask, has_ember_permission
+
+ember_permission_names(257)                  # ['SEND', 'ATTACH']
+ember_permission_mask("SEND", "ATTACH")      # 257 (also takes a list, "send messages" or "Attach files")
+has_ember_permission(server["perms"], "BAN") # ADMIN counts as everything
+```
+
 ## Changes in 0.9.4
 
 Personal emojis (needs Chat): emojis that belong to your Nookara account and work on every Ember server, in DMs and in group chats (25 for free accounts, 100 with Pro). `personal_emojis()` is `GET /chat/personal-emojis` and answers `{emojis: [{eid, name, animated, url, created_at}], max, pro_max}`. `add_personal_emoji(file, name=None)` uploads a PNG, JPG, GIF or WebP up to 2 MB and returns the emoji; `rename_personal_emoji(eid, name)` and `delete_personal_emoji(eid)` do what they say. In a message they are the same `<:name:eid>` or `<a:name:eid>` as server emojis. `emoji_info(eid)` (`GET /chat/emojis/:eid/info`) now also answers for personal emojis with `{emoji, server: None, personal: {owner: {username, pfp}}}`. Errors: `too_many_emojis`, `file_too_large` (413), `invalid_emoji`, `name_required`, `not_found` (404), `upload_suspended` (403).

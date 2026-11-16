@@ -219,7 +219,59 @@ export const parse_personal_sticker = text => {
   const m = STICKER_LINK.exec(t);
   return m ? { sid: m[1], name: m[3] || 'sticker', url: t.split('#')[0], animated: m[2] === 'gif' } : null;
 };
+// Ember server permission numbers (0.1.7, same as Python): a role's permissions, your server.perms, a channel's allow / deny.
+// Calculator and the full list: https://nookara.cc/docs/ember-permissions. The table is generated from ember-server's src/perms.js.
+// gen:start
+const EMBER_PERMISSIONS = Object.freeze({"SEND":1,"MANAGE_CHANNELS":2,"MANAGE_SERVER":4,"MANAGE_ROLES":8,"KICK":16,"BAN":32,"MANAGE_MESSAGES":64,"MENTION_EVERYONE":128,"ATTACH":256,"ADMIN":512,"VIEW":1024,"MANAGE_USERS":2048,"UNMARKED_ALIASES":4096});
+const EMBER_PERMISSION_LABELS = Object.freeze({"SEND":"Send messages","MANAGE_CHANNELS":"Manage channels","MANAGE_SERVER":"Manage server","MANAGE_ROLES":"Manage roles","KICK":"Kick members","BAN":"Ban members","MANAGE_MESSAGES":"Manage messages","MENTION_EVERYONE":"Mention @everyone, @here and all roles","ATTACH":"Attach files","ADMIN":"Administrator","VIEW":"View channel","MANAGE_USERS":"Manage users","UNMARKED_ALIASES":"Use unmarked aliases"});
+const EMBER_ALL_PERMISSIONS = 7167;
+const EMBER_CHANNEL_PERMISSIONS = 1281;
+const EMBER_EVERYONE_DEFAULT = 257;
+// gen:end
+const EMBER_ALIASES = { SEND_MESSAGES: 'SEND', KICK_MEMBERS: 'KICK', BAN_MEMBERS: 'BAN', ATTACH_FILES: 'ATTACH', ADMINISTRATOR: 'ADMIN', VIEW_CHANNEL: 'VIEW', UNMARKED_ALIAS: 'UNMARKED_ALIASES' };
+const EMBER_KNOWN = Object.values(EMBER_PERMISSIONS).reduce((m, b) => m | BigInt(b), 0n);
+const emberBig = value => {
+  if (typeof value === 'bigint') { if (value < 0n) throw new RangeError("Permissions can't be negative"); return value; }
+  if (typeof value === 'number') { if (!Number.isSafeInteger(value) || value < 0) throw new RangeError(`Permissions must be a whole number, like 257: ${value}`); return BigInt(value); }
+  const text = String(value ?? '').trim().replace(/_/g, '');
+  if (text === '') return 0n;
+  if (!/^(\d+|0x[0-9a-f]+|0b[01]+)$/i.test(text)) throw new RangeError(`Permissions must be a whole number, like 257: ${value}`);
+  return BigInt(text.toLowerCase());
+};
+const emberOut = n => (n <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(n) : n);
+const emberBit = permission => {
+  if (typeof permission === 'number' || typeof permission === 'bigint') {
+    const b = BigInt(permission);
+    if (b <= 0n || (b & (b - 1n))) throw new RangeError(`Not a single permission bit: ${permission}`);
+    return b;
+  }
+  const text = String(permission).trim();
+  let key = text.toUpperCase().replace(/[\s-]+/g, '_');
+  key = EMBER_ALIASES[key] || key;
+  if (key in EMBER_PERMISSIONS) return BigInt(EMBER_PERMISSIONS[key]);
+  const byLabel = Object.keys(EMBER_PERMISSION_LABELS).find(k => EMBER_PERMISSION_LABELS[k].toLowerCase() === text.toLowerCase());
+  if (byLabel) return BigInt(EMBER_PERMISSIONS[byLabel]);
+  const extra = /^BIT_(\d{1,4})$/.exec(key);
+  if (extra) return 1n << BigInt(extra[1]);
+  throw new TypeError(`Unknown Ember permission: ${permission} (see https://nookara.cc/docs/ember-permissions)`);
+};
+/** names (or bits) -> the number: ember_permission_mask('SEND', 'ATTACH') === 257. An array works too. A number past 2^53 comes back as a BigInt. */
+export const ember_permission_mask = (...permissions) => emberOut((permissions.length === 1 && Array.isArray(permissions[0]) ? permissions[0] : permissions).reduce((m, p) => m | emberBit(p), 0n));
+/** the number (number, BigInt, or a string like '257' / '0x101') -> names, lowest bit first. Unknown bits come out as BIT_<n>. */
+export const ember_permission_names = value => {
+  const n = emberBig(value);
+  const names = Object.keys(EMBER_PERMISSIONS).filter(k => (n & BigInt(EMBER_PERMISSIONS[k])) !== 0n);
+  let rest = n & ~EMBER_KNOWN;
+  for (let bit = 0; rest > 0n; bit++, rest >>= 1n) if (rest & 1n) names.push(`BIT_${bit}`);
+  return names;
+};
+/** does this number allow the permission? ADMIN counts as every permission, like the server does. */
+export const has_ember_permission = (value, permission) => {
+  const n = emberBig(value), b = emberBit(permission);
+  if ((n & BigInt(EMBER_PERMISSIONS.ADMIN)) && (b & EMBER_KNOWN)) return true;
+  return (n & b) === b;
+};
 export const scope_mask = (...names) => names.reduce((m, n) => { if (!(n in SCOPES)) throw new TypeError(`Unknown scope: ${n}`); return m | SCOPES[n]; }, 0);
 export const scope_names = mask => Object.keys(SCOPES).filter(n => (Number(mask) & SCOPES[n]) === SCOPES[n] && SCOPES[n]);
 export const has_scope = (mask, name) => (Number(mask) & SCOPES[name]) === SCOPES[name];
-export { SCOPES, ROUTES, VERSION };
+export { SCOPES, ROUTES, VERSION, EMBER_PERMISSIONS, EMBER_PERMISSION_LABELS, EMBER_ALL_PERMISSIONS, EMBER_CHANNEL_PERMISSIONS, EMBER_EVERYONE_DEFAULT };

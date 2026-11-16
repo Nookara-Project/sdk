@@ -13,7 +13,7 @@ const core = fs.readFileSync(path.join(root, 'src/core.mjs'), 'utf8').replace('_
 
 fs.mkdirSync(path.join(root, 'dist'), { recursive: true });
 fs.writeFileSync(path.join(root, 'dist/index.mjs'), head + core);
-const names = ['APIError', 'ScopeError', 'TransportError', 'Client', 'startAppLinkLogin', 'shown_name', 'personal_sticker_text', 'parse_personal_sticker', 'scope_mask', 'scope_names', 'has_scope', 'SCOPES', 'ROUTES', 'VERSION'];
+const names = ['APIError', 'ScopeError', 'TransportError', 'Client', 'startAppLinkLogin', 'shown_name', 'personal_sticker_text', 'parse_personal_sticker', 'scope_mask', 'scope_names', 'has_scope', 'SCOPES', 'ROUTES', 'VERSION', 'ember_permission_mask', 'ember_permission_names', 'has_ember_permission', 'EMBER_PERMISSIONS', 'EMBER_PERMISSION_LABELS', 'EMBER_ALL_PERMISSIONS', 'EMBER_CHANNEL_PERMISSIONS', 'EMBER_EVERYONE_DEFAULT'];
 const cjs = (head + core).replace(/^export \{[^\n]*\n/m, '').replace(/^export (class|const|async function) /gm, '$1 ') + `module.exports = { ${names.join(', ')} };\n`;
 fs.writeFileSync(path.join(root, 'dist/index.cjs'), cjs);
 
@@ -54,6 +54,18 @@ export function shown_name(user: { username?: string; display_name?: string | nu
 export function scope_mask(...names: string[]): number;
 export function scope_names(mask: number): string[];
 export function has_scope(mask: number, name: string): boolean;
+/** Ember server permission bits by name (https://nookara.cc/docs/ember-permissions) */
+export const EMBER_PERMISSIONS: Readonly<Record<string, number>>;
+export const EMBER_PERMISSION_LABELS: Readonly<Record<string, string>>;
+export const EMBER_ALL_PERMISSIONS: number;
+export const EMBER_CHANNEL_PERMISSIONS: number;
+export const EMBER_EVERYONE_DEFAULT: number;
+/** names, labels, BIT_n or single bits -> the number (a BigInt only past 2^53): ember_permission_mask('SEND', 'ATTACH') === 257 */
+export function ember_permission_mask(...permissions: Array<string | number | bigint | Array<string | number | bigint>>): number | bigint;
+/** the number -> names, lowest bit first; unknown bits come out as BIT_<n> */
+export function ember_permission_names(value: number | bigint | string): string[];
+/** ADMIN counts as every permission, like the server does */
+export function has_ember_permission(value: number | bigint | string, permission: string | number | bigint): boolean;
 export class Client {
   constructor(token?: string | null, options?: ClientOptions);
   baseUrl: string;

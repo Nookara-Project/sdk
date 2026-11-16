@@ -57,6 +57,18 @@ The Python SDK also has sign-in helpers, websockets and the bot gateway, message
 
 Guide: https://nookara.cc/guides/node-sdk. Every route: https://nookara.cc/guides/velora-api
 
+## Changes in 0.1.7
+
+Ember server permission numbers to names and back, same as Python 0.9.11. Unknown bits come out as `BIT_<n>`; a number past 2^53 comes back as a BigInt. Calculator and the full list: https://nookara.cc/docs/ember-permissions
+
+```js
+import { ember_permission_names, ember_permission_mask, has_ember_permission } from 'nookara';
+
+ember_permission_names(257);                // ['SEND', 'ATTACH']
+ember_permission_mask('SEND', 'ATTACH');    // 257
+has_ember_permission(server.perms, 'KICK'); // ADMIN counts as everything
+```
+
 ## Changes in 0.1.6
 
 Clone locks. `lock_my_emojis(true)` turns on Lock my emojis and stickers (the chat setting `lock_emojis`): nobody else can clone your personal emojis and stickers to a server or add them to their own. Ember servers have the matching setting `emojis.allow_cloning`. An exact copy of a locked one is refused with `clone_locked` or `cloning_disabled` (403). Pass where a copied picture came from with `{ source }`, and ask first with `clone_check` (bytes or a SHA-256, no sign-in needed). Personal emojis are here too now, the same as Python.

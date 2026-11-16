@@ -14,6 +14,9 @@ from .instance_gateway import BotGateway, InstanceGateway
 from .realtime import GAME_EVENT_TYPES, NOTIFICATION_EVENT_TYPES, RealtimeClient
 from .scopes import (EMBER_APP_MASK, DEFAULT_OFF, INSTANCE_SCOPES, SCOPE_LABELS, SCOPES, has_scope, scope_bit,
                      scope_mask, scope_names)
+from .ember_permissions import (EMBER_ALL_PERMISSIONS, EMBER_CHANNEL_PERMISSIONS, EMBER_EVERYONE_DEFAULT, EMBER_PERMISSION_LABELS,
+                                EMBER_PERMISSIONS, ember_permission_bit, ember_permission_mask, ember_permission_names,
+                                has_ember_permission)
 from .signing import Signer, verify_message
 
 __all__ = ["EncryptedDMs", "KeyChanged", "APIError", "ScopeError", "Client", "TransportError", "RealtimeClient", "GAME_EVENT_TYPES", "NOTIFICATION_EVENT_TYPES",
@@ -23,4 +26,6 @@ __all__ = ["EncryptedDMs", "KeyChanged", "APIError", "ScopeError", "Client", "Tr
            "is_paid", "Instance", "InstanceGateway", "BotGateway", "Ember", "BotProgram", "Signer", "verify_message",
            "execute_webhook", "make_alias", "normalize_origin", "SCOPES", "SCOPE_LABELS", "DEFAULT_OFF", "INSTANCE_SCOPES",
            "EMBER_APP_MASK", "scope_mask", "scope_names", "scope_bit", "has_scope",
-           "DMRefused", "DM_REFUSALS", "dm_channel_id", "dm_user_id", "is_dm_event"]
+           "DMRefused", "DM_REFUSALS", "dm_channel_id", "dm_user_id", "is_dm_event",
+           "EMBER_PERMISSIONS", "EMBER_PERMISSION_LABELS", "EMBER_ALL_PERMISSIONS", "EMBER_CHANNEL_PERMISSIONS", "EMBER_EVERYONE_DEFAULT",
+           "ember_permission_bit", "ember_permission_mask", "ember_permission_names", "has_ember_permission"]

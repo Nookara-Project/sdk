@@ -3,7 +3,7 @@ import assert from 'node:assert';
 import http from 'node:http';
 import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
-import { startAppLinkLogin, shown_name, personal_sticker_text, parse_personal_sticker, Client, APIError, ScopeError, TransportError, ROUTES, SCOPES, scope_mask, scope_names, has_scope, VERSION } from '../dist/index.mjs';
+import { startAppLinkLogin, shown_name, personal_sticker_text, parse_personal_sticker, Client, APIError, ScopeError, TransportError, ROUTES, SCOPES, scope_mask, scope_names, has_scope, VERSION, ember_permission_mask, ember_permission_names, has_ember_permission, EMBER_PERMISSIONS, EMBER_ALL_PERMISSIONS } from '../dist/index.mjs';
 
 let server, base, last;
 const STK = { sid: 's0123456789', name: 'wave', animated: false, url: 'https://nookara.cc/uploads/stickers/s0123456789.png', send: 'https://nookara.cc/uploads/stickers/s0123456789.png#wave', created_at: 1 };
@@ -219,4 +219,27 @@ test('clone locks: lock_my_emojis, clone_check (bytes or hash, no token), upload
   assert.doesNotMatch(String(last.body), /name="from"/);
   assert.strictEqual((await c.personal_emojis()).max, 25);
   assert.ok('get_chat_clone_check' in ROUTES);
+});
+
+test('ember permissions: names and back', () => {
+  assert.deepEqual(ember_permission_names(257), ['SEND', 'ATTACH']);
+  assert.deepEqual(ember_permission_names('0x101'), ['SEND', 'ATTACH']);
+  assert.deepEqual(ember_permission_names(0), []);
+  assert.equal(ember_permission_mask('SEND', 'ATTACH'), 257);
+  assert.equal(ember_permission_mask(['send messages', 'Attach files']), 257);
+  assert.equal(ember_permission_mask('administrator'), 512);
+  assert.throws(() => ember_permission_mask('NOPE'));
+  assert.throws(() => ember_permission_names('abc'));
+  assert.deepEqual(ember_permission_names(4096 + 8192), ['UNMARKED_ALIASES', 'BIT_13']);
+  assert.equal(ember_permission_mask('UNMARKED_ALIASES', 'BIT_13'), 12288);
+  const big = (1n << 60n) | 1n;
+  assert.equal(ember_permission_mask(ember_permission_names(big)), big);
+  assert.equal(ember_permission_mask(ember_permission_names(big.toString())), big);
+  const every = Object.values(EMBER_PERMISSIONS).reduce((a, b) => a | b, 0);
+  assert.equal(ember_permission_mask(ember_permission_names(every)), every);
+  assert.equal(EMBER_ALL_PERMISSIONS & EMBER_PERMISSIONS.VIEW, 0);
+  assert.equal(has_ember_permission(257, 'SEND'), true);
+  assert.equal(has_ember_permission(257, 'KICK'), false);
+  assert.equal(has_ember_permission(512, 'KICK'), true);
+  assert.equal(has_ember_permission(512, 'BIT_40'), false);
 });
