@@ -57,6 +57,16 @@ The Python SDK also has sign-in helpers, websockets and the bot gateway, message
 
 Guide: https://nookara.cc/guides/node-sdk. Every route: https://nookara.cc/guides/velora-api
 
+## Changes in 0.1.9
+
+Same as Python 0.9.13: `SCOPES` gains the new App permissions for Nookara Drive and websites, plus `ACTIVITY` (4194304).
+
+- `DRIVE_READ` (8388608): read the person's Nookara Drive (`/drive/api/items`, `/search`, `/items/:id/text`, `/items/:id/edit`, `/items/:id/link`...).
+- `DRIVE_WRITE` (16777216, includes read): make folders, upload files or new revisions, rename, move, bin, restore.
+- `SITES_MANAGE` (33554432, needs Nookara Drive): make and update Nookara Sites through `/drive/api/sites`; writing files into a site's folder publishes them.
+
+Sharing, deleting for good and emptying the bin stay Drive-only (`403 drive_app_only`). The person can switch any of these off when they sign in, so check with `has_scope(scopes, 'DRIVE_WRITE')`.
+
 ## Changes in 0.1.8
 
 Mentions are Discord's format now, same as Python 0.9.12: `<@id>` pings a person, `<#cid>` is a channel, `<@&rid>` a role, `<:name:eid>` a custom emoji. A plain `@name` is only text and pings nobody. Ids: a Nookara account number (`<@42>`), or on an Ember server the member's id there (`<@v:42>`, `<@l:3>`, `<@b:7>`).

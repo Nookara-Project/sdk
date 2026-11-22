@@ -31,6 +31,10 @@ SCOPES = {
     "NOTIFY_READ": 524288,
     "BLOCKS_READ": 1048576,
     "BLOCKS_MANAGE": 2097152,
+    "ACTIVITY": 4194304,
+    "DRIVE_READ": 8388608,
+    "DRIVE_WRITE": 16777216,
+    "SITES_MANAGE": 33554432,
 }
 
 SCOPE_LABELS = {
@@ -56,9 +60,13 @@ SCOPE_LABELS = {
     "NOTIFY_READ": "Read Notifications",
     "BLOCKS_READ": "View Blocked People",
     "BLOCKS_MANAGE": "Block and Unblock",
+    "ACTIVITY": "Show Activity",
+    "DRIVE_READ": "Nookara Drive (read only)",
+    "DRIVE_WRITE": "Nookara Drive (read and edit)",
+    "SITES_MANAGE": "Websites",
 }
 
-DEFAULT_OFF = ("PROFILE_SENSITIVE", "ACCOUNT_WRITE", "STORAGE_WRITE", "FRIENDS_MANAGE", "CURRENCY_PAY", "SIGN_MESSAGES")
+DEFAULT_OFF = ("PROFILE_SENSITIVE", "ACCOUNT_WRITE", "STORAGE_WRITE", "FRIENDS_MANAGE", "CURRENCY_PAY", "SIGN_MESSAGES", "DRIVE_WRITE", "SITES_MANAGE")
 
 INSTANCE_SCOPES = {"chat": "CHAT", "voice": "VOICE", "media": "MEDIA_UPLOAD", "sign": "SIGN_MESSAGES"}
 

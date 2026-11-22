@@ -559,6 +559,26 @@ Three new App scopes (they sit above the old 16 bits, so only a registered App's
 
 An App token now needs these for notifications and blocks; Friends no longer reaches blocks for Apps. `SCOPES` also lists `FILES_READ` and `FILES_WRITE`.
 
+## Changes in 0.9.13
+
+New App permissions for Nookara Drive and websites (Nookara, 2026-11-22). Until now only Drive's own app could reach Drive; an App can now, if the person turns these on when they sign in to it:
+
+| Scope | Bit | What it reaches |
+|---|---|---|
+| `DRIVE_READ` (Nookara Drive, read only) | 8388608 | `/drive/api/items`, `/search`, `/recent`, `/folders`, `/tree`, `/items/{id}/text`, `/items/{id}/edit` (whole text + rev), `/items/{id}/link` |
+| `DRIVE_WRITE` (Nookara Drive, read and edit; includes read) | 16777216 | make folders, upload new files or new revisions (`replaces` + `base_rev`), rename and move, put in the bin, restore |
+| `SITES_MANAGE` (Websites; needs Nookara Drive) | 33554432 | `/drive/api/sites`: list, make, read, update, deploy and import sites. A site is a Drive folder, so writing files into it (DRIVE_WRITE) publishes them |
+
+Sharing, share links, deleting for good, emptying the bin, buying site slots, site people, addresses, domains and deleting sites stay with Drive itself: another App gets `403 drive_app_only`. 13-15 accounts can't grant these. `SCOPES` also gains `ACTIVITY` (4194304, Show Activity), which was missing.
+
+```python
+from nookara import Client, login_app, scope_mask
+token, origin = login_app("app_...")          # tick Nookara Drive (Read and edit) + Websites in your App's settings first
+c = Client(token, origin=origin)
+print(c.has_scope("DRIVE_READ"), c.has_scope("SITES_MANAGE"))
+items = c.request("GET", "/drive/api/items")["items"]
+```
+
 ## Changes in 0.9.12
 
 Mentions are Discord's format now. In Ember message text `<@id>` pings a person, `<#cid>` is a channel, `<@&rid>` a role and `<:name:eid>` a custom emoji. A plain `@name` is only text and pings nobody (messages from before 2026-11-17 used `@name`). Ids: a Nookara account number (`<@42>`), or on an Ember server the member's id there (`<@v:42>` for a Nookara account, `<@l:3>` local, `<@b:7>` a bot). Bots on `/bot/v1` keep Discord's numeric ids; the server turns `<@id>` / `<#id>` into Ember's tokens and back.
